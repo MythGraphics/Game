@@ -1,0 +1,4 @@
+# file/image:sprite_alignment:offset_x:offset_y:sprite_size_x:sprite_size_y:number_of_sprites
+# sprite_direction have to be either x or y
+# sprite_size means the size of a single sprite
+bubbles.png:x:0:0:225:225:4

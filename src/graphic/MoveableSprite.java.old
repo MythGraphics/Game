@@ -1,0 +1,43 @@
+/*
+ *
+ */
+
+package graphic;
+
+/**
+ *
+ * @author  Martin Pröhl alias MythGraphics
+ * @version 1.0.0
+ *
+ */
+
+import java.awt.Image;
+import java.awt.Point;
+
+public class MoveableSprite extends MoveableBlock {
+
+    private final Image[] imageset;
+
+    Image currentImg;
+
+    public MoveableSprite(Image image, int x, int y, int blockSize, TileType type, Point maxPoint) {
+        this( new Image[] {image, image, image, image}, x, y, blockSize, type, maxPoint );
+    }
+
+    public MoveableSprite(Image[] imageset, int x, int y, int blockSize, TileType type, Point maxPoint) {
+        super(x, y, blockSize, type, maxPoint);
+        this.imageset = imageset;
+        currentImg = imageset[0];
+    }
+
+    @Override
+    public Image getImage() {
+        return currentImg;
+    }
+
+    @Override
+    public void setImage(Direction direction) {
+        currentImg = imageset[ direction.ordinal() ];
+    }
+
+}
