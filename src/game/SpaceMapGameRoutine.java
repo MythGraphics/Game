@@ -73,10 +73,6 @@ public class SpaceMapGameRoutine extends GameRoutine {
         super.collisionPerformed(e);
         switch( e.getBlock().getType() ) {
             case ENEMY -> {
-/*              player.getDialogOutputListener().show( new Message(
-                    "Der Zerg erschreckt sich bei Eurem Anblick zu Tode.", player
-                ));
- */
                 if ( !enemy.getMinion().isAlive() ) {
                     enemy.getMinion().resurrect();
                     enemy.getMinion().setLevel( player.getPlayerAsMinion().getLevel() );
@@ -86,6 +82,11 @@ public class SpaceMapGameRoutine extends GameRoutine {
                 if ( !enemy.getMinion().isAlive() ) {
                     e.block.dead();
                 }
+            }
+            case ENVIRONMENT_A -> {
+                player.getDialogOutputListener().show( new Message(
+                    "Wieso liegt hier eigentlich Stroh rum?", player
+                ));
             }
         }
     }
