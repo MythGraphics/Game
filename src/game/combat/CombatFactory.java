@@ -11,7 +11,8 @@ package game.combat;
  *
  */
 
-import static game.combat.AmmoType.*;
+import game.Resource;
+import static game.combat.AmmoType.PROJECTILE;
 import static game.combat.ArmorType.*;
 import static game.combat.CombatantType.*;
 import static game.combat.DamageType.*;
@@ -25,19 +26,13 @@ public class CombatFactory {
 
     public enum DefaultMinion {
 
-        APOTHEKER       ( getDefaultApotheker() ),
-        MAGIER          ( getDefaultMagier() ),
-        KRIEGER         ( getDefaultKrieger() ),
-
         GIFTZERG        ( getDefaultGiftZerg() ),
         FEUERZERG       ( getDefaultFeuerZerg() ),
         KRIEGERZERG     ( getDefaultKriegerZerg() ),
 
         HASE            ( getDefaultBattlePet_Hase() ),
         KATZE           ( getDefaultBattlePet_Katze() ),
-        RATTE           ( getDefaultBattlePet_Ratte() ),
-
-        SPACE_MARINE    ( getDefaultSpaceMarine() );
+        RATTE           ( getDefaultBattlePet_Ratte() );
 
         private final Combatant combatant;
 
@@ -104,24 +99,24 @@ public class CombatFactory {
         return c;
     }
 
-    public static Player getDefaultApotheker() {
-        Player c = new Player( "Der Apotheker", APOTHEKER, 0 );
+    public static Player getDefaultApotheker(Resource health) {
+        Player c = new Player( "Der Apotheker", APOTHEKER, health, 0 );
         c.addArmor( new Armor( "Antikörper", ANTIKÖRPER, 50 ));
         c.addArmor( new Armor( "Kittel", RÜSTUNG, 10 ));
         c.addWeapon( new Weapon( "Pistill", KNÜPPEL, PHYSISCH, 10 ));
         return c;
     }
 
-    public static Player getDefaultKrieger() {
-        Player c = new Player( "Poppeye", KRIEGER, 0 );
+    public static Player getDefaultKrieger(Resource health) {
+        Player c = new Player( "Poppeye", KRIEGER, health, 0 );
         c.addArmor( new Armor( "Dicke Muckies", RÜSTUNG, 50 ));
         c.addArmor( new Armor( "Matrosenhemd", RÜSTUNG, 10 ));
         c.addWeapon( new Weapon( "Pfeife", KNÜPPEL, PHYSISCH, 10 ));
         return c;
     }
 
-    public static Player getDefaultMagier() {
-        Player c = new Player( "Gandalf", MAGIER, 0 );
+    public static Player getDefaultMagier(Resource health) {
+        Player c = new Player( "Gandalf", MAGIER, health, 0 );
         c.addArmor( new Armor( "Asbestumhang", ASBESTBESCHICHTUNG, 50 ));
         c.addArmor( new Armor( "Robe", RÜSTUNG, 10 ));
         c.addWeapon( new Weapon( "Elderstab", STAB, PHYSISCH, 10 ));
@@ -183,8 +178,8 @@ public class CombatFactory {
         return c;
     }
 
-    public static Player getDefaultSpaceMarine() {
-        Player c = new Player( "SpaceMarine Johannis Kraut", SPACE_MARINE, 0 );
+    public static Player getDefaultSpaceMarine(Resource health) {
+        Player c = new Player( "SpaceMarine Johannis Kraut", SPACE_MARINE, health, 0 );
         c.addArmor( new Armor( "Space Suit", RÜSTUNG, 90 ));
         AmmoWeapon weapon = new AmmoWeapon( "BFG Sturmgewehr", GEWEHR, PROJECTILE );
         weapon.addAmmo( new Ammo( "Plasmaladung", PROJECTILE, 100, 10, new Damage( NUKLEAR, 50 )));

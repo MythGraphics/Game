@@ -13,7 +13,7 @@ package game;
 
 import game.combat.CombatFactory;
 import game.combat.CombatFrame;
-import game.combat.Combatant;
+import game.item.Item;
 import graphic.CollisionEvent;
 import graphic.TextFrame;
 import graphic.io.BinaryIO;
@@ -22,13 +22,17 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import javax.swing.JFrame;
 
 public class SpaceMapGameRoutine extends GameRoutine {
 
     private final List<String> audioTrackList;
     private final JFrame frame;
+    private final Random rand = new Random();
+    private final List<Item> itemPool = new ArrayList<>();
 
     private Enemy enemy;
 
@@ -48,7 +52,7 @@ public class SpaceMapGameRoutine extends GameRoutine {
 
     private void init() throws IOException {
         enemy = GameObjectLoader.loadNextEnemy();
-        player.setPlayerAsMinion( CombatFactory.getDefaultSpaceMarine() );
+        player.setPlayerAsMinion( CombatFactory.getDefaultSpaceMarine( player.getHealth() ));
     }
 
     @Override
@@ -68,6 +72,10 @@ public class SpaceMapGameRoutine extends GameRoutine {
         textFrame.show("Prolog", prolog, bg);
     }
 
+    private void loot() {
+        // ToDo hier weiter
+    }
+
     @Override
     public void collisionPerformed(CollisionEvent e) {
         super.collisionPerformed(e);
@@ -76,16 +84,19 @@ public class SpaceMapGameRoutine extends GameRoutine {
                 if ( !enemy.getMinion().isAlive() ) {
                     enemy.getMinion().resurrect();
                     enemy.getMinion().setLevel( player.getPlayerAsMinion().getLevel() );
-                };
+                }
                 CombatFrame cFrame = new CombatFrame( frame, player.getPlayerAsMinion(), enemy.getMinion() );
                 cFrame.setVisible(true);
                 if ( !enemy.getMinion().isAlive() ) {
                     e.block.dead();
                 }
+                if ( player.getPlayerAsMinion().isAlive() ) {
+                    loot();
+                }
             }
             case ENVIRONMENT_A -> {
                 player.getDialogOutputListener().show( new Message(
-                    "Wieso liegt hier eigentlich Stroh rum?", player
+                    "Warum liegt hier eigentlich Stroh rum?", player
                 ));
             }
         }

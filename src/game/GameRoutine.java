@@ -17,7 +17,9 @@ import static graphic.CollisionType.*;
 import graphic.map.BlockType;
 import graphic.map.GameMap;
 import java.awt.Point;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import util.CycleList;
 
 public abstract class GameRoutine implements CollisionActionListener {

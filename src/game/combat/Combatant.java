@@ -37,16 +37,19 @@ public class Combatant extends InteractiveObject implements Combatable {
     // Attribute über cType (CombatantType) implementiert
 
     public Combatant(String name, CombatantType cType) {
-        super(name);
-        this.cType = cType;
-        health = new Resource(RESOURCE_NAME, Resource.ResourceType.HEALTH, HP_PER_LEVEL);
-        armorList = new ArrayList<>();
-        weaponList = new ArrayList<>(2); // 0-2 Einträge
+        this(name, cType, null);
     }
 
-    public Combatant(HashMap<Byte, String> nameMap, CombatantType cType) {
-        this(UNNAMED, cType);
-        setNameMap(nameMap);
+    public Combatant(String name, CombatantType cType, Resource health) {
+        super(name);
+        this.cType  = cType;
+        if (health == null) {
+            this.health = new Resource( RESOURCE_NAME, Resource.ResourceType.HEALTH, HP_PER_LEVEL );
+        } else {
+            this.health = health;
+        }
+        armorList   = new ArrayList<>();
+        weaponList  = new ArrayList<>(2); // 0-2 Einträge
     }
 
     @Override

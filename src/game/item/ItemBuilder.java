@@ -24,8 +24,8 @@ public class ItemBuilder {
     private final List<String> itemNames;
     private final List<Image>  itemBGImages;
     private final List<Image>  itemGUIImages;
-    private final List<ItemEffect> itemEffectList_prä = new ArrayList<>();
-    private final List<ItemEffect> itemEffectList_suff = new ArrayList<>();
+    private final List<ItemEffect> itemEffectList_prä   = new ArrayList<>();
+    private final List<ItemEffect> itemEffectList_suff  = new ArrayList<>();
 
     public ItemBuilder() {
         this.itemNames = new ArrayList<>();

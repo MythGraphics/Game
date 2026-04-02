@@ -11,6 +11,7 @@ package game.combat;
  *
  */
 
+import game.Resource;
 import static game.combat.AttributeType.*;
 import static game.combat.CombatantType.*;
 import static game.combat.DamageType.*;
@@ -24,17 +25,11 @@ public class Player extends Combatant {
     private final Map<AttributeType, Attribute> attributes;
     private int xp = 0;
 
-    public Player(String name, CombatantType cType, int xp) {
-        super(name, cType);
+    public Player(String name, CombatantType cType, Resource health, int xp) {
+        super(name, cType, health);
         this.attributes = new HashMap<>();
         addXP(xp);
-        Map<Attribute, Integer> lvlBuff = getType(cType); // Anzahl der Punkte, um die das Attribut pro Level steigt
-        for ( Attribute a : lvlBuff.keySet() ) {
-            // Attribute an Level anpassen
-            a.setValue( getLevel()*lvlBuff.get( a ));
-            // Attribute in sinnige HashMap ablegen
-            attributes.put( a.getAttributeType(), a );
-        }
+        buffAttr();
     }
 
     public int getXP() {
@@ -43,15 +38,24 @@ public class Player extends Combatant {
 
     public final void addXP(int xp) {
         this.xp += xp;
-        setLevel( (byte) ( 1 + xp/XP_PER_LEVEL ));
+        setLevel((byte) ( this.xp/XP_PER_LEVEL + 1 ));
     }
 
     public int getAttributeValue(AttributeType aType) {
         return attributes.get(aType).getValue();
     }
 
+    private void buffAttr() {
+        Map<Attribute, Integer> lvlBuff = getType(cType); // Anzahl der Punkte, um die das Attribut pro Level steigt
+        for ( Attribute a : lvlBuff.keySet() ) {
+            a.setValue( getLevel()*lvlBuff.get( a )); // Attribute an Level anpassen
+            attributes.put( a.getAttributeType(), a ); // Attribute in sinnige Map ablegen
+        }
+    }
+
     @Override
     public void buffDamage(Damage damage) {
+        buffAttr();
         for ( HashMap.Entry<AttributeType, Attribute> entry : attributes.entrySet() ) {
             damage.buffDamage( entry.getValue() );
         }

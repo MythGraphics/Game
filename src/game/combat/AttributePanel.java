@@ -187,7 +187,7 @@ public class AttributePanel extends JPanel implements BattleActionListener, Reso
 
         jTextFieldLvl.setEditable(false);
         jTextFieldLvl.setText(String.valueOf(combatant.getLevel()));
-        jTextFieldLvl.setToolTipText("Level");
+        jTextFieldLvl.setToolTipText(getXPString());
         jTextFieldLvl.setFocusable(false);
 
         jTextFieldDmg1.setEditable(false);
@@ -493,6 +493,14 @@ public class AttributePanel extends JPanel implements BattleActionListener, Reso
         jTextFieldDmg3.setText( String.valueOf( combatant.getDamageReduction( PHYSISCH )) + "%" );
         jTextFieldDmg4.setText( String.valueOf( combatant.getDamageReduction( GIFT )) + "%" );
         jTextFieldDmg5.setText( String.valueOf( combatant.getDamageReduction( FEUER )) + "%" );
+    }
+
+    private String getXPString() {
+        if (combatant instanceof Player p) {
+            return "XP: " + p.getXP();
+        } else {
+            return null;
+        }
     }
 
     @Override

@@ -278,7 +278,7 @@ public class CombatFrame extends JDialog implements CombatActionListener, Battle
     public static void main(String args[]) {
         EventQueue.invokeLater( () -> {
             new CombatFrame(
-                null, CombatFactory.getDefaultSpaceMarine(), CombatFactory.getDefaultKriegerZerg()
+                null, CombatFactory.getDefaultSpaceMarine(null), CombatFactory.getDefaultKriegerZerg()
             ).setVisible(true);
             System.exit(0);
         });
