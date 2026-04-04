@@ -15,7 +15,7 @@ import static graphic.io.ImageUtility.scaleImage;
 import java.awt.Image;
 import javax.swing.ImageIcon;
 
-public class InteractiveObject implements HasName, HasUIImage {
+public class InteractiveObject implements HasName, HasUIImage, Cloneable {
 
     private String name;
     private Image img; // Bild/Hintergrund für TextBox
@@ -28,6 +28,12 @@ public class InteractiveObject implements HasName, HasUIImage {
     public InteractiveObject(String name, Image img) {
         this(name);
         this.img = img;
+    }
+
+    InteractiveObject(InteractiveObject obj) {
+        this.name   = obj.getName();
+        this.img    = obj.getImg();
+        this.icon   = obj.getIcon().getImage();
     }
 
     public void setImg(Image img) {
@@ -82,6 +88,11 @@ public class InteractiveObject implements HasName, HasUIImage {
     @Override
     public String toString() {
         return getName();
+    }
+
+    @Override
+    public InteractiveObject clone() throws CloneNotSupportedException {
+        return new InteractiveObject(this);
     }
 
 }

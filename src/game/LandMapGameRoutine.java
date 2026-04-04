@@ -54,10 +54,10 @@ public class LandMapGameRoutine extends GameRoutine {
             GameObjectLoader.loadQuestObjectiveDialog(qObj, player);
 
             // load environment items
-            UsableItem item = GameObjectLoader.loadNextItem(player);
+            UsableItem item = (UsableItem) GameObjectLoader.loadNextItem(player);
             item.addItemEffect( new ItemEffect( "Blutsaugender", TYPE.PRÄFIX, HEALTH, 20, 20 ));
             items.add(item);
-            item = GameObjectLoader.loadNextItem(player);
+            item = (UsableItem) GameObjectLoader.loadNextItem(player);
             item.addItemEffect( new ItemEffect( "einfacher", TYPE.PRÄFIX, CREDIT, item.getPrice() ));
             items.add(item);
 

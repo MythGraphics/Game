@@ -15,9 +15,7 @@ import static game.GameObject.*;
 import game.combat.CombatFactory;
 import game.combat.Combatant;
 import game.combat.CombatantType;
-import game.item.Item;
-import game.item.ReUsableItem;
-import game.item.UsableItem;
+import game.item.*;
 import game.quest.Quest;
 import static graphic.io.BinaryIO.BINARYIO;
 import static graphic.io.ImageUtility.scale;
@@ -47,27 +45,35 @@ public class GameObjectLoader {
         return p;
     }
 
-    public static UsableItem loadNextItem(Player player) throws IOException {
+    public static Item loadNextItem(Player player) throws IOException {
         int id = ID.getNextItemID();
         Properties p = loadProperties( buildFileString( ITEM, id ));
-        ReUsableItem item = new ReUsableItem( id, p.getProperty( "name" ));
+        Item item;
+        String type = p.getProperty("type");
+        switch ( type.toLowerCase() ) {
+            case "usable"   -> item = new UsableItem( id, p.getProperty( "name" ));
+            case "reusable" -> item = new ReUsableItem( id, p.getProperty( "name" ));
+            default         -> item = new Item( id, p.getProperty( "name" ));
+        }
         item.setPrice( Integer.parseInt( p.getProperty( "price" )));
         item.setImg( scale( BINARYIO.loadImage( p.getProperty( "img" )), 200 ));
         item.setIcon( BINARYIO.loadImage( p.getProperty( "uiImg" )));
+        if (item instanceof UsableItem uitem) {
+            try { uitem.addMessageOnUse( new Message( p.getProperty( "onUse" ), item )); }
+            catch (NullPointerException e) {}
+            for (int i = 0; i < 10; ++i) {
+                try { uitem.addMessageOnUse( new Message( p.getProperty( i+"u" ), item )); }
+                catch (NullPointerException e) {}
+                try { uitem.addMessageOnUse( new Message( p.getProperty( i+"up" ), player )); }
+                catch (NullPointerException e) {}
+            }
+        }
         try { item.addMessageOnFind( new Message( p.getProperty( "onFind" ), item )); }
         catch (NullPointerException e) {}
-        try { item.addMessageOnUse( new Message( p.getProperty( "onUse" ), item )); }
-            catch (NullPointerException e) {}
         for (int i = 0; i < 10; ++i) {
             try { item.addMessageOnFind( new Message( p.getProperty( i+"f" ), item )); }
             catch (NullPointerException e) {}
             try { item.addMessageOnFind( new Message( p.getProperty( i+"fp" ), player )); }
-            catch (NullPointerException e) {}
-        }
-        for (int i = 0; i < 10; ++i) {
-            try { item.addMessageOnUse( new Message( p.getProperty( i+"u" ), item )); }
-            catch (NullPointerException e) {}
-            try { item.addMessageOnUse( new Message( p.getProperty( i+"up" ), player )); }
             catch (NullPointerException e) {}
         }
         return item;

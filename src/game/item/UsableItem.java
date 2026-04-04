@@ -25,8 +25,8 @@ import java.util.List;
 
 public class UsableItem extends Item implements Usable {
 
-    private final List<ItemEffect> itemEffectList = new ArrayList<>(); // Liste der Item Effekte auf Spieler Ressourcen
-    private final LinkedList<Message> msgListOnUse = new LinkedList<>();
+    private final List<ItemEffect> itemEffectList   = new ArrayList<>(); // Liste der Item Effekte auf Spieler Ressourcen
+    private final LinkedList<Message> msgListOnUse  = new LinkedList<>();
 
     public UsableItem(int id, String name) {
         super(id, name);
@@ -70,7 +70,6 @@ public class UsableItem extends Item implements Usable {
             case ItemAction.USE -> dialogListener.show( () -> msgListOnUse );
         }
     }
-
 
     @Override
     public String getName() {

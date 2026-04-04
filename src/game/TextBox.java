@@ -15,18 +15,25 @@ import java.util.LinkedList;
 
 public class TextBox extends InteractiveObject implements HasDialog, HasID {
 
-    protected final LinkedList<Message> msgList = new LinkedList<>();
+    protected final LinkedList<Message> msgList;
 
     private final int id;
 
     public TextBox(int id, String name) {
         super(name);
         this.id = id;
+        this.msgList = new LinkedList<>();
     }
 
     public TextBox(int id, String name, String text) {
         this(id, name);
         msgList.add( new Message( text, this ));
+    }
+
+    protected TextBox(TextBox textbox) {
+        super(textbox);
+        this.id = textbox.getId();
+        this.msgList = textbox.getDialogCopy();
     }
 
     @Override
@@ -50,6 +57,11 @@ public class TextBox extends InteractiveObject implements HasDialog, HasID {
         newMsgList.addAll(this.msgList);
         return newMsgList;
  */
+    }
+
+    @Override
+    public TextBox clone() throws CloneNotSupportedException {
+        return new TextBox(this);
     }
 
 }

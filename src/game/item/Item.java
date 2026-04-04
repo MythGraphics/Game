@@ -18,13 +18,27 @@ import java.util.LinkedList;
 
 public class Item extends TextBox implements IsItem, Tradable, ItemActionListener {
 
-    private final LinkedList<Message> msgListOnBuy = new LinkedList<>();
+    private final LinkedList<Message> msgListOnBuy  = new LinkedList<>();
     private final LinkedList<Message> msgListOnSell = new LinkedList<>();
 
     private int price = 0;
 
     public Item(int id, String name) {
         super(id, name);
+    }
+
+    Item(Item item) {
+        super(item);
+        item.setPrice( item.getPrice() );
+        for ( Message m : msgListOnBuy ) {
+            item.addMessageOnBuy(m);
+        }
+        for ( Message m : msgListOnSell ) {
+            item.addMessageOnSell(m);
+        }
+        for ( Message m : super.getDialog() ) {
+            item.addMessageOnFind(m);
+        }
     }
 
     public void addMessageOnFind(Message msg) {
@@ -54,6 +68,15 @@ public class Item extends TextBox implements IsItem, Tradable, ItemActionListene
             case ItemAction.FIND -> dialogListener.show( () -> super.msgList );
             case ItemAction.SELL -> dialogListener.show( () -> msgListOnSell );
             case ItemAction.BUY  -> dialogListener.show( () -> msgListOnBuy );
+        }
+    }
+
+    @Override
+    public Item clone() throws CloneNotSupportedException {
+        if ( this.getClass() == Item.class ) {
+            return new Item(this);
+        } else {
+            throw new CloneNotSupportedException("Item.clone(): Methode von erbender Klasse nicht unterstützt.");
         }
     }
 
