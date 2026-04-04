@@ -34,9 +34,9 @@ public class ItemBuilder {
     }
 
     public ItemBuilder(List<String> names, List<Image> bgImgs, List<Image> guiImgs) {
-        this.itemNames = names;
-        this.itemBGImages = bgImgs;
-        this.itemGUIImages = guiImgs;
+        this.itemNames      = names;
+        this.itemBGImages   = bgImgs;
+        this.itemGUIImages  = guiImgs;
     }
 
     public void addItem(String name, Image bgImg, Image guiImg) {
@@ -68,15 +68,15 @@ public class ItemBuilder {
         );
     }
 
-    public static Item createCoinPouch(String präfix, int value) {
-        Item item = new Item( 0, "Münzbeutel" );
+    public static UsableItem createCoinPouch(String präfix, int value) {
+        UsableItem item = new UsableItem( 0, "Münzbeutel" );
         item.setPrice(value);
         item.addItemEffect( new ItemEffect( präfix, TYPE.PRÄFIX, ResourceType.CREDIT, value ));
         return item;
     }
 
-    public static Item createItem(String name, Image bgImg, Image uiImg, ItemEffect effect_prä, ItemEffect effect_suff) {
-        Item item = new Item( ID.getNextItemID(), name );
+    public static ReUsableItem createItem(String name, Image bgImg, Image uiImg, ItemEffect effect_prä, ItemEffect effect_suff) {
+        ReUsableItem item = new ReUsableItem( ID.getNextItemID(), name );
         item.addItemEffect(effect_prä, effect_suff);
         item.setImg(bgImg);
         item.setIcon(uiImg);

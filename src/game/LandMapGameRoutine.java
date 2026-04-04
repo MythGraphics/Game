@@ -13,6 +13,8 @@ package game;
 
 import static game.Resource.ResourceType.*;
 import game.item.Item;
+import game.item.ReUsableItem;
+import game.item.UsableItem;
 import game.item.ItemEffect;
 import game.item.ItemEffect.TYPE;
 import graphic.CollisionEvent;
@@ -42,7 +44,7 @@ public class LandMapGameRoutine extends GameRoutine {
             npc = GameObjectLoader.loadNextNpc(player);
 
             // load quest
-            Item qItem = new Item(-1, "Halskette");
+            ReUsableItem qItem = new ReUsableItem(-1, "Halskette");
             qItem.addItemEffect(
                 new ItemEffect("Neptunes", ItemEffect.TYPE.PRÄFIX, HEALTH, 0, 200),
                 new ItemEffect("des Delfins", ItemEffect.TYPE.SUFFIX, AIR, 0, 200)
@@ -52,12 +54,11 @@ public class LandMapGameRoutine extends GameRoutine {
             GameObjectLoader.loadQuestObjectiveDialog(qObj, player);
 
             // load environment items
-            Item item = GameObjectLoader.loadNextItem(player);
+            UsableItem item = GameObjectLoader.loadNextItem(player);
             item.addItemEffect( new ItemEffect( "Blutsaugender", TYPE.PRÄFIX, HEALTH, 20, 20 ));
             items.add(item);
             item = GameObjectLoader.loadNextItem(player);
             item.addItemEffect( new ItemEffect( "einfacher", TYPE.PRÄFIX, CREDIT, item.getPrice() ));
-            item.setReusable(false);
             items.add(item);
 
             Collections.shuffle(items); // Item-Liste durchmischen

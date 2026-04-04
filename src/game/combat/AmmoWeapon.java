@@ -22,8 +22,8 @@ public class AmmoWeapon extends AbstractWeapon {
     private Ammo ammo;
     private final Random rand;
 
-    public AmmoWeapon(String name, WeaponType wType, AmmoType aType) {
-        super(name, wType);
+    public AmmoWeapon(int id, String name, WeaponType wType, AmmoType aType) {
+        super(id, name, wType);
         this.aType = aType;
         this.rand = new Random();
     }
@@ -72,6 +72,10 @@ public class AmmoWeapon extends AbstractWeapon {
 
     public Ammo getAmmo() {
         return ammo;
+    }
+
+    public AmmoType getAmmoType() {
+        return aType;
     }
 
     @Override

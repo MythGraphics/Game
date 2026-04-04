@@ -11,22 +11,29 @@ package game.combat;
  *
  */
 
+import game.DialogOutputListener;
+import game.Message;
+import game.item.IsItem;
+import game.item.Item;
+import game.item.ItemAction;
+import game.item.ReUsable;
+import java.awt.Image;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import javax.swing.ImageIcon;
 
-public abstract class AbstractWeapon implements Blockable {
+public abstract class AbstractWeapon extends Item implements Blockable, ReUsable {
 
-    final String name;
     final WeaponType wType;
 
     private final ArrayList<WeaponActionListener> actionListeners;
     private final Random rand;
     private String description = "";
 
-    public AbstractWeapon(String name, WeaponType wType) {
-        this.name = name;
+    public AbstractWeapon(int id, String name, WeaponType wType) {
+        super(id, name);
         this.wType = wType;
         this.actionListeners = new ArrayList<>();
         rand = new Random();
@@ -50,6 +57,41 @@ public abstract class AbstractWeapon implements Blockable {
      * @return Schaden als Damage-Objekt
      */
     abstract Damage getDamage(DamageType dType);
+
+    @Override
+    public void itemActionPerformed(IsItem item, ItemAction action, DialogOutputListener dialogListener) {
+        super.itemActionPerformed(item, action, dialogListener);
+        switch (action) {
+            case ItemAction.USE -> dialogListener.show( new Message( toString(), this ));
+        }
+    }
+
+    @Override
+    public Image getImg() {
+        // ToDo implementieren
+        return null;
+    }
+
+    @Override
+    public ImageIcon getIcon() {
+        // ToDo implementieren
+        return null;
+    }
+
+    @Override
+    public boolean use(game.Player player) {
+        if ( player.getPlayerAsMinion().addWeapon( this )) {
+            return true;
+        }
+        player.getInventory().add( player.getPlayerAsMinion().changeWeapon( this, 1 ));
+        return true;
+    }
+
+    @Override
+    public ReUsable remove(game.Player player) {
+        player.getPlayerAsMinion().getWeaponList().remove(this);
+        return this;
+    }
 
     public List<WeaponActionListener> getActionListeners() {
         return actionListeners;
@@ -75,11 +117,6 @@ public abstract class AbstractWeapon implements Blockable {
         return wType;
     }
 
-    @Override
-    public String getName() {
-        return name;
-    }
-
     /**
      * Gibt den erlittenen Schaden unter Berücksichtigung der Blockchance der Waffe zurück.
      * Wird für Armor-Berechnung benötigt.
@@ -97,7 +134,7 @@ public abstract class AbstractWeapon implements Blockable {
 
     @Override
     public String toString() {
-        return name + " (" + wType + ")\n" + getDescription();
+        return super.toString() + " (" + wType + ")\n" + getDescription();
     }
 
 }

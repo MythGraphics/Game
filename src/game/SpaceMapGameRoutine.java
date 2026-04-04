@@ -32,7 +32,7 @@ public class SpaceMapGameRoutine extends GameRoutine {
     private final List<String> audioTrackList;
     private final JFrame frame;
     private final Random rand = new Random();
-    private final List<Item> itemPool = new ArrayList<>();
+    private final List<Item> lootPool = new ArrayList<>();
 
     private Enemy enemy;
 

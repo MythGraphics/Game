@@ -11,6 +11,7 @@ package game;
  *
  */
 
+import game.item.IsItem;
 import game.item.Item;
 import game.item.ItemAction;
 
@@ -23,7 +24,7 @@ public class InventoryManager extends Inventory {
     }
 
     @Override
-    void fireEvent(Item item, ItemAction action) {
+    void fireEvent(IsItem item, ItemAction action) {
         item.itemActionPerformed( item, action, player.getDialogOutputListener() );
     }
 

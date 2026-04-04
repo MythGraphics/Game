@@ -13,7 +13,7 @@ package game;
 
 public class ID {
 
-    private static int qID = -1, nID = -1, sID = -1, iID = -1, mID = -1, pID = -1, eID = -1;
+    private static int qID = -1, nID = -1, sID = -1, iID = -1, mID = -1, pID = -1, eID = -1, wID = -1, aID = -1;
 
     private ID() {}
 
@@ -50,6 +50,16 @@ public class ID {
     public static int getNextPortalID() {
         ++pID;
         return pID;
+    }
+
+    public static int getWeaponID() {
+        ++wID;
+        return wID;
+    }
+
+    public static int getAmmoID() {
+        ++aID;
+        return aID;
     }
 
 }

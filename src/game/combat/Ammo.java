@@ -11,9 +11,16 @@ package game.combat;
  *
  */
 
-public class Ammo {
+import game.DialogOutputListener;
+import game.Message;
+import game.item.IsItem;
+import game.item.Item;
+import game.item.ItemAction;
+import game.item.Usable;
+import java.util.List;
 
-    private final String name;
+public class Ammo extends Item implements Usable {
+
     private final int stackSize;
     private final AmmoType aType;
     private final Damage dmg;
@@ -25,15 +32,31 @@ public class Ammo {
     }
 
     public Ammo(String name, AmmoType aType, int stackSize, int stack, Damage dmg) {
-        this.name = name;
+        super(0, name);
         this.aType = aType;
         this.stackSize = stackSize;
         this.stack = stack;
         this.dmg = dmg;
     }
 
-    public String getName() {
-        return name;
+    @Override
+    public boolean use(game.Player player) {
+        List<AbstractWeapon> weaponList = player.getPlayerAsMinion().getWeaponList();
+        for ( AbstractWeapon w : weaponList ) {
+            if (w instanceof AmmoWeapon aw) {
+                if ( aw.getAmmoType() == getType() ) {
+                    aw.addAmmo(this);
+                    return true;
+        }}}
+        return false;
+    }
+
+    @Override
+    public void itemActionPerformed(IsItem item, ItemAction action, DialogOutputListener dialogListener) {
+        super.itemActionPerformed(item, action, dialogListener);
+        switch (action) {
+            case ItemAction.USE  -> dialogListener.show( new Message( toString(), this ));
+        }
     }
 
     public int getStack() {
@@ -67,7 +90,7 @@ public class Ammo {
 
     @Override
     public String toString() {
-        return name + " (" + aType + "), " + stack + "/" + stackSize + ", " + dmg.toString();
+        return super.toString() + " (" + aType + "), " + stack + "/" + stackSize + ", " + dmg.toString();
     }
 
 }

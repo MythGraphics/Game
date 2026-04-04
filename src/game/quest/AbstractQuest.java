@@ -15,10 +15,12 @@ import game.HasDialog;
 import game.HasID;
 import game.InteractiveObject;
 import game.Message;
+import game.item.IsItem;
 import game.item.Item;
 import static game.quest.QuestStatus.*;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
 public abstract class AbstractQuest implements HasDialog, HasID {
 
@@ -36,11 +38,11 @@ public abstract class AbstractQuest implements HasDialog, HasID {
         objective = new Item( id, objectiveName + " #" + id );
     }
 
-    public static ArrayList<Message> newMessageList( ArrayList<String> list, InteractiveObject source ) {
+    public static List<Message> newMessageList( ArrayList<String> list, InteractiveObject source ) {
         return newMessageList( list.get(0), list.get(1), list.get(2), list.get(3), source );
     }
 
-    public static ArrayList<Message> newMessageList( String prolog, String questText, String epilog, String completed,
+    public static List<Message> newMessageList( String prolog, String questText, String epilog, String completed,
                                                      InteractiveObject source ) {
         ArrayList<Message> msgList = new ArrayList<>(4);
         msgList.add( new Message( prolog, source ));
@@ -50,8 +52,8 @@ public abstract class AbstractQuest implements HasDialog, HasID {
         return msgList;
     }
 
-    abstract ArrayList<Message> getMessageList();
-    abstract Item getReward();
+    abstract List<Message> getMessageList();
+    abstract IsItem getReward();
 
     public Item getQuestObjective() {
         return objective;
@@ -113,7 +115,7 @@ public abstract class AbstractQuest implements HasDialog, HasID {
      * Spieler erhält das Belohnungsitem.
      * @return Belohnung
      */
-    public Item deliver() {
+    public IsItem deliver() {
         if ( status == READY ) {
             status = COMPLETE;
             return getReward();
@@ -126,7 +128,7 @@ public abstract class AbstractQuest implements HasDialog, HasID {
      * @param questObject QuestObjective
      * @return Belohnung
      */
-    public Item deliver(Item questObject) {
+    public IsItem deliver(Item questObject) {
         if ( check( questObject )) {
             return deliver();
         }

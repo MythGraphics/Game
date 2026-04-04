@@ -14,10 +14,7 @@ package game;
 import game.Resource.ResourceType;
 import static game.Resource.ResourceType.CREDIT;
 import static game.Resource.ResourceType.HEALTH;
-import game.item.Item;
-import game.item.ItemAction;
-import game.item.ItemActionListener;
-import game.item.ItemEffectListener;
+import game.item.*;
 import game.quest.Quest;
 import game.quest.QuestListener;
 import static game.quest.QuestStatus.ACTIVE;
@@ -29,7 +26,7 @@ import java.util.HashSet;
 public class Player extends InteractiveObject implements HasHealth, Trader {
 
     private final ArrayList<Resource> resources; // Health, Credits, Reputation, ...
-    private final ArrayList<Item> items; // aktive, also angelegte Items
+    private final ArrayList<Usable> items; // aktive, also angelegte Items
     private final Collection<ItemActionListener> itemActionListeners; // feuert bei Änderung an aktiven Spieler-Items
     private final Collection<ItemEffectListener> resourceChangeListeners; // feuert bei Änderung an den Resourcen
     private final Collection<QuestListener> questListeners; // feuert bei Änderung des Quest-Status
@@ -90,7 +87,7 @@ public class Player extends InteractiveObject implements HasHealth, Trader {
         resourceChangeListeners.forEach( actionListener -> actionListener.itemEffectPerformed( this ));
     }
 
-    private void fireItemEvent(Item item, ItemAction action) {
+    private void fireItemEvent(IsItem item, ItemAction action) {
         itemActionListeners.forEach( listener -> listener.itemActionPerformed(
             item, action, dialogListener
         ));
@@ -158,27 +155,18 @@ public class Player extends InteractiveObject implements HasHealth, Trader {
         questListeners.add(listener);
     }
 
-    /**
-     * Fügt das Item dem Spieler hinzu --> heißt: legt es an und aktiviert seinen Effekt.
-     * Hat keinen Effekt auf das Inventar.
-     * @param item Das Item.
-     */
-    public void use(Item item) {
-        if ( item.isReusable() ) {
-            items.add(item);
-        }
-        item.applyEffect(this);
-        fireItemEvent(item, ItemAction.USE);
+    void addActiveItem(ReUsable item) {
+        items.add(item);
     }
 
-    public void discard(Item item) {
-        if ( !items.contains( item )) {
-            return;
+    public ReUsable removeActiveItem(ReUsable item) {
+        if ( items.remove( item )) {
+            item.remove(this); // ItemEffekt zurücksetzen
+            fireItemEvent(item, ItemAction.REMOVE);
+            return item;
+        } else {
+            return null;
         }
-        items.remove(item);
-        item.revokeEffect(this);
-        inventory.add(item);
-        fireItemEvent(item, ItemAction.DISCARD);
     }
 
     public void acceptQuest(Quest quest) {

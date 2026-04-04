@@ -14,10 +14,7 @@ package game;
 import audio.AudioPlayer;
 import static game.Resource.ResourceType.*;
 import game.combat.Combatant;
-import game.item.Item;
-import game.item.ItemAction;
-import game.item.ItemActionListener;
-import game.item.ItemEffectListener;
+import game.item.*;
 import graphic.TextFrame;
 import static graphic.io.BinaryIO.BINARYIO;
 import graphic.io.ImageUtility;
@@ -30,10 +27,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.StringTokenizer;
+import java.util.*;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.JComponent;
@@ -53,7 +47,7 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
     static String playerName = "Teufelsmaus";
 
     private final TextFrame textFrame;
-    private final HashMap<JLabel, Item> iconMap;
+    private final Map<JLabel, ReUsable> iconMap;
     private final MouseAdapter iconMouseAdapter;
 
     private GameMap map;
@@ -571,7 +565,7 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
             // rechter Mausbutton
             // Item ablegen, heißt: Effekt rückgängig machen und Item zurück ins Inventar legen
             jIconPanel.remove(jLabel); // Icon (JLabel) aus UI entfernen
-            player.discard( iconMap.remove( jLabel )); // ItemEffekt zurücksetzen
+            player.removeActiveItem( iconMap.remove( jLabel ));
         }
         if ( evt.getButton() == MouseEvent.BUTTON1 ) {
             // linker Mausbutton
@@ -652,7 +646,7 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
     private void jRightListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jRightListMouseClicked
         if ( evt.getClickCount() >= 2 ) {
             // Doppelklick
-            Item item = jRightList.getSelectedValue();
+            IsItem item = jRightList.getSelectedValue();
             boolean used = player.getInventory().use(item);
             if (!used) {
                 System.out.println( item + " nicht verwendbar." );
@@ -663,20 +657,21 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
     }//GEN-LAST:event_jRightListMouseClicked
 
     @Override
-    public void itemActionPerformed(Item item, ItemAction action, DialogOutputListener dialogListener) {
+    public void itemActionPerformed(IsItem item, ItemAction action, DialogOutputListener dialogListener) {
         switch (action) {
             case ItemAction.USE -> {
-                if ( !item.isReusable() ) {
-                    return;
+                if (item instanceof ReUsable reu) {
+                    // Item im UI anzeigen
+                    JLabel icon = new JLabel();
+                    icon.setIcon( reu.getIcon() );
+                    icon.addMouseListener(iconMouseAdapter);
+                    iconMap.put(icon, reu);
+                    jIconPanel.add(icon);
+                } else {
+                    // ToDo ggf. repaint des Player-UI erforderlich
                 }
-                // Item im UI anzeigen
-                JLabel icon = new JLabel();
-                icon.setIcon( item.getIcon() );
-                icon.addMouseListener(iconMouseAdapter);
-                iconMap.put(icon, item);
-                jIconPanel.add(icon);
             }
-            case ItemAction.DISCARD -> {
+            case ItemAction.REMOVE -> {
                 System.out.println( item.getName() + " zurück ins Inventar gelegt.");
             }
         }
@@ -720,7 +715,7 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
     private javax.swing.JProgressBar jProgressBarHealth;
     private javax.swing.JProgressBar jProgressBarMana;
     private javax.swing.JProgressBar jProgressBarRep;
-    private javax.swing.JList<Item> jRightList;
+    private javax.swing.JList<IsItem> jRightList;
     private javax.swing.JPanel jRightPanel;
     private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JPanel jTopPanel;

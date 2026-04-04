@@ -13,10 +13,11 @@ package game.quest;
 
 import game.InteractiveObject;
 import game.Message;
-import game.item.Item;
+import game.item.IsItem;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
+import java.util.List;
 
 public class SelectableQuest extends AbstractQuest implements KeyListener {
 
@@ -31,7 +32,7 @@ public class SelectableQuest extends AbstractQuest implements KeyListener {
 
     public static SelectableQuest newInstance( int id,
                                                String prolog, String[] questText, String[] epilog, String[] complete,
-                                               InteractiveObject source, Item[] reward ) {
+                                               InteractiveObject source, IsItem[] reward ) {
         boolean equalLength = QuestFactory.checkArraysEqualLengths(questText, epilog, complete, reward);
         if ( !equalLength ) {
             throw new ArrayIndexOutOfBoundsException("Arrays not equal in length.");
@@ -77,12 +78,12 @@ public class SelectableQuest extends AbstractQuest implements KeyListener {
     }
 
     @Override
-    public ArrayList<Message> getMessageList() {
+    public List<Message> getMessageList() {
         return questList.get(selectedIndex).getMessageList();
     }
 
     @Override
-    public Item getReward() {
+    public IsItem getReward() {
         return questList.get(selectedIndex).getReward();
     }
 

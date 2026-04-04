@@ -11,12 +11,6 @@ package game.item;
  *
  */
 
-public enum ItemAction {
+import game.HasName;
 
-    FIND,
-    USE,
-    REMOVE,
-    BUY,
-    SELL;
-
-}
+public interface IsItem extends HasName, ItemActionListener {}

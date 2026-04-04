@@ -11,7 +11,7 @@ package graphic.ui;
  *
  */
 
-import game.item.Item;
+import game.item.IsItem;
 import java.awt.Component;
 import java.util.Map;
 import javax.swing.DefaultListCellRenderer;
@@ -20,9 +20,9 @@ import javax.swing.JList;
 
 public class InventoryCellRenderer extends DefaultListCellRenderer {
 
-    private final Map<Item, Integer> inventar;
+    private final Map<IsItem, Integer> inventar;
 
-    public InventoryCellRenderer(Map<Item, Integer> inventar) {
+    public InventoryCellRenderer(Map<IsItem, Integer> inventar) {
         this.inventar = inventar;
     }
 
@@ -31,7 +31,7 @@ public class InventoryCellRenderer extends DefaultListCellRenderer {
         // Die Standard-Rendering-Komponente holen
         JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 
-        if (value instanceof Item item) {
+        if (value instanceof IsItem item) {
             Integer stack = inventar.get(item);
             label.setText( item.getName() + " (" + stack + ")" );
         }

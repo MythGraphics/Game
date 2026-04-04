@@ -12,15 +12,15 @@ package game.quest;
  */
 
 import game.Message;
-import game.item.Item;
-import java.util.ArrayList;
+import game.item.IsItem;
+import java.util.List;
 
 public class Quest extends AbstractQuest {
 
-    private final ArrayList<Message> msgList;
-    private final Item reward;
+    private final List<Message> msgList;
+    private final IsItem reward;
 
-    public Quest(int id, ArrayList<Message> msgList, Item reward) {
+    public Quest(int id, List<Message> msgList, IsItem reward) {
         super(id);
         this.msgList = msgList;
         this.reward = reward;
@@ -33,12 +33,12 @@ public class Quest extends AbstractQuest {
     }
 
     @Override
-    ArrayList<Message> getMessageList() {
+    List<Message> getMessageList() {
         return msgList;
     }
 
     @Override
-    Item getReward() {
+    IsItem getReward() {
         return reward;
     }
 

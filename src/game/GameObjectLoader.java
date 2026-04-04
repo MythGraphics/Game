@@ -16,6 +16,8 @@ import game.combat.CombatFactory;
 import game.combat.Combatant;
 import game.combat.CombatantType;
 import game.item.Item;
+import game.item.ReUsableItem;
+import game.item.UsableItem;
 import game.quest.Quest;
 import static graphic.io.BinaryIO.BINARYIO;
 import static graphic.io.ImageUtility.scale;
@@ -45,10 +47,10 @@ public class GameObjectLoader {
         return p;
     }
 
-    public static Item loadNextItem(Player player) throws IOException {
+    public static UsableItem loadNextItem(Player player) throws IOException {
         int id = ID.getNextItemID();
         Properties p = loadProperties( buildFileString( ITEM, id ));
-        Item item = new Item( id, p.getProperty( "name" ));
+        ReUsableItem item = new ReUsableItem( id, p.getProperty( "name" ));
         item.setPrice( Integer.parseInt( p.getProperty( "price" )));
         item.setImg( scale( BINARYIO.loadImage( p.getProperty( "img" )), 200 ));
         item.setIcon( BINARYIO.loadImage( p.getProperty( "uiImg" )));

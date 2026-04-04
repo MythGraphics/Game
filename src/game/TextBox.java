@@ -15,14 +15,13 @@ import java.util.LinkedList;
 
 public class TextBox extends InteractiveObject implements HasDialog, HasID {
 
-    protected final LinkedList<Message> msgList;
+    protected final LinkedList<Message> msgList = new LinkedList<>();
 
     private final int id;
 
     public TextBox(int id, String name) {
         super(name);
         this.id = id;
-        this.msgList = new LinkedList<>();
     }
 
     public TextBox(int id, String name, String text) {

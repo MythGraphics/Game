@@ -24,8 +24,8 @@ public class Weapon extends AbstractWeapon {
 
     private Map<DamageType, Damage> dmgList;
 
-    public Weapon(String name, WeaponType wType, DamageType dType, int baseDmg) {
-        super(name, wType);
+    public Weapon(int id, String name, WeaponType wType, DamageType dType, int baseDmg) {
+        super(id, name, wType);
         this.dType = dType;
         this.baseDmg = baseDmg;
         rand = new Random();

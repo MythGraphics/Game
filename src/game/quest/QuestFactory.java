@@ -13,14 +13,14 @@ package game.quest;
 
 import game.ID;
 import game.InteractiveObject;
-import game.item.Item;
+import game.item.IsItem;
 
 public class QuestFactory {
 
     private QuestFactory() {}
 
     public static AbstractQuest[] createQuests( String[] prolog, String[] questText, String[] epilog, String[] complete,
-                                                InteractiveObject source, Item[] reward ) {
+                                                InteractiveObject source, IsItem[] reward ) {
         boolean equalLength = checkArraysEqualLengths( prolog, questText, epilog, complete, reward );
         if ( !equalLength ) {
             throw new ArrayIndexOutOfBoundsException("Arrays of constructor not equal in length.");

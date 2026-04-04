@@ -13,8 +13,9 @@ package game.item;
 
 import game.DialogOutputListener;
 
+// für das Inventar
 public interface ItemActionListener {
 
-    void itemActionPerformed(Item item, ItemAction action, DialogOutputListener dialogListener);
+    void itemActionPerformed(IsItem item, ItemAction action, DialogOutputListener dialogListener);
 
 }
