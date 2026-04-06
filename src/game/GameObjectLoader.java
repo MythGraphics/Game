@@ -12,10 +12,10 @@ package game;
  */
 
 import static game.GameObject.*;
-import game.combat.CombatFactory;
-import game.combat.Combatant;
-import game.combat.CombatantType;
-import game.item.*;
+import game.combat.*;
+import game.item.Item;
+import game.item.ReUsableItem;
+import game.item.UsableItem;
 import game.quest.Quest;
 import static graphic.io.BinaryIO.BINARYIO;
 import static graphic.io.ImageUtility.scale;
@@ -33,8 +33,8 @@ public class GameObjectLoader {
 
     private GameObjectLoader() {}
 
-    private static String buildFileString(GameObject gobj, int id) {
-        return gobj.toString() + id + FILEXT;
+    private static String buildFileString(GameObject gObj, int id) {
+        return gObj.toString() + id + FILEXT;
     }
 
     public static Properties loadProperties(String filepath) throws IOException {
@@ -93,8 +93,8 @@ public class GameObjectLoader {
         Properties p = loadProperties( buildFileString( TEXT, id ));
         TextBox text = new TextBox(
             id,
-            p.getProperty( "name" ),
-            p.getProperty( "text" )
+            p.getProperty("name"),
+            p.getProperty("text")
         );
         text.setImg( scale( BINARYIO.loadImage( p.getProperty( "img" )), 200 ));
         loadText(p, text, player);
@@ -116,6 +116,16 @@ public class GameObjectLoader {
         } else {
             return null;
         }
+    }
+
+    public static AbstractWeapon loadNextWeapon() throws IOException {
+        // ToDo hier weiter
+        return null;
+    }
+
+    public static Ammo loadNextAmmo() throws IOException {
+        // ToDo hier weiter
+        return null;
     }
 
     public static Combatant loadNextMinion() throws IOException {

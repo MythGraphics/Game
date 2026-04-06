@@ -11,27 +11,29 @@ package game.combat;
  *
  */
 
+import static game.combat.AmmoType.*;
+
 public enum WeaponType {
 
 //  NAME        (crit, block, needAmmo)
-    AXT         (25, 25, false),
-    DOLCH       (45,  5, false),
-    GEWEHR      (30, 30, true ),
-    KNÜPPEL     (10, 15, false),
-    KRIEGSCLEVE (30, 40, false),
-    SCHILD      ( 0, 75, false),
-    SCHWERT     (25, 10, false),
-    STAB        ( 5, 20, false),
-    ZAUBER      (50,  0, true );
+    AXT         (25, 25, NONE),
+    DOLCH       (45,  5, NONE),
+    GEWEHR      (30, 30, PROJECTILE ),
+    KNÜPPEL     (10, 15, NONE),
+    KRIEGSCLEVE (30, 40, NONE),
+    SCHILD      ( 0, 75, NONE),
+    SCHWERT     (25, 10, NONE),
+    STAB        ( 5, 20, NONE),
+    ZAUBER      (50,  0, SPELL );
 
     final int crit;  // kritische Trefferchance (pro Waffe/Hand) in %
     final int block; // Block-Chance (pro Waffe/Hand) in %
-    final boolean needAmmo; // benötigt sie Munition oder Ressource (Mana)
+    final AmmoType aType; // benötigte Munition oder Ressource (Mana) oder null
 
-    WeaponType(int crit, int block, boolean needAmmo) {
-        this.crit = crit;
+    WeaponType(int crit, int block, AmmoType aType) {
+        this.crit  = crit;
         this.block = block;
-        this.needAmmo = needAmmo;
+        this.aType = aType;
     }
 
     public int getCrit() {
@@ -42,8 +44,16 @@ public enum WeaponType {
         return block;
     }
 
+    public AmmoType getAmmoType() {
+        if (aType == null) {
+            return NONE;
+        } else {
+            return aType;
+        }
+    }
+
     public boolean needAmmo() {
-        return needAmmo;
+        return !(aType == null || aType == NONE);
     }
 
 }

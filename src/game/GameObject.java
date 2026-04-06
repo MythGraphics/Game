@@ -13,14 +13,16 @@ package game;
 
 public enum GameObject {
 
+    AMMO            ("Ammo"),
     ENEMY           ("Enemy"),
     NPC             ("Npc"),
     QUEST           ("Quest"),
     QUEST_OBJECTIVE ("QuestObjective"),
-    TEXT            ("Text"),
-    ITEM            ("Item"),
+    TEXT            ("Text"),   // game.TextBox
+    ITEM            ("Item"),   // game.item.Item
     MINION          ("Minion"), // combat.Combatant
-    PORTAL          ("Portal"); // java.awt.Point
+    PORTAL          ("Portal"), // java.awt.Point
+    WEAPON          ("Weapon"); // game.combat.AbstractWeapon
 
     private final String str;
 
