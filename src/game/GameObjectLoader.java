@@ -12,6 +12,7 @@ package game;
  */
 
 import static game.GameObject.*;
+import static util.EnumHelper.getEnumFromString;
 import game.combat.*;
 import game.item.Item;
 import game.item.ReUsableItem;
@@ -21,6 +22,7 @@ import static graphic.io.BinaryIO.BINARYIO;
 import static graphic.io.ImageUtility.scale;
 import static graphic.io.TextIO.TEXTIO;
 import java.awt.Point;
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -46,7 +48,7 @@ public class GameObjectLoader {
     }
 
     public static Item loadNextItem(Player player) throws IOException {
-        int id = ID.getNextItemID();
+        int id = ID.getNextItemId();
         Properties p = loadProperties( buildFileString( ITEM, id ));
         Item item;
         String type = p.getProperty("type");
@@ -54,6 +56,9 @@ public class GameObjectLoader {
             case "usable"   -> item = new UsableItem( id, p.getProperty( "name" ));
             case "reusable" -> item = new ReUsableItem( id, p.getProperty( "name" ));
             default         -> item = new Item( id, p.getProperty( "name" ));
+        }
+        if ( p.containsKey( "description" )) {
+            item.setDescription( p.getProperty( "description" ));
         }
         item.setPrice( Integer.parseInt( p.getProperty( "price" )));
         item.setImg( scale( BINARYIO.loadImage( p.getProperty( "img" )), 200 ));
@@ -80,7 +85,7 @@ public class GameObjectLoader {
     }
 
     public static Npc loadNextNpc(Player player) throws IOException {
-        int id = ID.getNextNpcID();
+        int id = ID.getNextNpcId();
         Properties p = loadProperties( buildFileString( NPC, id ));
         Npc npc = new Npc( id, p.getProperty( "name" ));
         npc.setImg( scale( BINARYIO.loadImage( p.getProperty( "img" )), 200 ));
@@ -89,7 +94,7 @@ public class GameObjectLoader {
     }
 
     public static TextBox loadNextDialog(Player player) throws IOException {
-        int id = ID.getNextSignID();
+        int id = ID.getNextSignId();
         Properties p = loadProperties( buildFileString( TEXT, id ));
         TextBox text = new TextBox(
             id,
@@ -102,7 +107,7 @@ public class GameObjectLoader {
     }
 
     public static Enemy loadNextEnemy() throws IOException, NoSuchElementException {
-        int id = ID.getNextEnemyID();
+        int id = ID.getNextEnemyId();
         Properties p = loadProperties( buildFileString( ENEMY, id ));
         Combatant minion = loadMinion(p);
         if ( minion instanceof game.combat.Enemy e ) {
@@ -119,29 +124,57 @@ public class GameObjectLoader {
     }
 
     public static AbstractWeapon loadNextWeapon() throws IOException {
-        // ToDo hier weiter
-        return null;
+        int id = ID.getNextWeaponId();
+        Properties p = loadProperties( buildFileString( WEAPON, id ));
+        String name = p.getProperty("name");
+        String description = p.getProperty("description");
+        BufferedImage img = scale( BINARYIO.loadImage( p.getProperty( "img" )), 100 );
+        WeaponType wType = getEnumFromString( WeaponType.class, p.getProperty( "type" ));
+        AbstractWeapon w;
+        if ( wType.needAmmo() ) {
+            AmmoType aType = getEnumFromString( AmmoType.class, p.getProperty( "needAmmo" ));
+            w = new AmmoWeapon(id, name, wType, aType);
+        } else {
+            int dmg = Integer.parseInt( p.getProperty( "dmg" ));
+            DamageType dType = getEnumFromString( DamageType.class, p.getProperty( "dmgtype" ));
+            w = new Weapon(id, name, wType, dType, dmg);
+        }
+        w.setDescription(description);
+        w.setImg(img);
+        return w;
     }
 
     public static Ammo loadNextAmmo() throws IOException {
-        // ToDo hier weiter
-        return null;
+        // ToDo Ammo-Id fehlt in der Ammo-Klasse
+        int id = ID.getNextAmmoId();
+        Properties p = loadProperties( buildFileString( AMMO, id ));
+        String name = p.getProperty("name");
+        String description = p.getProperty("description");
+        AmmoType aType = getEnumFromString( AmmoType.class, p.getProperty( "type" ));
+        DamageType dType = getEnumFromString( DamageType.class, p.getProperty( "dmgtype" ));
+        int size = Integer.parseInt( p.getProperty( "size" ));
+        int dmg = Integer.parseInt( p.getProperty( "dmg" ));
+        BufferedImage img = scale( BINARYIO.loadImage( p.getProperty( "img" )), 100 );
+        Ammo ammo = new Ammo( name, aType, size, 0, new Damage( dType, dmg ));
+        ammo.setImg(img);
+        ammo.setDescription(description);
+        return ammo;
     }
 
-    public static Combatant loadNextMinion() throws IOException {
-        int id = ID.getNextMinionID();
+    public static Combatant loadNextMinion() throws IOException, NoSuchElementException {
+        int id = ID.getNextMinionId();
         Properties p = loadProperties( buildFileString( MINION, id ));
         return loadMinion(p);
     }
 
-    private static Combatant loadMinion(Properties p) throws IOException {
+    private static Combatant loadMinion(Properties p) throws IOException, NoSuchElementException {
         Combatant minion;
         if ( p.containsKey( "default" )) {
-            minion = CombatFactory.DefaultMinion.getByName( p.getProperty( "default" )).orElseThrow().getMinion();
+            minion = getEnumFromString( CombatFactory.DefaultMinion.class, p.getProperty( "default" )).getMinion();
         } else {
             minion = new Combatant(
                 p.getProperty( "name" ),
-                CombatantType.getByName( p.getProperty( "type" )).orElseThrow()
+                getEnumFromString( CombatantType.class, p.getProperty( "type" ))
             );
         }
         minion.setLevel( Byte.parseByte( p.getProperty( "lvl" )));
@@ -153,7 +186,7 @@ public class GameObjectLoader {
     }
 
     public static Point loadNextPortal() throws IOException {
-        int id = ID.getNextPortalID();
+        int id = ID.getNextPortalId();
         Properties p = loadProperties( buildFileString( PORTAL, id ));
         try {
             int x = Integer.parseInt( p.getProperty( "dest_x" ));

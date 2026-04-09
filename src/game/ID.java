@@ -17,47 +17,47 @@ public class ID {
 
     private ID() {}
 
-    public static int getNextQuestID() {
+    public static int getNextQuestId() {
         ++qID;
         return qID;
     }
 
-    public static int getNextNpcID() {
+    public static int getNextNpcId() {
         ++nID;
         return nID;
     }
 
-    public static int getNextSignID() {
+    public static int getNextSignId() {
         ++sID;
         return sID;
     }
 
-    public static int getNextItemID() {
+    public static int getNextItemId() {
         ++iID;
         return iID;
     }
 
-    public static int getNextMinionID() {
+    public static int getNextMinionId() {
         ++mID;
         return mID;
     }
 
-    public static int getNextEnemyID() {
+    public static int getNextEnemyId() {
         ++eID;
         return eID;
     }
 
-    public static int getNextPortalID() {
+    public static int getNextPortalId() {
         ++pID;
         return pID;
     }
 
-    public static int getWeaponID() {
+    public static int getNextWeaponId() {
         ++wID;
         return wID;
     }
 
-    public static int getAmmoID() {
+    public static int getNextAmmoId() {
         ++aID;
         return aID;
     }

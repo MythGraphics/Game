@@ -13,4 +13,9 @@ package game.item;
 
 import game.HasName;
 
-public interface IsItem extends HasName, ItemActionListener {}
+public interface IsItem extends HasName, ItemActionListener {
+
+    void setDescription(String description);
+    String getDescription();
+
+}

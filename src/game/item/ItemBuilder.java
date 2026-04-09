@@ -76,7 +76,7 @@ public class ItemBuilder {
     }
 
     public static ReUsableItem createItem(String name, Image bgImg, Image uiImg, ItemEffect effect_prä, ItemEffect effect_suff) {
-        ReUsableItem item = new ReUsableItem( ID.getNextItemID(), name );
+        ReUsableItem item = new ReUsableItem( ID.getNextItemId(), name );
         item.addItemEffect(effect_prä, effect_suff);
         item.setImg(bgImg);
         item.setIcon(uiImg);

@@ -15,6 +15,6 @@ public enum AmmoType {
 
     NONE,       // benötigt keine  Munition
     PROJECTILE, // benötigt Item (Ammo)
-    SPELL       // benötigt Ressource (Mana)
+    SPELL;      // benötigt Ressource (Mana)
 
 }

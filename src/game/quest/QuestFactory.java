@@ -27,7 +27,8 @@ public class QuestFactory {
         }
         Quest[] quests = new Quest[prolog.length];
         for (int i = 0; i < quests.length; ++i) {
-            quests[i] = new Quest( ID.getNextQuestID(),
+            quests[i] = new Quest(
+                ID.getNextQuestId(),
                 Quest.newMessageList( prolog[i], questText[i], epilog[i], complete[i], source ),
                 reward[i]
             );

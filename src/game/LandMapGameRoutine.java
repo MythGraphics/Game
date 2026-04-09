@@ -13,10 +13,10 @@ package game;
 
 import static game.Resource.ResourceType.*;
 import game.item.Item;
-import game.item.ReUsableItem;
-import game.item.UsableItem;
 import game.item.ItemEffect;
 import game.item.ItemEffect.TYPE;
+import game.item.ReUsableItem;
+import game.item.UsableItem;
 import graphic.CollisionEvent;
 import static graphic.map.BlockType.ENVIRONMENT_A;
 import static graphic.map.BlockType.TEXTSIGN;
@@ -49,7 +49,7 @@ public class LandMapGameRoutine extends GameRoutine {
                 new ItemEffect("Neptunes", ItemEffect.TYPE.PRÄFIX, HEALTH, 0, 200),
                 new ItemEffect("des Delfins", ItemEffect.TYPE.SUFFIX, AIR, 0, 200)
             );
-            int questID = ID.getNextQuestID();
+            int questID = ID.getNextQuestId();
             qObj = GameObjectLoader.loadQuest(questID, npc, qItem, player);
             GameObjectLoader.loadQuestObjectiveDialog(qObj, player);
 

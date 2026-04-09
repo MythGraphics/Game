@@ -22,6 +22,7 @@ public class Item extends TextBox implements IsItem, Tradable, ItemActionListene
     private final LinkedList<Message> msgListOnSell = new LinkedList<>();
 
     private int price = 0;
+    private String description = "";
 
     public Item(int id, String name) {
         super(id, name);
@@ -39,6 +40,16 @@ public class Item extends TextBox implements IsItem, Tradable, ItemActionListene
         for ( Message m : super.getDialog() ) {
             item.addMessageOnFind(m);
         }
+    }
+
+    @Override
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    @Override
+    public String getDescription() {
+        return description;
     }
 
     public void addMessageOnFind(Message msg) {

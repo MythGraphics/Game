@@ -30,7 +30,6 @@ public abstract class AbstractWeapon extends Item implements Blockable, ReUsable
 
     private final ArrayList<WeaponActionListener> actionListeners;
     private final Random rand;
-    private String description = "";
 
     public AbstractWeapon(int id, String name, WeaponType wType) {
         super(id, name);
@@ -103,14 +102,6 @@ public abstract class AbstractWeapon extends Item implements Blockable, ReUsable
 
     public void removeAllActionListener() {
         this.actionListeners.clear();
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getDescription() {
-        return description;
     }
 
     public WeaponType getWeaponType() {

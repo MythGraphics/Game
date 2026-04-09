@@ -12,7 +12,6 @@ package game.combat;
  */
 
 import static game.combat.DamageType.*;
-import java.util.Optional;
 
 public enum CombatantType {
 
@@ -29,17 +28,6 @@ public enum CombatantType {
 
     public DamageType getDamageType() {
         return dType;
-    }
-
-    public static Optional<CombatantType> getByName(String s) {
-        if ( s == null || s.isBlank() ) {
-            return Optional.empty();
-        }
-        try {
-            return Optional.of( CombatantType.valueOf( s.toUpperCase().trim() ));
-        } catch (IllegalArgumentException e) {
-            return Optional.empty();
-        }
     }
 
 }

@@ -20,7 +20,6 @@ import static game.combat.WeaponType.*;
 import static graphic.io.BinaryIO.BINARYIO;
 import static graphic.io.ImageUtility.scale;
 import java.util.ArrayList;
-import java.util.Optional;
 
 public class CombatFactory {
 
@@ -42,17 +41,6 @@ public class CombatFactory {
 
         public Combatant getMinion() {
             return combatant;
-        }
-
-        public static Optional<DefaultMinion> getByName(String s) {
-            if ( s == null || s.isBlank() ) {
-                return Optional.empty();
-            }
-            try {
-                return Optional.of( DefaultMinion.valueOf( s.toUpperCase().trim() ));
-            } catch (IllegalArgumentException e) {
-                return Optional.empty();
-            }
         }
 
     }

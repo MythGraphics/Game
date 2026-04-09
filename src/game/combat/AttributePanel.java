@@ -563,7 +563,7 @@ public class AttributePanel extends JPanel implements BattleActionListener, Reso
             if (ammo == null) {
                 return null;
             } else {
-                return ammo.getName() + " (" + ammo.getType() + ")";
+                return ammo.getName() + " (" + ammo.getType() + ")\n" + ammo.getDescription();
             }
         }
         return null;

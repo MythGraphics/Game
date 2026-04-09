@@ -20,10 +20,10 @@ public enum WeaponType {
     DOLCH       (45,  5, NONE),
     GEWEHR      (30, 30, PROJECTILE ),
     KNÜPPEL     (10, 15, NONE),
-    KRIEGSCLEVE (30, 40, NONE),
+    KRIEGSCLEVE (35, 45, NONE),
     SCHILD      ( 0, 75, NONE),
     SCHWERT     (25, 10, NONE),
-    STAB        ( 5, 20, NONE),
+    STAB        ( 1, 20, NONE),
     ZAUBER      (50,  0, SPELL );
 
     final int crit;  // kritische Trefferchance (pro Waffe/Hand) in %
