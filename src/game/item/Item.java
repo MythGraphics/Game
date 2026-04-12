@@ -83,6 +83,11 @@ public class Item extends TextBox implements IsItem, Tradable, ItemActionListene
     }
 
     @Override
+    public String toString() {
+        return super.toString() + ", Preis: " + price + "\n" + description;
+    }
+
+    @Override
     public Item clone() throws CloneNotSupportedException {
         if ( this.getClass() == Item.class ) {
             return new Item(this);

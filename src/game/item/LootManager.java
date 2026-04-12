@@ -13,13 +13,13 @@ package game.item;
 
 import static game.combat.AmmoType.*;
 import game.combat.*;
-import game.item.Item;
-import game.item.ItemBuilder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 public class LootManager {
+
+    public final static int MIN_STACK_SIZE = 5;
 
     private final List<Item> lootPool;
     private final Random rand;
@@ -70,8 +70,8 @@ public class LootManager {
         if (aType == NONE) {
             return null;
         }
-        int stackSize = 5 + rand.nextInt( 2*enemy.getLevel() );
-        int baseDmg = rand.nextInt( 10 * enemy.getLevel() );
+        int stackSize = MIN_STACK_SIZE + rand.nextInt( 2*enemy.getLevel() );
+        int baseDmg = Math.max( 5, rand.nextInt( 10 * enemy.getLevel() ));
         DamageType dType = enemy.getType().getDamageType();
         Damage dmg = new Damage(dType, baseDmg);
         String name = "";
@@ -82,7 +82,7 @@ public class LootManager {
         }
         name += dType.getSuffix();
         Ammo ammo = new Ammo( name, aType, stackSize, dmg );
-        ammo.setStack( rand.nextInt( stackSize ));
+        ammo.setStack( Math.max( MIN_STACK_SIZE, rand.nextInt( stackSize )));
         ammo.setDescription( "Loot von " + enemy.getName() );
         return ammo;
     }

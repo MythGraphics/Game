@@ -94,7 +94,7 @@ public class Ammo extends Item implements Usable {
 
     @Override
     public String toString() {
-        return super.toString() + " (" + aType + "), " + stack + "/" + stackSize + ", " + dmg.toString();
+        return getName() + " (" + aType + "), " + stack + "/" + stackSize + ", " + dmg.toString() + "\n" + getDescription();
     }
 
 }

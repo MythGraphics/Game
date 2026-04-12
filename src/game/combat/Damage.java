@@ -72,7 +72,7 @@ public class Damage implements Cloneable {
 
     @Override
     public String toString() {
-        return String.valueOf( value + " (" + dType + ")" );
+        return String.valueOf( value + " Schaden " + " (" + dType + ")" );
     }
 
     @Override

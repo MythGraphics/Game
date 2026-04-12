@@ -19,7 +19,7 @@ public enum DamageType {
     GIFT            ( new Color( 153, 255, 153 ), "der Viper" ),
     FEUER           ( new Color( 255, 153, 153 ), "des Infernos" ),
     NUKLEAR         ( new Color( 102, 255, 255 ), "der Sonne" ),
-    PHYSISCH        ( new Color( 242, 242, 242 ), "der Gewalt" ),
+    PHYSISCH        ( new Color( 242, 242, 242 ), "der Auslöschung" ),
     SÄURE           ( new Color( 255, 153, 255 ), "der Zersetzung" );
     // helles violett: 195, 153, 255
 

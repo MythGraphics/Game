@@ -11,10 +11,7 @@ package game;
  *
  */
 
-import game.combat.AmmoType;
-import game.combat.CombatFactory;
-import game.combat.CombatFrame;
-import game.combat.Combatant;
+import game.combat.*;
 import game.item.LootManager;
 import graphic.CollisionEvent;
 import graphic.TextFrame;
@@ -64,7 +61,11 @@ public class SpaceMapGameRoutine extends GameRoutine {
     }
 
     private void loot(Combatant enemy) {
-        player.getInventory().add( lootManager.getAmmo( enemy, AmmoType.PROJECTILE ));
+        Ammo loot = lootManager.getAmmo(enemy, AmmoType.PROJECTILE);
+        player.getInventory().add(loot);
+        dialogListener.show( new Message(
+            "Da liegt doch was!\n" + loot.toString(), player
+        ));
     }
 
     @Override
