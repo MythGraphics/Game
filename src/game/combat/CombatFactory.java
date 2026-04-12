@@ -142,7 +142,7 @@ public class CombatFactory {
     public static Enemy getDefaultBattlePet_Ratte() {
         Enemy c = new Enemy( "Ranzige Ratte", APOTHEKER, 1 );
         c.addArmor( new Armor( "verfilztes Fell", RÜSTUNG, 50 ));
-        c.addWeapon( new Weapon( -1, "rasiermesserscharfe Krallen", KRIEGSCLEVE, PHYSISCH, 5 ));
+        c.addWeapon( new Weapon( -1, "rasiermesserscharfe Krallen", GLEVE, PHYSISCH, 5 ));
         c.addWeapon( new Weapon( -1, "giftiger Biss", DOLCH, GIFT, 15 ));
         c.setImg( scale( BINARYIO.loadImage( "sprites/minion/rat.png" ), 100 ));
         return c;
@@ -151,7 +151,7 @@ public class CombatFactory {
     public static Enemy getDefaultBattlePet_Katze() {
         Enemy c = new Enemy( "Mucki-Mietze", KRIEGER, 1 );
         c.addArmor( new Armor( "dickes Fell", RÜSTUNG, 50 ));
-        c.addWeapon( new Weapon( -1, "rasiermesserscharfe Krallen", KRIEGSCLEVE, PHYSISCH, 5 ));
+        c.addWeapon( new Weapon( -1, "rasiermesserscharfe Krallen", GLEVE, PHYSISCH, 5 ));
         c.addWeapon( new Weapon( -1, "kräftiger Biss", DOLCH, PHYSISCH, 5 ));
         c.setImg( scale( BINARYIO.loadImage( "sprites/minion/cat.png" ), 100 ));
         return c;
@@ -160,7 +160,7 @@ public class CombatFactory {
     public static Enemy getDefaultBattlePet_Hase() {
         Enemy c = new Enemy( "Heißer Hoppler", MAGIER, 1 );
         c.addArmor( new Armor( "Asbestfell", ASBESTBESCHICHTUNG, 50 ));
-        c.addWeapon( new Weapon( -1, "brennende Krallen", KRIEGSCLEVE, FEUER, 5 ));
+        c.addWeapon( new Weapon( -1, "brennende Krallen", GLEVE, FEUER, 5 ));
         c.addWeapon( new Weapon( -1, "brennender Biss", DOLCH, FEUER, 5 ));
         c.setImg( scale( BINARYIO.loadImage( "sprites/minion/rabbit3.png" ), 100 ));
         return c;

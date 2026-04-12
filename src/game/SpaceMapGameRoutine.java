@@ -11,9 +11,11 @@ package game;
  *
  */
 
+import game.combat.AmmoType;
 import game.combat.CombatFactory;
 import game.combat.CombatFrame;
-import game.item.Item;
+import game.combat.Combatant;
+import game.item.LootManager;
 import graphic.CollisionEvent;
 import graphic.TextFrame;
 import graphic.io.BinaryIO;
@@ -22,24 +24,18 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
 import javax.swing.JFrame;
 
 public class SpaceMapGameRoutine extends GameRoutine {
 
-    private final List<String> audioTrackList;
     private final JFrame frame;
-    private final Random rand = new Random();
-    private final List<Item> lootPool = new ArrayList<>();
 
     private Enemy enemy;
+    private LootManager lootManager = new LootManager();
 
     public SpaceMapGameRoutine(Player player, JFrame frame) {
-        super(player);
+        super( player, null, "SpaceMapAudioTrackList.txt" );
         this.frame = frame;
-        audioTrackList = TextIO.TEXTIO.loadAudioTrackList("SpaceMapAudioTrackList.txt");
         try {
             init();
         } catch (IOException e) {
@@ -55,11 +51,6 @@ public class SpaceMapGameRoutine extends GameRoutine {
         player.setPlayerAsMinion( CombatFactory.getDefaultSpaceMarine( player.getHealth() ));
     }
 
-    @Override
-    public List<String> getAudioTrackList() {
-        return audioTrackList;
-    }
-
     public final void showProlog() {
         String prolog = TextIO.TEXTIO.loadProlog();
         if (prolog == null) {
@@ -72,8 +63,8 @@ public class SpaceMapGameRoutine extends GameRoutine {
         textFrame.show("Prolog", prolog, bg);
     }
 
-    private void loot() {
-        // ToDo hier weiter
+    private void loot(Combatant enemy) {
+        player.getInventory().add( lootManager.getAmmo( enemy, AmmoType.PROJECTILE ));
     }
 
     @Override
@@ -81,17 +72,19 @@ public class SpaceMapGameRoutine extends GameRoutine {
         super.collisionPerformed(e);
         switch( e.getBlock().getType() ) {
             case ENEMY -> {
-                if ( !enemy.getMinion().isAlive() ) {
-                    enemy.getMinion().resurrect();
-                    enemy.getMinion().setLevel( player.getPlayerAsMinion().getLevel() );
+                Combatant enemyMinion  = this.enemy.getMinion();
+                Combatant playerMinion = this.player.getPlayerAsMinion();
+                if ( !enemyMinion.isAlive() ) {
+                    enemyMinion.resurrect();
+                    enemyMinion.setLevel( playerMinion.getLevel() );
                 }
-                CombatFrame cFrame = new CombatFrame( frame, player.getPlayerAsMinion(), enemy.getMinion() );
+                CombatFrame cFrame = new CombatFrame(frame, playerMinion, enemyMinion);
                 cFrame.setVisible(true);
-                if ( !enemy.getMinion().isAlive() ) {
+                if ( !enemyMinion.isAlive() ) {
                     e.block.dead();
                 }
-                if ( player.getPlayerAsMinion().isAlive() ) {
-                    loot();
+                if ( player.isAlive() ) {
+                    loot(enemyMinion);
                 }
             }
             case ENVIRONMENT_A -> {

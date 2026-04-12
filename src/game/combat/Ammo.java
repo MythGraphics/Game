@@ -33,10 +33,10 @@ public class Ammo extends Item implements Usable {
 
     public Ammo(String name, AmmoType aType, int stackSize, int stack, Damage dmg) {
         super(0, name);
-        this.aType = aType;
-        this.stackSize = stackSize;
-        this.stack = stack;
-        this.dmg = dmg;
+        this.aType      = aType;
+        this.stackSize  = stackSize;
+        this.stack      = stack;
+        this.dmg        = dmg;
     }
 
     @Override
@@ -61,6 +61,10 @@ public class Ammo extends Item implements Usable {
 
     public int getStack() {
         return stack;
+    }
+
+    public void setStack(int value) {
+        this.stack = value;
     }
 
     public void charge(int amount) {

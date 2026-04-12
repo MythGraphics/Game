@@ -15,21 +15,28 @@ import java.awt.Color;
 
 public enum DamageType {
 
-    ELEKTRIZITÄT    (new Color( 255, 255,   0 )),
-    GIFT            (new Color( 153, 255, 153 )),
-    FEUER           (new Color( 255, 153, 153 )),
-    NUKLEAR         (new Color( 102, 255, 255 )),
-    PHYSISCH        (new Color( 242, 242, 242 )),
-    SÄURE           (new Color( 255, 153, 255 )); // helles violett: 195, 153, 255
+    ELEKTRIZITÄT    ( new Color( 255, 255,   0 ), "des Blitzes" ),
+    GIFT            ( new Color( 153, 255, 153 ), "der Viper" ),
+    FEUER           ( new Color( 255, 153, 153 ), "des Infernos" ),
+    NUKLEAR         ( new Color( 102, 255, 255 ), "der Sonne" ),
+    PHYSISCH        ( new Color( 242, 242, 242 ), "der Gewalt" ),
+    SÄURE           ( new Color( 255, 153, 255 ), "der Zersetzung" );
+    // helles violett: 195, 153, 255
 
     private final Color color;
+    private final String suffix;
 
-    DamageType(Color color) {
+    DamageType(Color color, String suffix) {
         this.color = color;
+        this.suffix = suffix;
     }
 
     public Color getColor() {
         return color;
+    }
+
+    public String getSuffix() {
+        return suffix;
     }
 
 }

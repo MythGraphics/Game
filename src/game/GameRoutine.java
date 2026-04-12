@@ -11,28 +11,38 @@ package game;
  *
  */
 
+import game.item.Item;
 import graphic.CollisionActionListener;
 import graphic.CollisionEvent;
 import static graphic.CollisionType.*;
+import graphic.io.TextIO;
 import graphic.map.BlockType;
 import graphic.map.GameMap;
 import java.awt.Point;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import util.CycleList;
 
-public abstract class GameRoutine implements CollisionActionListener {
+public class GameRoutine implements CollisionActionListener {
 
     final Player player;
     final DialogOutputListener dialogListener;
     final CycleList<Point> portals;
     final Map<BlockType, TextBox> dialogMap = new HashMap<>();
+    final List<String> audioTrackList;
+    final Random rand = new Random();
 
-    public GameRoutine(Player player) {
+    public GameRoutine(Player player, List<Item> lootPool, String audioTrackListFileString) {
         this.player = player;
+        this.audioTrackList = TextIO.TEXTIO.loadAudioTrackList(audioTrackListFileString);
         this.dialogListener = player.getDialogOutputListener();
         this.portals = new CycleList<>();
+    }
+
+    public List<String> getAudioTrackList() {
+        return audioTrackList;
     }
 
     public void addDialog(BlockType tType, TextBox dialog) {
@@ -42,8 +52,6 @@ public abstract class GameRoutine implements CollisionActionListener {
     public Player getPlayer() {
         return player;
     }
-
-    abstract List<String> getAudioTrackList();
 
     @Override
     public void collisionPerformed(CollisionEvent e) {

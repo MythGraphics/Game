@@ -467,12 +467,7 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
                 case UW     -> map.addCollisionActionListener( routine = new UWMapGameRoutine( player ));
             }
         } else {
-            routine = new GameRoutine(player) {
-                @Override
-                public List<String> getAudioTrackList() {
-                    return new ArrayList<>();
-                }
-            };
+            routine = new GameRoutine(player, null, null);
         }
 
         jLeftList.setModel( player.getMinionManager().getListModel() );

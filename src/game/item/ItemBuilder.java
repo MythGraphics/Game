@@ -57,7 +57,7 @@ public class ItemBuilder {
     public Item createRandomItem() {
         Random r = new Random();
         int rintItem = r.nextInt( itemNames.size() );
-        int rintPrä = r.nextInt( itemEffectList_prä.size() );
+        int rintPrä  = r.nextInt( itemEffectList_prä.size() );
         int rintSuff = r.nextInt( itemEffectList_suff.size() );
         return createItem(
             itemNames.get(rintItem),
@@ -68,14 +68,16 @@ public class ItemBuilder {
         );
     }
 
-    public static UsableItem createCoinPouch(String präfix, int value) {
+    public static UsableItem createCoinPouch(String suffix, int value) {
         UsableItem item = new UsableItem( 0, "Münzbeutel" );
         item.setPrice(value);
-        item.addItemEffect( new ItemEffect( präfix, TYPE.PRÄFIX, ResourceType.CREDIT, value ));
+        item.addItemEffect( new ItemEffect( suffix, TYPE.SUFFIX, ResourceType.CREDIT, value ));
         return item;
     }
 
-    public static ReUsableItem createItem(String name, Image bgImg, Image uiImg, ItemEffect effect_prä, ItemEffect effect_suff) {
+    public static ReUsableItem createItem(
+        String name, Image bgImg, Image uiImg, ItemEffect effect_prä, ItemEffect effect_suff
+    ) {
         ReUsableItem item = new ReUsableItem( ID.getNextItemId(), name );
         item.addItemEffect(effect_prä, effect_suff);
         item.setImg(bgImg);

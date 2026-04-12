@@ -27,16 +27,12 @@ public class LandMapGameRoutine extends GameRoutine {
 
     final LinkedList<Item> items; // Items, die zufällig (10%) in der Landschaft gefunden werden können
 
-    private final Random rand;
-    private final List<String> audioTrackList = new ArrayList<>();
-
     private Npc npc;
     private Item qObj;
 
     public LandMapGameRoutine(Player player) {
-        super(player);
+        super(player, null, null);
         this.items = new LinkedList<>();
-        this.rand = new Random();
         try {
             addDialog(TEXTSIGN, GameObjectLoader.loadNextDialog(player));
             addDialog(ENVIRONMENT_A, GameObjectLoader.loadNextDialog(player));

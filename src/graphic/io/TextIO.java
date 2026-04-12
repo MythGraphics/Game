@@ -75,12 +75,21 @@ public class TextIO {
     }
 
     public List<String> loadAudioTrackList(String filestr) {
-        try (BufferedReader in = getTextReader( filestr )) {
-            return in.lines().toList();
-        } catch (IOException e) {
-            System.err.println( "Fehler beim Lesen der Tracklist-Datei: " + e.getMessage() );
+        // CAVE! Alle zurückgegebenen Sisten sind immutabel!
+        if ( filestr == null || filestr.isBlank() ) {
+            System.err.println("Keine Tracklist-Datei übergeben.");
             return Collections.emptyList();
         }
+        try (BufferedReader in = getTextReader( filestr )) {
+            return in.lines().toList();
+        }
+        catch (FileNotFoundException e) {
+            System.err.println( "Tracklist-Datei nicht gefunden: " + e.getMessage() );
+        }
+        catch (IOException e) {
+            System.err.println( "Fehler beim Lesen der Tracklist-Datei: " + e.getMessage() );
+        }
+        return Collections.emptyList();
     }
 
 }
