@@ -20,8 +20,19 @@ public class Enemy extends TextBox {
         this.minion = minion;
     }
 
+    protected Enemy(Enemy enemy) {
+        super(enemy);
+        this.minion = enemy.getMinion();
+    }
+
     public game.combat.Enemy getMinion() {
         return minion;
+    }
+
+    // shallow copy
+    @Override
+    public Enemy clone() throws CloneNotSupportedException {
+        return new Enemy(this);
     }
 
 }

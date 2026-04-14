@@ -15,9 +15,9 @@ public enum QuestString {
 
     PROLOG      ("quest_prolog"),
     TEXT        ("quest_text"),
-    EPILOG      ("quest_epilog"),
+    OBJ_FOUND   ("questobj_found"),
     COMPLETE    ("quest_complete"),
-    OBJ_FOUND   ("questobj_found");
+    EPILOG      ("quest_epilog");
 
     private final String name;
 

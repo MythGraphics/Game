@@ -11,9 +11,10 @@ package game;
  *
  */
 
+import game.quest.HasQuest;
 import game.quest.Quest;
 
-public class Npc extends TextBox {
+public class Npc extends TextBox implements HasQuest {
 
     private Quest quest;
 
@@ -21,16 +22,30 @@ public class Npc extends TextBox {
         super(id, name);
     }
 
+    protected Npc(Npc npc) {
+        super(npc);
+        this.quest = npc.getQuest();
+    }
+
+    @Override
     public void setQuest(Quest quest) {
         this.quest = quest;
     }
 
+    @Override
     public Quest getQuest() {
         return quest;
     }
 
+    @Override
     public boolean hasQuest() {
         return quest != null;
+    }
+
+    // shallow copy
+    @Override
+    public Npc clone() throws CloneNotSupportedException  {
+        return new Npc(this);
     }
 
 }

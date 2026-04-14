@@ -23,13 +23,13 @@ public class Quest extends AbstractQuest {
     public Quest(int id, List<Message> msgList, IsItem reward) {
         super(id);
         this.msgList = msgList;
-        this.reward = reward;
+        this.reward  = reward;
     }
 
     @Override
     public void accept() {
         super.accept();
-        System.out.println("Quest #" + getId() + " angenommen."); // debug
+        System.out.println( "Quest #" + getId() + " angenommen." ); // debug
     }
 
     @Override

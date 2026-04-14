@@ -15,7 +15,7 @@ import java.util.LinkedList;
 
 public interface HasDialog {
 
-    // A dialog is a LinkedList of Messages.
+    // A Dialog is a LinkedList of Messages.
     LinkedList<Message> getDialog();
 
 }
