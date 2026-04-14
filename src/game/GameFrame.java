@@ -27,7 +27,10 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.StringTokenizer;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.JComponent;
@@ -36,6 +39,7 @@ import javax.swing.JLabel;
 import javax.swing.JProgressBar;
 import javax.swing.plaf.basic.BasicProgressBarUI;
 import util.ColorLibrary;
+import util.EnumHelper;
 
 public class GameFrame extends JFrame implements ItemEffectListener, ItemActionListener {
 
@@ -68,7 +72,7 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
             }
         };
 
-        MapType mType = MapType.getByName(mapType).orElseGet( () -> {
+        MapType mType = EnumHelper.getEnumFromStringAsOptional(MapType.class, mapType).orElseGet( () -> {
             System.err.println("Initialisieren der Map fehlgeschlagen - Typ unbekannt - Abbruch!");
             System.exit(255);
             return null;
@@ -463,11 +467,11 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
             // wenn Fernsteuerung nicht aktiv, GameRoutine laden
             switch (mType) {
                 case SPACE  -> map.addCollisionActionListener( routine = new SpaceMapGameRoutine( player, this ));
-                case LAND   -> map.addCollisionActionListener( routine = new LandMapGameRoutine( player ));
-                case UW     -> map.addCollisionActionListener( routine = new UWMapGameRoutine( player ));
+                case LAND   -> map.addCollisionActionListener( routine = new LandMapGameRoutine(  player, this ));
+                case UW     -> map.addCollisionActionListener( routine = new UWMapGameRoutine(    player, this ));
             }
         } else {
-            routine = new GameRoutine(player, null, null);
+            routine = new PeacefulGameRoutine(player, null, this);
         }
 
         jLeftList.setModel( player.getMinionManager().getListModel() );

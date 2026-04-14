@@ -25,14 +25,11 @@ import javax.swing.JFrame;
 
 public class SpaceMapGameRoutine extends GameRoutine {
 
-    private final JFrame frame;
-
-    private Enemy enemy;
     private LootManager lootManager = new LootManager();
 
     public SpaceMapGameRoutine(Player player, JFrame frame) {
-        super( player, null, "SpaceMapAudioTrackList.txt" );
-        this.frame = frame;
+        super(player, null, "SpaceMapAudioTrackList.txt", frame);
+        player.setPlayerAsMinion( CombatFactory.getDefaultSpaceMarine( player.getHealth() ));
         try {
             init();
         } catch (IOException e) {
@@ -44,8 +41,7 @@ public class SpaceMapGameRoutine extends GameRoutine {
     }
 
     private void init() throws IOException {
-        enemy = GameObjectLoader.loadNextEnemy();
-        player.setPlayerAsMinion( CombatFactory.getDefaultSpaceMarine( player.getHealth() ));
+        // ToDo hier Properties laden
     }
 
     public final void showProlog() {
@@ -60,8 +56,9 @@ public class SpaceMapGameRoutine extends GameRoutine {
         textFrame.show("Prolog", prolog, bg);
     }
 
-    private void loot(Combatant enemy) {
-        Ammo loot = lootManager.getAmmo(enemy, AmmoType.PROJECTILE);
+    @Override
+    void loot(Combatant enemy) {
+        Ammo loot = lootManager.createAmmo(enemy, AmmoType.PROJECTILE);
         player.getInventory().add(loot);
         dialogListener.show( new Message(
             "Da liegt doch was!\n" + loot.toString(), player
@@ -72,22 +69,6 @@ public class SpaceMapGameRoutine extends GameRoutine {
     public void collisionPerformed(CollisionEvent e) {
         super.collisionPerformed(e);
         switch( e.getBlock().getType() ) {
-            case ENEMY -> {
-                Combatant enemyMinion  = this.enemy.getMinion();
-                Combatant playerMinion = this.player.getPlayerAsMinion();
-                if ( !enemyMinion.isAlive() ) {
-                    enemyMinion.resurrect();
-                    enemyMinion.setLevel( playerMinion.getLevel() );
-                }
-                CombatFrame cFrame = new CombatFrame(frame, playerMinion, enemyMinion);
-                cFrame.setVisible(true);
-                if ( !enemyMinion.isAlive() ) {
-                    e.block.dead();
-                }
-                if ( player.isAlive() ) {
-                    loot(enemyMinion);
-                }
-            }
             case ENVIRONMENT_A -> {
                 player.getDialogOutputListener().show( new Message(
                     "Warum liegt hier eigentlich Stroh rum?", player

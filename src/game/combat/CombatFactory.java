@@ -20,29 +20,65 @@ import static game.combat.WeaponType.*;
 import static graphic.io.BinaryIO.BINARYIO;
 import static graphic.io.ImageUtility.scale;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
+import java.util.function.Supplier;
+import java.util.stream.IntStream;
 
 public class CombatFactory {
 
-    public enum DefaultMinion {
+    private static final Random RAND = new Random();
 
-        GIFTZERG        ( getDefaultGiftZerg() ),
-        FEUERZERG       ( getDefaultFeuerZerg() ),
-        KRIEGERZERG     ( getDefaultKriegerZerg() ),
+    public enum DefaultEnemy {
 
-        HASE            ( getDefaultBattlePet_Hase() ),
-        KATZE           ( getDefaultBattlePet_Katze() ),
-        RATTE           ( getDefaultBattlePet_Ratte() );
+        GIFTZERG(CombatFactory::getDefaultGiftZerg, Group.ZERG),
+        FEUERZERG(CombatFactory::getDefaultFeuerZerg, Group.ZERG),
+        KRIEGERZERG(CombatFactory::getDefaultKriegerZerg, Group.ZERG),
 
-        private final Combatant combatant;
+        HASE(CombatFactory::getDefaultBattlePet_Hase, Group.ANIMAL),
+        KATZE(CombatFactory::getDefaultBattlePet_Katze, Group.ANIMAL),
+        RATTE(CombatFactory::getDefaultBattlePet_Ratte, Group.ANIMAL);
 
-        DefaultMinion(Combatant combatant) {
-            this.combatant = combatant;
+        private final Supplier<Enemy> factory;
+        private final Group group;
+
+        DefaultEnemy(Supplier<Enemy> factory, Group group) {
+            this.factory = factory;
+            this.group = group;
         }
 
-        public Combatant getMinion() {
-            return combatant;
+        public Enemy create() {
+            return factory.get();
         }
 
+    }
+
+    public enum Group {
+        ZERG,
+        ANIMAL;
+    }
+
+    public static List<Enemy> createRandomZergSquad(int size) {
+        return createRandomSquad(Group.ZERG, size);
+    }
+
+    public static List<Enemy> createRandomAnimalSquad(int size) {
+        return createRandomSquad(Group.ANIMAL, size);
+    }
+
+    public static List<Enemy> createRandomSquad(Group group, int size) {
+        // alle verfügbaren Blueprints dieser Gruppe sammeln
+        List<DefaultEnemy> blueprints = Arrays.stream( DefaultEnemy.values() )
+                                              .filter(e -> e.group == group)
+                                              .toList();
+        if ( blueprints.isEmpty() ) {
+            return List.of();
+        }
+        // per Zufall 'size'-oft einen Blueprint wählen und eine neue Instanz erzeugen
+        return IntStream.range(0, size)
+                        .mapToObj(i -> blueprints.get( RAND.nextInt( blueprints.size() )).create())
+                        .toList();
     }
 
     private String name;
@@ -111,6 +147,15 @@ public class CombatFactory {
         return c;
     }
 
+    public static Player getDefaultSpaceMarine(Resource health) {
+        Player c = new Player( "SpaceMarine Johannis Kraut", SPACE_MARINE, health, 0 );
+        c.addArmor( new Armor( "Space Suit", RÜSTUNG, 90 ));
+        AmmoWeapon weapon = new AmmoWeapon( -1, "BFG Sturmgewehr", GEWEHR, PROJECTILE );
+        weapon.addAmmo( new Ammo( "Plasmaladung", PROJECTILE, 100, 10, new Damage( NUKLEAR, 50 )));
+        c.addWeapon(weapon);
+        return c;
+    }
+
     public static Enemy getDefaultFeuerZerg() {
         Enemy c = new Enemy( "Höllenzerg", MAGIER, 1 );
         c.addArmor( new Armor( "Asbestschuppen", ASBESTBESCHICHTUNG, 50 ));
@@ -163,15 +208,6 @@ public class CombatFactory {
         c.addWeapon( new Weapon( -1, "brennende Krallen", GLEVE, FEUER, 5 ));
         c.addWeapon( new Weapon( -1, "brennender Biss", DOLCH, FEUER, 5 ));
         c.setImg( scale( BINARYIO.loadImage( "sprites/minion/rabbit3.png" ), 100 ));
-        return c;
-    }
-
-    public static Player getDefaultSpaceMarine(Resource health) {
-        Player c = new Player( "SpaceMarine Johannis Kraut", SPACE_MARINE, health, 0 );
-        c.addArmor( new Armor( "Space Suit", RÜSTUNG, 90 ));
-        AmmoWeapon weapon = new AmmoWeapon( -1, "BFG Sturmgewehr", GEWEHR, PROJECTILE );
-        weapon.addAmmo( new Ammo( "Plasmaladung", PROJECTILE, 100, 10, new Damage( NUKLEAR, 50 )));
-        c.addWeapon(weapon);
         return c;
     }
 

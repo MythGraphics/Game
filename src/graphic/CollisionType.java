@@ -13,12 +13,14 @@ package graphic;
 
 public enum CollisionType {
 
-    WALL,           // non-interactive impassable environment
-    ENV_PASS,       // interactive passable environment
     ENV_IMPASS,     // interactive non-passable environment
+    ENV_PASS,       // interactive passable environment
+    ENEMY,
+    EXIT,
     INTERACTIVE,    // interactive game object
-    TEXT,           // text output
     PORTAL,
-    EXIT;
+    SURFACE,        // interactive map object/part
+    TEXT,           // text output
+    WALL,           // non-interactive impassable environment
 
 }

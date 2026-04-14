@@ -170,7 +170,7 @@ public class GameObjectLoader {
     private static Combatant loadMinion(Properties p) throws IOException, NoSuchElementException {
         Combatant minion;
         if ( p.containsKey( "default" )) {
-            minion = getEnumFromString( CombatFactory.DefaultMinion.class, p.getProperty( "default" )).getMinion();
+            minion = getEnumFromString( CombatFactory.DefaultEnemy.class, p.getProperty( "default" )).create();
         } else {
             minion = new Combatant(
                 p.getProperty( "name" ),

@@ -19,19 +19,19 @@ public class MapBuilder {
 
     // gemeinsame Klasse: GameMap
 
-    public static DefaultLandMap DefaultLandMap() {
+    public static DefaultLandMap createDefaultLandMap() {
         DefaultLandMap map = new DefaultLandMap(DefaultLandMap.DEFAULT_TILE_MAP);
         map.init();
         return map;
     }
 
-    public static DefaultSpaceMap DefaultSpaceMap() {
+    public static DefaultSpaceMap createDefaultSpaceMap() {
         DefaultSpaceMap map = new DefaultSpaceMap(DefaultSpaceMap.DEFAULT_TILE_MAP);
         map.init();
         return map;
     }
 
-    public static DefaultUWMap DefaultUWMap(UWMapRoutine uw) {
+    public static DefaultUWMap createDefaultUWMap(UWMapRoutine uw) {
         DefaultUWMap map = new DefaultUWMap(DefaultUWMap.DEFAULT_TILE_MAP, uw);
         map.init();
         return map;

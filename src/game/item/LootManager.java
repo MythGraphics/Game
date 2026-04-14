@@ -21,8 +21,8 @@ public class LootManager {
 
     public final static int MIN_STACK_SIZE = 5;
 
+    private final Random rand = new Random();
     private final List<Item> lootPool;
-    private final Random rand;
     private final Item defaultLoot;
 
     public LootManager() {
@@ -36,7 +36,10 @@ public class LootManager {
             this.lootPool = new ArrayList<>();
         }
         this.defaultLoot = defaultLoot;
-        this.rand = new Random();
+    }
+
+    public boolean hasLootPool() {
+        return lootPool != null && !lootPool.isEmpty();
     }
 
     public Item getLootFromPool() {
@@ -46,12 +49,12 @@ public class LootManager {
         return lootPool.remove( rand.nextInt( lootPool.size() ));
     }
 
-    public Item getCredits(Combatant enemy) {
+    public Item createCredits(Combatant enemy) {
         int value = rand.nextInt( 100 * enemy.getLevel() );
         return ItemBuilder.createCoinPouch( "des " + enemy.getName(), value );
     }
 
-    public AbstractWeapon getWeapon(Combatant enemy) {
+    public AbstractWeapon createWeapon(Combatant enemy) {
         int id = rand.nextInt();
         DamageType dType = enemy.getType().getDamageType();
         WeaponType wType = WeaponType.values()[ rand.nextInt( WeaponType.values().length )];
@@ -66,7 +69,7 @@ public class LootManager {
         return w;
     }
 
-    public Ammo getAmmo(Combatant enemy, AmmoType aType) {
+    public Ammo createAmmo(Combatant enemy, AmmoType aType) {
         if (aType == NONE) {
             return null;
         }

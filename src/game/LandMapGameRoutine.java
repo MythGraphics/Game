@@ -21,17 +21,20 @@ import graphic.CollisionEvent;
 import static graphic.map.BlockType.ENVIRONMENT_A;
 import static graphic.map.BlockType.TEXTSIGN;
 import java.io.IOException;
-import java.util.*;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import javax.swing.JFrame;
 
-public class LandMapGameRoutine extends GameRoutine {
+public class LandMapGameRoutine extends PeacefulGameRoutine {
 
     final LinkedList<Item> items; // Items, die zufällig (10%) in der Landschaft gefunden werden können
 
     private Npc npc;
     private Item qObj;
 
-    public LandMapGameRoutine(Player player) {
-        super(player, null, null);
+    public LandMapGameRoutine(Player player, JFrame frame) {
+        super(player, null, frame);
         this.items = new LinkedList<>();
         try {
             addDialog(TEXTSIGN, GameObjectLoader.loadNextDialog(player));

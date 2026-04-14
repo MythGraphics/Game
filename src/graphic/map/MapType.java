@@ -13,40 +13,28 @@ package graphic.map;
 
 import game.Player;
 import game.UWMapRoutine;
-import java.util.Optional;
 
 public enum MapType {
 
     LAND {
         @Override
         public GameMap createMap(Player player) {
-            return MapBuilder.DefaultLandMap();
+            return MapBuilder.createDefaultLandMap();
         }
     },
     SPACE {
         @Override
         public GameMap createMap(Player player) {
-            return MapBuilder.DefaultSpaceMap();
+            return MapBuilder.createDefaultSpaceMap();
         }
     },
     UW {
         @Override
         public GameMap createMap(Player player) {
-            return MapBuilder.DefaultUWMap(new UWMapRoutine(player));
+            return MapBuilder.createDefaultUWMap( new UWMapRoutine( player ));
         }
     };
 
     public abstract GameMap createMap(Player player);
-
-    public static Optional<MapType> getByName(String s) {
-        if ( s == null || s.isBlank() ) {
-            return Optional.empty();
-        }
-        try {
-            return Optional.of( MapType.valueOf( s.toUpperCase().trim() ));
-        } catch (IllegalArgumentException e) {
-            return Optional.empty();
-        }
-    }
 
 }

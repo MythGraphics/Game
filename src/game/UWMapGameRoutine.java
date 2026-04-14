@@ -13,11 +13,12 @@ package game;
 
 import graphic.CollisionEvent;
 import graphic.map.UWMap;
+import javax.swing.JFrame;
 
 public class UWMapGameRoutine extends LandMapGameRoutine {
 
-    public UWMapGameRoutine(Player player) {
-        super(player);
+    public UWMapGameRoutine(Player player, JFrame frame) {
+        super(player, frame);
     }
 
     @Override

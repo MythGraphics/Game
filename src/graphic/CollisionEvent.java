@@ -17,10 +17,9 @@ import java.util.EventObject;
 
 public class CollisionEvent extends EventObject {
 
-    public final CollisionType cType; // falls abweichend vom cType des tType
+    public final CollisionType cType; // im Grunde redundant, da über Block ( getType().getCollisionType() ) zu erhalten
     public final Block block;
 
-    // tType über Block, cType über tType
     public CollisionEvent(GameMap source, CollisionType cType, Block block) {
         super(source);
         this.cType = cType;
