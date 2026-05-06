@@ -45,11 +45,11 @@ public class SpaceMapGameRoutine extends GameRoutine {
     }
 
     public final void showProlog() {
-        String prolog = TextIO.TEXTIO.loadProlog();
+        String prolog = TextIO.loadProlog( getClass() );
         if (prolog == null) {
             return;
         }
-        BufferedImage bg = BinaryIO.BINARYIO.loadImage("bg/interior_of_a_spaceship_by_parker_west.jpg");
+        BufferedImage bg = BinaryIO.loadImage("bg/interior_of_a_spaceship_by_parker_west.jpg");
         TextFrame textFrame = new TextFrame( new Dimension( 800, 600 ));
         textFrame.getTexter().setFontColor(Color.WHITE);
         textFrame.getTexter().setTypeOverImage(true);

@@ -37,10 +37,10 @@ public class LandMapGameRoutine extends PeacefulGameRoutine {
         super(player, null, frame);
         this.items = new LinkedList<>();
         try {
-            addDialog(TEXTSIGN, GameObjectLoader.loadNextDialog(player));
-            addDialog(ENVIRONMENT_A, GameObjectLoader.loadNextDialog(player));
+            addDialog(TEXTSIGN, getLoader().loadNextDialog(player));
+            addDialog(ENVIRONMENT_A, getLoader().loadNextDialog(player));
 
-            npc = GameObjectLoader.loadNextNpc(player);
+            npc = getLoader().loadNextNpc(player);
 
             // load quest
             ReUsableItem qItem = new ReUsableItem(-1, "Halskette");
@@ -49,14 +49,14 @@ public class LandMapGameRoutine extends PeacefulGameRoutine {
                 new ItemEffect("des Delfins", ItemEffect.TYPE.SUFFIX, AIR, 0, 200)
             );
             int questID = ID.getNextQuestId();
-            qObj = GameObjectLoader.loadQuest(questID, npc, qItem, player);
-            GameObjectLoader.loadQuestObjectiveDialog(qObj, player);
+            qObj = getLoader().loadQuest(questID, npc, qItem, player);
+            getLoader().loadQuestObjectiveDialog(qObj, player);
 
             // load environment items
-            UsableItem item = (UsableItem) GameObjectLoader.loadNextItem(player);
+            UsableItem item = (UsableItem) getLoader().loadNextItem(player);
             item.addItemEffect( new ItemEffect( "Blutsaugender", TYPE.PRÄFIX, HEALTH, 20, 20 ));
             items.add(item);
-            item = (UsableItem) GameObjectLoader.loadNextItem(player);
+            item = (UsableItem) getLoader().loadNextItem(player);
             item.addItemEffect( new ItemEffect( "einfacher", TYPE.PRÄFIX, CREDIT, item.getPrice() ));
             items.add(item);
 

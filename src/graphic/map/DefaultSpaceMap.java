@@ -11,15 +11,19 @@ package graphic.map;
  *
  */
 
-import graphic.*;
-import static graphic.io.BinaryIO.BINARYIO;
+import graphic.AnimatedBlock;
+import graphic.Animation;
+import graphic.MoveableSprite;
+import graphic.Sprite;
+import static graphic.io.BinaryIO.SPRITE;
+import static graphic.io.BinaryIO.loadImage;
 import graphic.io.TilesetUtility;
 import static graphic.map.BlockType.*;
 import java.awt.Color;
 import java.awt.Image;
+import java.awt.Point;
 import java.util.HashMap;
 import java.util.Map;
-import java.awt.Point;
 
 public class DefaultSpaceMap extends GameMap {
 
@@ -71,25 +75,25 @@ public class DefaultSpaceMap extends GameMap {
     @Override
     void loadSprites() {
         Image[][] tileset = TilesetUtility.getAnimationSet(
-            BINARYIO.loadImage("tilesets/spaceship/creatures2.png"), 0, 0, 32, 32, 3
+            loadImage("tilesets/spaceship/creatures2.png"), 0, 0, 32, 32, 3
         );
         Image[] corpseset = TilesetUtility.getSpriteSet(
-            BINARYIO.loadImage("tilesets/spaceship/creatures2.png"), new Point(3*32, 0), 0, 0, 32, -1
+            loadImage("tilesets/spaceship/creatures2.png"), new Point(3*32, 0), 0, 0, 32, -1
         );
-        imgMap.put(ENVIRONMENT_A, BINARYIO.loadImage(BINARYIO.SPRITE+"land/Straw1.png"));
-        imgMap.put(WALL0, BINARYIO.loadImage("tilesets/spaceship/wall1.png"));
-        imgMap.put(WALL1, BINARYIO.loadImage("tilesets/spaceship/wall2.png"));
-        imgMap.put(WALL2, BINARYIO.loadImage("tilesets/spaceship/wall3.png"));
-        imgMap.put(WALL3, BINARYIO.loadImage("tilesets/spaceship/wall4.png"));
-        imgMap.put(WALL4, BINARYIO.loadImage("tilesets/spaceship/wall5.png"));
-        imgMap.put(WALL5, BINARYIO.loadImage("tilesets/spaceship/wall6.png"));
-        imgMap.put(WALL6, BINARYIO.loadImage("tilesets/spaceship/wall7.png"));
-        imgMap.put(WALL7, BINARYIO.loadImage("tilesets/spaceship/wall8.png"));
-        imgMap.put(SPACE, BINARYIO.loadImage("tilesets/spaceship/floor.png"));
+        imgMap.put(ENVIRONMENT_A, loadImage(SPRITE+"land/Straw1.png"));
+        imgMap.put(WALL0, loadImage("tilesets/spaceship/wall1.png"));
+        imgMap.put(WALL1, loadImage("tilesets/spaceship/wall2.png"));
+        imgMap.put(WALL2, loadImage("tilesets/spaceship/wall3.png"));
+        imgMap.put(WALL3, loadImage("tilesets/spaceship/wall4.png"));
+        imgMap.put(WALL4, loadImage("tilesets/spaceship/wall5.png"));
+        imgMap.put(WALL5, loadImage("tilesets/spaceship/wall6.png"));
+        imgMap.put(WALL6, loadImage("tilesets/spaceship/wall7.png"));
+        imgMap.put(WALL7, loadImage("tilesets/spaceship/wall8.png"));
+        imgMap.put(SPACE, loadImage("tilesets/spaceship/floor.png"));
         imgMap.put(CORPSE, corpseset[5]);
         enemyAni = new Animation(tileset[5], true);
         playerAni = Animation.buildDirectionalAnimationSet( TilesetUtility.getAnimationSet(
-            BINARYIO.loadImage("tilesets/spaceship/spacemarine.png"), 0, 0, 32, 32, 3
+            loadImage("tilesets/spaceship/spacemarine.png"), 0, 0, 32, 32, 3
         ));
         for (Animation a : playerAni) {
             a.slowDown();

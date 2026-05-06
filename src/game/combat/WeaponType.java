@@ -16,16 +16,16 @@ import static game.combat.NamePool.*;
 
 public enum WeaponType {
 
-//  NAME    (crit, block, needAmmo)
-    AXT     (25, 25, NONE,          WEAPON_AXT),
-    DOLCH   (45,  5, NONE,          WEAPON_DOLCH),
-    GEWEHR  (30, 30, PROJECTILE,    WEAPON_GEWEHR),
-    KNÜPPEL (10, 15, NONE,          WEAPON_KNÜPPEL),
-    GLEVE   (35, 45, NONE,          WEAPON_GLEVE),
-    SCHILD  ( 0, 75, NONE,          WEAPON_SCHILD),
-    SCHWERT (25, 10, NONE,          WEAPON_SCHWERT),
-    STAB    ( 1, 20, SPELL,         WEAPON_STAB),
-    ZAUBER  (50,  0, SPELL,         WEAPON_ZAUBER);
+//  NAME    (crit,  block,  needAmmo,   namePool)
+    AXT     (25,    25,     NONE,       WEAPON_AXT),
+    DOLCH   (45,     5,     NONE,       WEAPON_DOLCH),
+    GEWEHR  (30,    30,     PROJECTILE, WEAPON_GEWEHR),
+    KNÜPPEL (10,    15,     NONE,       WEAPON_KNÜPPEL),
+    GLEVE   (35,    45,     NONE,       WEAPON_GLEVE),
+    SCHILD  ( 0,    75,     NONE,       WEAPON_SCHILD),
+    SCHWERT (25,    10,     NONE,       WEAPON_SCHWERT),
+    STAB    ( 1,    20,     SPELL,      WEAPON_STAB),
+    ZAUBER  (50,     0,     SPELL,      WEAPON_ZAUBER);
 
     final int crit;  // kritische Trefferchance (pro Waffe/Hand) in %
     final int block; // Block-Chance (pro Waffe/Hand) in %

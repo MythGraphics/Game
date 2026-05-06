@@ -7,11 +7,10 @@ package graphic.io;
 /**
  *
  * @author  Martin Pröhl alias MythGraphics
- * @version 1.0.0
+ * @version 1.0.1
  *
  */
 
-import graphic.map.GameMap;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Point;
@@ -31,23 +30,23 @@ public class TilesetUtility {
      * @param start Startposition
      * @param space_x Abstand zwischen Sprites in x-Achse
      * @param space_y Abstand zwischen Sprites in y-Achse
-     * @param tilesize Größe des Sprite-Blocks (tilesize x tilesize Pixel)
      * @param number Anzahl der zu ladenden Sprites oder -1 für alle
+     * @param tileSize Größe des Sprite-Blocks (tileSize x tileSize Pixel)
      * @return SpriteSet
      */
     public static BufferedImage[] getSpriteSet(
-        BufferedImage image, Point start, int space_x, int space_y, int tilesize, int number
+        BufferedImage image, Point start, int space_x, int space_y, int tileSize, int number
     ) {
         ArrayList<BufferedImage> list = new ArrayList<>();
-        for ( int y = start.y, x = start.x; y+tilesize <= image.getHeight(); y += tilesize+space_y, x = start.x ) {
-            for (; x+tilesize <= image.getWidth(); x += tilesize+space_x ) {
-                list.add( image.getSubimage( x, y, tilesize, tilesize ));
+        for ( int y = start.y, x = start.x; y+tileSize <= image.getHeight(); y += tileSize+space_y, x = start.x ) {
+            for (; x+tileSize <= image.getWidth(); x += tileSize+space_x ) {
+                list.add( image.getSubimage( x, y, tileSize, tileSize ));
                 if ( list.size() == number ) {
-                    return list.toArray(new BufferedImage[0]);
+                    return list.toArray(BufferedImage[]::new);
                 }
             }
         }
-        return list.toArray(new BufferedImage[0]);
+        return list.toArray(BufferedImage[]::new);
     }
 
     /**
@@ -57,13 +56,14 @@ public class TilesetUtility {
      * @param width Ausdehnung eines Sprites in x-Achse (Breite) oder 0 für anteilige Breite basierend auf der
      *              Gesamtbreite des Bildes
      * @param number Anzahl der zu ladenden Sprites
+     * @param tileSize Größe des Sprite-Blocks (tileSize x tileSize Pixel)
      * @return SpriteSet
      */
-    public static BufferedImage[] getSpriteSetHorizontal(BufferedImage image, int width, int number) {
+    public static BufferedImage[] getSpriteSetHorizontal(BufferedImage image, int width, int tileSize, int number) {
         if ( width <= 0 ) {
             width = image.getWidth() / number;
         }
-        return getSpriteSet( image, image.getHeight(), width, number, HORIZONTAL );
+        return getSpriteSet( image, image.getHeight(), width, HORIZONTAL, tileSize, number );
     }
 
     /**
@@ -73,13 +73,14 @@ public class TilesetUtility {
      * @param height Ausdehnung eines Sprites in y-Achse (Länge) oder 0 für anteilige Länge basierend auf der
      *               Gesamtlänge des Bildes
      * @param number Anzahl der zu ladenden Sprites
+     * @param tileSize Größe des Sprite-Blocks (tileSize x tileSize Pixel)
      * @return SpriteSet
      */
-    public static BufferedImage[] getSpriteSetVertical(BufferedImage image, int height, int number) {
+    public static BufferedImage[] getSpriteSetVertical(BufferedImage image, int height, int tileSize, int number) {
         if ( height <= 0 ) {
             height = image.getHeight() / number;
         }
-        return getSpriteSet( image, height, image.getWidth(), number, VERTICAL );
+        return getSpriteSet( image, height, image.getWidth(), VERTICAL, tileSize, number );
     }
 
     /**
@@ -89,19 +90,26 @@ public class TilesetUtility {
      * @param width Ausdehnung eines Sprites in x-Achse (Breite)
      * @param number Anzahl der zu ladenden Sprites
      * @param alignment Ausrichtung des SpriteSets (horizontal oder vertical)
+     * @param tileSize Größe des Sprite-Blocks (tileSize x tileSize Pixel)
      * @return SpriteSet
      */
-    public static BufferedImage[] getSpriteSet(BufferedImage image, int height, int width, int number, char alignment) {
+    public static BufferedImage[] getSpriteSet(
+        BufferedImage image, int height, int width, char alignment, int tileSize, int number
+    ) {
         BufferedImage subimg;
         ArrayList<BufferedImage> list = new ArrayList<>();
         for (int i = 0; i < number; ++i) {
             subimg = image.getSubimage( 0, 0, width, height );
             switch (alignment) {
-                case HORIZONTAL -> subimg = image.getSubimage( i*width, 0, width, height );
-                case VERTICAL   -> subimg = image.getSubimage( 0, i*height, width, height );
+                case HORIZONTAL:
+                    subimg = image.getSubimage( i*width, 0, width, height );
+                    break;
+                case VERTICAL:
+                    subimg = image.getSubimage( 0, i*height, width, height );
+                    break;
             }
-            if ( subimg.getHeight() < GameMap.DEFAULT_TILE_SIZE || subimg.getWidth() < GameMap.DEFAULT_TILE_SIZE ) {
-                subimg = adjustSprite(subimg);
+            if ( subimg.getHeight() < tileSize || subimg.getWidth() < tileSize ) {
+                subimg = adjustSprite(subimg, tileSize);
             }
             list.add(subimg);
         }
@@ -114,32 +122,32 @@ public class TilesetUtility {
      * @param start Startposition
      * @param space_x Abstand zwischen Sprites in x-Achse
      * @param space_y Abstand zwischen Sprites in y-Achse
-     * @param tilesize Größe des Sprite-Blocks (tilesize x tilesize Pixel)
-     * @param numbers Anzahl der zu ladenden Sprites pro Animation (Zeile) oder -1 für alle
+     * @param number Anzahl der zu ladenden Sprites pro Animation (Zeile) oder -1 für alle
+     * @param tileSize Größe des Sprite-Blocks (tileSize x tileSize Pixel)
      * @return AnimationSet
      */
     public static Image[][] getAnimationSet(
-        BufferedImage image, Point start, int space_x, int space_y, int tilesize, int numbers
+        BufferedImage image, Point start, int space_x, int space_y, int tileSize, int number
     ) {
-        if ( image.getWidth() < ( numbers*(tilesize+space_x)+start.x )) {
-            numbers = -1;
+        if ( image.getWidth() < ( number*(tileSize+space_x)+start.x )) {
+            number = -1;
         }
-        if (numbers == -1) {
-            numbers = image.getWidth()-start.x/(tilesize+space_x);
+        if (number == -1) {
+            number = image.getWidth()-start.x/(tileSize+space_x);
         }
-        int amountX = numbers;
-        int amountY = image.getHeight()-start.y/(tilesize+space_y);
+        int amountX = number;
+        int amountY = image.getHeight()-start.y/(tileSize+space_y);
         BufferedImage[][] array = new BufferedImage[amountY][];
         for (int i = 0; i < amountY; ++i) {
             array[i] = new BufferedImage[amountX];
         }
         Point pos = start;
         for ( int i = 0;
-              pos.y+tilesize <= image.getHeight();
-              pos.y += tilesize+space_y, pos.x = start.x, ++i
+              pos.y+tileSize <= image.getHeight();
+              pos.y += tileSize+space_y, pos.x = start.x, ++i
         ) {
-            for ( int j = 0; pos.x+tilesize <= image.getWidth(); pos.x += tilesize+space_x, ++j ) {
-                array[i][j] = image.getSubimage( pos.x, pos.y, tilesize, tilesize );
+            for ( int j = 0; pos.x+tileSize <= image.getWidth(); pos.x += tileSize+space_x, ++j ) {
+                array[i][j] = image.getSubimage( pos.x, pos.y, tileSize, tileSize );
                 if ( j == amountX-1 ) { break; }
             }
             if ( i == amountY-1 ) { break; }
@@ -155,19 +163,19 @@ public class TilesetUtility {
      * @param space_y Abstand zwischen Sprites in y-Achse
      * @param width Länge eines Sprites
      * @param height Höhe eines Sprites
-     * @param numbers Anzahl der zu ladenden Sprites pro Animation (Zeile) oder -1 für alle
+     * @param number Anzahl der zu ladenden Sprites pro Animation (Zeile) oder -1 für alle
      * @return AnimationSet
      */
     public static Image[][] getAnimationSet(
-        BufferedImage image, int space_x, int space_y, int width, int height, int numbers
+        BufferedImage image, int space_x, int space_y, int width, int height, int number
     ) {
-        if ( image.getWidth() < numbers*(width+space_x)) {
-            numbers = -1;
+        if ( image.getWidth() < number*(width+space_x)) {
+            number = -1;
         }
-        if (numbers == -1) {
-            numbers = image.getWidth()/(width+space_x);
+        if (number == -1) {
+            number = image.getWidth()/(width+space_x);
         }
-        int amountX = numbers;
+        int amountX = number;
         int amountY = image.getHeight()/(height+space_y);
         BufferedImage[][] array = new BufferedImage[amountY][];
         for (int i = 0; i < amountY; ++i) {
@@ -192,16 +200,17 @@ public class TilesetUtility {
      * Erzeugt ein neues BufferedImage mit GameMap.DEFAULT_TILE_SIZE x GameMap.DEFAULT_TILE_SIZE und positioniert
      * das Ursprüngliche in die obere linke Ecke.
      * @param image Bild
+     * @param tileSize Größe des Sprite-Blocks (tileSize x tileSize Pixel)
      * @return neues Bild
      */
-    public static BufferedImage adjustSprite(BufferedImage image) {
+    public static BufferedImage adjustSprite(BufferedImage image, int tileSize) {
         int w = image.getWidth();
         int h = image.getHeight();
-        if ( w < GameMap.DEFAULT_TILE_SIZE ) {
-            w = GameMap.DEFAULT_TILE_SIZE;
+        if ( w < tileSize ) {
+            w = tileSize;
         }
-        if ( h < GameMap.DEFAULT_TILE_SIZE ) {
-            h = GameMap.DEFAULT_TILE_SIZE;
+        if ( h < tileSize ) {
+            h = tileSize;
         }
         BufferedImage newImage = new BufferedImage( w, h, image.getType() );
         Graphics2D g2d = newImage.createGraphics(); // Graphics2D-Objekt holen, um das alte Bild in das neue zu zeichnen

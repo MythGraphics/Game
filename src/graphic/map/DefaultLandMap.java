@@ -11,10 +11,14 @@ package graphic.map;
  *
  */
 
-import graphic.*;
-import static graphic.io.BinaryIO.BINARYIO;
+import graphic.AnimatedBlock;
+import graphic.Animation;
+import graphic.MoveableSprite;
+import graphic.Sprite;
+import static graphic.io.BinaryIO.*;
 import graphic.io.TilesetUtility;
 import static graphic.map.BlockType.*;
+import static graphic.map.GameMap.DEFAULT_TILE_SIZE;
 import java.awt.Color;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
@@ -72,32 +76,32 @@ public class DefaultLandMap extends GameMap {
     @Override
     void loadSprites() {
         playerImg = TilesetUtility.getSpriteSetVertical(
-            BINARYIO.loadImage(BINARYIO.TILESET+"player/lpc_female_blond/idle2.png"), 0, 4
+            loadImage(TILESET+"player/lpc_female_blond/idle2.png"), 0, 4, DEFAULT_TILE_SIZE
         );
         npcAni = new Animation( TilesetUtility.getSpriteSetHorizontal(
-            BINARYIO.loadImage(BINARYIO.TILESET+"npc/lpc_male_blackbeard/idle2.png"), 0, 2
+            loadImage(TILESET+"npc/lpc_male_blackbeard/idle2.png"), 0, 2, DEFAULT_TILE_SIZE
         ));
         npcAni.slowDown();
         portalAni = new Animation( TilesetUtility.getSpriteSetHorizontal(
-            BINARYIO.loadImage(BINARYIO.TILESET+"portal.png"), 0, 4
+            loadImage(TILESET+"portal.png"), 0, 4, DEFAULT_TILE_SIZE
         ));
         portalAni.slowDown();
-        imgMap.put( SPACE,          BINARYIO.loadImage( BINARYIO.SPRITE+"land/Gras1.png" ));
-        imgMap.put( WALL5,          BINARYIO.loadImage( BINARYIO.SPRITE+"land/Stone1.png" ));
-        imgMap.put( TEXTSIGN,       BINARYIO.loadImage( BINARYIO.SPRITE+"land/Sign1.png" ));
-        imgMap.put( ENVIRONMENT_A,  BINARYIO.loadImage( BINARYIO.SPRITE+"land/Straw1.png" ));
-        imgMap.put( ENVIRONMENT1,   BINARYIO.loadImage( BINARYIO.SPRITE+"land/Bush1.png" ));
-        imgMap.put( ENVIRONMENT2,   BINARYIO.loadImage( BINARYIO.SPRITE+"land/Bush2.png" ));
-        imgMap.put( ENVIRONMENT3,   BINARYIO.loadImage( BINARYIO.SPRITE+"land/Bush3.png" ));
-        imgMap.put( ENVIRONMENT4,   BINARYIO.loadImage( BINARYIO.SPRITE+"land/Bush4.png" ));
-        imgMap.put( ENVIRONMENT5,   BINARYIO.loadImage( BINARYIO.SPRITE+"land/Bush5.png" ));
-        imgMap.put( ENVIRONMENT6,   BINARYIO.loadImage( BINARYIO.SPRITE+"land/Bush5_berries.png" ));
-        imgMap.put( ENVIRONMENT7,   BINARYIO.loadImage( BINARYIO.SPRITE+"land/Mushroom1.png" ));
-        imgMap.put( ENVIRONMENT8,   BINARYIO.loadImage( BINARYIO.SPRITE+"land/Mushroom2.png" ));
-        imgMap.put( WALL1,          BINARYIO.loadImage( BINARYIO.SPRITE+"land/Water.png" ));
-        imgMap.put( WALL3,          BINARYIO.loadImage( BINARYIO.SPRITE+"land/Water2Land.png" ));
-        imgMap.put( ENVIRONMENT_B,  BINARYIO.loadImage( BINARYIO.SPRITE+"land/House.png" ));
-        imgMap.put( ENVIRONMENT_C,  BINARYIO.loadImage( BINARYIO.SPRITE+"land/Tree1.png" ));
+        imgMap.put( SPACE,          loadImage( SPRITE+"land/Gras1.png" ));
+        imgMap.put( WALL5,          loadImage( SPRITE+"land/Stone1.png" ));
+        imgMap.put( TEXTSIGN,       loadImage( SPRITE+"land/Sign1.png" ));
+        imgMap.put( ENVIRONMENT_A,  loadImage( SPRITE+"land/Straw1.png" ));
+        imgMap.put( ENVIRONMENT1,   loadImage( SPRITE+"land/Bush1.png" ));
+        imgMap.put( ENVIRONMENT2,   loadImage( SPRITE+"land/Bush2.png" ));
+        imgMap.put( ENVIRONMENT3,   loadImage( SPRITE+"land/Bush3.png" ));
+        imgMap.put( ENVIRONMENT4,   loadImage( SPRITE+"land/Bush4.png" ));
+        imgMap.put( ENVIRONMENT5,   loadImage( SPRITE+"land/Bush5.png" ));
+        imgMap.put( ENVIRONMENT6,   loadImage( SPRITE+"land/Bush5_berries.png" ));
+        imgMap.put( ENVIRONMENT7,   loadImage( SPRITE+"land/Mushroom1.png" ));
+        imgMap.put( ENVIRONMENT8,   loadImage( SPRITE+"land/Mushroom2.png" ));
+        imgMap.put( WALL1,          loadImage( SPRITE+"land/Water.png" ));
+        imgMap.put( WALL3,          loadImage( SPRITE+"land/Water2Land.png" ));
+        imgMap.put( ENVIRONMENT_B,  loadImage( SPRITE+"land/House.png" ));
+        imgMap.put( ENVIRONMENT_C,  loadImage( SPRITE+"land/Tree1.png" ));
     }
 
     @Override

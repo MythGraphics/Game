@@ -205,7 +205,7 @@ public class TextFrame extends JFrame implements DialogOutputListener {
             };
         }
 
-        Image img = scale(BinaryIO.BINARYIO.loadImage(imgpath), DEFAULT_IMG_SIZE.height );
+        Image img = scale( BinaryIO.loadImage( imgpath ), DEFAULT_IMG_SIZE.height );
         return new HasUIImage() {
             @Override
             public Image getImg() { return img; }

@@ -103,8 +103,8 @@ public class ImageUtility {
     }
 
     public static BufferedImage toBufferedImage(Image img) {
-        if (img instanceof BufferedImage bufferedImage) {
-            return bufferedImage;
+        if (img instanceof BufferedImage) {
+            return (BufferedImage) img;
         }
 
         // sicherstellen, dass das Bild vollständig geladen ist. ImageIcon nutzt intern einen MediaTracker und regelt das.

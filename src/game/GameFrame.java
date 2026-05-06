@@ -16,7 +16,7 @@ import static game.Resource.ResourceType.*;
 import game.combat.Combatant;
 import game.item.*;
 import graphic.TextFrame;
-import static graphic.io.BinaryIO.BINARYIO;
+import static graphic.io.BinaryIO.*;
 import graphic.io.ImageUtility;
 import graphic.map.GameMap;
 import graphic.map.MapType;
@@ -456,7 +456,7 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
             IMAGEIO.loadImage(IMAGEIO.TILESET+"player/girl_red_swimsuit.png"), 140, 4
         )[0];
  */
-        BufferedImage pImg = BINARYIO.loadImage(BINARYIO.SPRITE+"player/man1.png");
+        BufferedImage pImg = loadImage(SPRITE+"player/man1.png");
         player.setImg(pImg);
         this.playerImg = ImageUtility.scaleImage(
             pImg, jPlayerIconPanel.getWidth(), jPlayerIconPanel.getHeight()
@@ -607,7 +607,7 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
 
         String audioFilePath = audioTrackList.get(index);
         try {
-            audioPlayer = new AudioPlayer( BINARYIO.zip_path+BINARYIO.AUDIO+audioFilePath, true );
+            audioPlayer = new AudioPlayer( ZIP_PATH+AUDIO+audioFilePath, true );
             new Thread(audioPlayer).start();
         } catch (UnsupportedAudioFileException | LineUnavailableException | IOException e) {
             System.err.println( "Fehler bei Audio-Wiedergabe: " + e.getMessage() );

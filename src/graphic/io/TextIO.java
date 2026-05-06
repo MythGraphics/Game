@@ -19,38 +19,30 @@ public class TextIO {
 
     public final static String ZIP_PATH     = "/";
     public final static String LOCAL_PATH   = "src/";
-
     public final static String PROPERTY     = "properties/";
-    public final static TextIO TEXTIO       = new TextIO(ZIP_PATH, LOCAL_PATH);
 
-    private final String zip_path;
-    private final String local_path;
-
-    public TextIO(String zip_path, String local_path) {
-        this.zip_path   = zip_path+PROPERTY;
-        this.local_path = local_path+PROPERTY;
-    }
+    private TextIO() {}
 
     /**
      * Try to load from jar, if possible, otherwise from filesystem.
-     * Method uses pre-specified pathes within jar-file and filesystem.
      * @param filepath relative filepath-string
+     * @param clazz class reference
      * @return BufferedReader
      * @throws IOException IOException, if an IO error occures.
      */
-    public BufferedReader getTextReader(String filepath) throws IOException {
-        // Versuchen aus Jar zu laden
+    public static BufferedReader getTextReader(String filepath, Class<?> clazz) throws IOException {
+        // versuchen, von JAR zu laden
         InputStream in = null;
         if ( PathFinder.getJarName().contains( ".jar" )) {
-            in = getClass().getResourceAsStream(zip_path+filepath);
+            in = clazz.getResourceAsStream(ZIP_PATH+filepath);
             if (in != null) {
                 return new BufferedReader( new InputStreamReader( in ));
             }
             // System.err.println( zip_path+filepath + " in Jar nicht gefunden." );
         }
 
-        // Versuchen aus Dateisystem zu laden
-        File file = new File(local_path+filepath);
+        // versuchen, von FS zu laden
+        File file = new File(LOCAL_PATH+filepath);
         if ( file.exists() && !file.isDirectory() ) {
             in = new FileInputStream(file);
         }
@@ -58,12 +50,12 @@ public class TextIO {
             return new BufferedReader( new InputStreamReader( in ));
         }
         // System.err.println( local_path+filepath + " im Dateisystem nicht gefunden." );
-        throw new IOException( filepath + " weder in Jar noch im Dateisystem gefunden.");
+        throw new IOException( filepath + " weder in JAR noch im FS gefunden.");
     }
 
-    public String loadProlog() {
+    public static String loadProlog(Class<?> clazz) {
         StringBuilder sb = new StringBuilder("");
-        try (BufferedReader in = getTextReader("prolog.txt")) {
+        try (BufferedReader in = getTextReader( PROPERTY+"prolog.txt", clazz )) {
             String line;
             while (( line = in.readLine() ) != null ) {
                 sb.append("\n").append(line); // Zeilenumbruch erhalten
@@ -74,13 +66,13 @@ public class TextIO {
         return sb.toString();
     }
 
-    public List<String> loadAudioTrackList(String filestr) {
-        // CAVE! Alle zurückgegebenen Sisten sind immutabel!
-        if ( filestr == null || filestr.isBlank() ) {
+    public static List<String> loadAudioTrackList(String filepath, Class<?> clazz) {
+        // CAVE! Alle zurückgegebenen Listen sind immutabel!
+        if ( filepath == null || filepath.isBlank() ) {
             System.err.println("Keine Tracklist-Datei übergeben.");
             return Collections.emptyList();
         }
-        try (BufferedReader in = getTextReader( filestr )) {
+        try (BufferedReader in = getTextReader( PROPERTY+filepath, clazz )) {
             return in.lines().toList();
         }
         catch (FileNotFoundException e) {

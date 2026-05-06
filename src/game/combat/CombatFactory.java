@@ -17,7 +17,7 @@ import static game.combat.ArmorType.*;
 import static game.combat.CombatantType.*;
 import static game.combat.DamageType.*;
 import static game.combat.WeaponType.*;
-import static graphic.io.BinaryIO.BINARYIO;
+import static graphic.io.BinaryIO.loadImage;
 import static graphic.io.ImageUtility.scale;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -161,7 +161,7 @@ public class CombatFactory {
         c.addArmor( new Armor( "Asbestschuppen", ASBESTBESCHICHTUNG, 50 ));
         c.addWeapon( new Weapon( -1, "rasiermesserscharfe Klauen", DOLCH, PHYSISCH, 25 ));
         c.addWeapon( new Weapon( -1, "langer, spitzer Stachel", SCHWERT, PHYSISCH, 10 ));
-        c.setImg( scale( BINARYIO.loadImage( "sprites/minion/zerg.png" ), 100 ));
+        c.setImg( scale( loadImage( "sprites/minion/zerg.png" ), 100 ));
         return c;
     }
 
@@ -171,7 +171,7 @@ public class CombatFactory {
         c.addArmor( new Armor( "Chitinschuppen", RÜSTUNG, 20 ));
         c.addWeapon( new Weapon( -1, "rasiermesserscharfe Klauen", DOLCH, PHYSISCH, 25 ));
         c.addWeapon( new Weapon( -1, "langer, spitzer Stachel", SCHWERT, PHYSISCH, 10 ));
-        c.setImg( scale( BINARYIO.loadImage( "sprites/minion/zerg.png" ), 100 ));
+        c.setImg( scale( loadImage( "sprites/minion/zerg.png" ), 100 ));
         return c;
     }
 
@@ -180,7 +180,7 @@ public class CombatFactory {
         c.addArmor( new Armor( "Chitinpanzerplatten", RÜSTUNG, 75 ));
         c.addWeapon( new Weapon( -1, "rasiermesserscharfe Klauen", DOLCH, PHYSISCH, 5 ));
         c.addWeapon( new Weapon( -1, "langer, spitzer Stachel", SCHWERT, PHYSISCH, 10 ));
-        c.setImg( scale( BINARYIO.loadImage( "sprites/minion/zerg.png" ), 100 ));
+        c.setImg( scale( loadImage( "sprites/minion/zerg.png" ), 100 ));
         return c;
     }
 
@@ -189,7 +189,7 @@ public class CombatFactory {
         c.addArmor( new Armor( "verfilztes Fell", RÜSTUNG, 50 ));
         c.addWeapon( new Weapon( -1, "rasiermesserscharfe Krallen", GLEVE, PHYSISCH, 5 ));
         c.addWeapon( new Weapon( -1, "giftiger Biss", DOLCH, GIFT, 15 ));
-        c.setImg( scale( BINARYIO.loadImage( "sprites/minion/rat.png" ), 100 ));
+        c.setImg( scale( loadImage( "sprites/minion/rat.png" ), 100 ));
         return c;
     }
 
@@ -198,7 +198,7 @@ public class CombatFactory {
         c.addArmor( new Armor( "dickes Fell", RÜSTUNG, 50 ));
         c.addWeapon( new Weapon( -1, "rasiermesserscharfe Krallen", GLEVE, PHYSISCH, 5 ));
         c.addWeapon( new Weapon( -1, "kräftiger Biss", DOLCH, PHYSISCH, 5 ));
-        c.setImg( scale( BINARYIO.loadImage( "sprites/minion/cat.png" ), 100 ));
+        c.setImg( scale( loadImage( "sprites/minion/cat.png" ), 100 ));
         return c;
     }
 
@@ -207,7 +207,7 @@ public class CombatFactory {
         c.addArmor( new Armor( "Asbestfell", ASBESTBESCHICHTUNG, 50 ));
         c.addWeapon( new Weapon( -1, "brennende Krallen", GLEVE, FEUER, 5 ));
         c.addWeapon( new Weapon( -1, "brennender Biss", DOLCH, FEUER, 5 ));
-        c.setImg( scale( BINARYIO.loadImage( "sprites/minion/rabbit3.png" ), 100 ));
+        c.setImg( scale( loadImage( "sprites/minion/rabbit3.png" ), 100 ));
         return c;
     }
 

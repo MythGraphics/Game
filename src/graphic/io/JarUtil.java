@@ -24,8 +24,6 @@ public class JarUtil {
 
     private JarUtil() {}
 
-    // Code by Google Gemini
-
     public static List<String> listFiles(String folder) throws IOException, URISyntaxException {
         // Pfad für ClassLoader normalisieren (kein führender Slash)
         String pathInJar = folder.startsWith("/") ? folder.substring(1) : folder;
@@ -33,7 +31,6 @@ public class JarUtil {
         // URI uri = JarUtil.class.getResource(pathInJar).toURI();
 
         if ( uri.getScheme().equals( "jar" )) {
-            // Sicherstellen, dass das FileSystem existiert oder erstellt wird
             try ( FileSystem fs = getFileSystem( uri )) {
                 return readFromPath( fs.getPath( "/" + pathInJar ));
             }
@@ -44,10 +41,10 @@ public class JarUtil {
 
     private static FileSystem getFileSystem(URI uri) throws IOException {
         try {
-            // Versuche ein neues zu erstellen
+            // Versuche ein Neues zu erstellen
             return FileSystems.newFileSystem( uri, Collections.emptyMap() );
         } catch (FileSystemAlreadyExistsException e) {
-            // Falls bereits offen, hole das bestehende
+            // Falls bereits offen, hole das Bestehende
             return FileSystems.getFileSystem(uri);
         }
     }

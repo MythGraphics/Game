@@ -28,24 +28,16 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 
 public class BinaryIO {
 
-    public final static String JAR          = "MythGraphics_Game.jar";
     public final static String ZIP_PATH     = "/resources/";
-    public final static String LOCAL_PATH   = "src/resources/";
+    public final static String LOCAL_PATH   = "src"+ZIP_PATH;
+    public final static String AUDIO        = "audio/";
+    public final static String IMG          = "img/";
+    public final static String SPRITE       = "sprites/";
+    public final static String TILESET      = "tilesets/";
 
-    public final String AUDIO               = "audio/";
-    public final String IMG                 = "img/";
-    public final String SPRITE              = "sprites/";
-    public final String TILESET             = "tilesets/";
+    public static String JAR                = "MythGraphics_Game.jar";
 
-    public final static BinaryIO BINARYIO   = new BinaryIO(ZIP_PATH, LOCAL_PATH);
-
-    public final String zip_path;
-    public final String local_path;
-
-    public BinaryIO(String zip_path, String local_path) {
-        this.zip_path   = zip_path;
-        this.local_path = local_path;
-    }
+    private BinaryIO() {}
 
     // new javax.swing.ImageIcon( getClass().getResource( "/path/icon.png" ));
 
@@ -57,44 +49,50 @@ public class BinaryIO {
                 try {
                     return Reader.getImage( new ZipFile(jar), filepath );
                 } catch (NullPointerException e) {
-                    throw new IOException( filepath + " konnte nicht aus Jar gelesen werden." );
+                    throw new IOException( filepath + " konnte nicht aus JAR gelesen werden" );
                 }
             }
         }
-        throw new IOException( jarname + ": Jar nicht auffindbar." );
+        throw new IOException( jarname + ": nicht auffindbar" );
     }
 
     public static BufferedImage loadImageFromFS(String imgpath) throws IOException {
-        if ( imgpath == null || imgpath.isEmpty() ) {
+        if ( imgpath == null || imgpath.isBlank() ) {
             return null;
         }
         File imgfile = new File(imgpath);
         if ( !imgfile.exists() ) {
-            throw new IOException( imgpath + " existiert nicht." );
+            throw new IOException( imgpath + " existiert nicht" );
         }
         return ImageIO.read(imgfile);
     }
 
     /**
-     * Try to load from jar, if possible, otherwise from filesystem.
-     * Method uses pre-specified pathes within jar-file and filesystem.
-     * @param imgpath relative imgpath-string
+     * Try to load image from filesystem first, then from jar.
+     * Uses local static string JAR.
+     * @param imgpath relative img path
      * @return BufferedImage
      */
-    public BufferedImage loadImage(String imgpath) {
-        if ( imgpath == null || imgpath.isEmpty() ) {
-            return null;
+    public static BufferedImage loadImage(String imgpath) {
+        return loadImage(imgpath, JAR);
+    }
+
+    /**
+     * Try to load image from filesystem first, then from jar.
+     * @param imgpath relative img path
+     * @param jar jar name
+     * @return BufferedImage
+     */
+    public static BufferedImage loadImage(String imgpath, String jar) {
+        if ( imgpath == null || imgpath.isBlank() ) { return null; }
+        try { return loadImageFromFS(LOCAL_PATH+imgpath); }
+        catch (IOException e) {
+            // ignorieren und versuchen, von JAR zu laden
+            /* System.err.println( "Laden des Bildes von Dateisystem fehlgeschlagen: " + e.getMessage() ); */
         }
-        try {
-            return loadImageFromJar(zip_path+imgpath, JAR);
-        } catch (IOException e) {
-            // ignorieren und versuchen, von Dateisystem zu laden
-            /* System.err.println( e.getMessage() ); */
-        }
-        try {
-            return loadImageFromFS(local_path+imgpath);
-        } catch (IOException e) {
-            System.err.println( e.getMessage() );
+        try { return loadImageFromJar(ZIP_PATH+imgpath, jar); }
+        catch (IOException e) {
+            System.err.println( "Laden des Bildes aus JAR fehlgeschlagen: " + e.getMessage() );
             return null;
         }
     }
@@ -112,42 +110,45 @@ public class BinaryIO {
                          : Transparency.OPAQUE;
 
         BufferedImage optimizedImage = config.createCompatibleImage(
-                sourceImage.getWidth(),
-                sourceImage.getHeight(),
-                transparency
+            sourceImage.getWidth(),
+            sourceImage.getHeight(),
+            transparency
         );
-
-        // Original in das optimierte Bild zeichnen
-        optimizedImage.createGraphics().drawImage(sourceImage, 0, 0, null);
+        optimizedImage.createGraphics().drawImage(sourceImage, 0, 0, null); // Original in das optimierte Bild zeichnen
 
         return optimizedImage;
     }
 
-    public AudioInputStream loadAudioStream(String audioFilePath) throws UnsupportedAudioFileException, IOException {
-        // versuche von Dateisystem zu laden
-        String path = local_path+AUDIO+audioFilePath;
+    public static AudioInputStream loadAudioStream(String audioFilePath, Class clazz)
+    throws UnsupportedAudioFileException, IOException {
+        // versuchen, von FS zu laden
+        String path = LOCAL_PATH+AUDIO+audioFilePath;
         File file = new File(path);
         if ( file.exists() ) {
-            return AudioSystem.getAudioInputStream( new BufferedInputStream( getClass().getResourceAsStream( audioFilePath )));
+            return AudioSystem.getAudioInputStream(
+                new BufferedInputStream(
+                    clazz.getClass().getResourceAsStream(audioFilePath)
+                )
+            );
         }
 
-        // versuche von Jar zu laden
-        path = zip_path+AUDIO+audioFilePath;
-        InputStream is = getClass().getResourceAsStream(path);
+        // versuchen, von JAR zu laden
+        path = ZIP_PATH+AUDIO+audioFilePath;
+        InputStream is = clazz.getResourceAsStream(path);
         if (is == null) {
-            // Fallback: Falls '/' vergessen wurde
-            is = getClass().getResourceAsStream("/"+path);
+            // Fallback: Falls '/' fehlt
+            is = clazz.getResourceAsStream("/"+path);
         }
         if (is == null) {
             throw new IOException("Audio-Quelle nicht gefunden: " + audioFilePath);
         }
-        return AudioSystem.getAudioInputStream( new BufferedInputStream( getClass().getResourceAsStream( path )));
+        return AudioSystem.getAudioInputStream( new BufferedInputStream( clazz.getClass().getResourceAsStream( path )));
 /*
         // den ganzen Quatsch cachen
         byte[] audioCache = is.readAllBytes();
         is.close();
 
-        // Erzeuge einen Stream aus dem Cache
+        // Stream aus dem Cache erzeugen
         InputStream bais = new ByteArrayInputStream(audioCache);
         return AudioSystem.getAudioInputStream( new BufferedInputStream( bais ));
  */

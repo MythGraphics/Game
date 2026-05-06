@@ -13,6 +13,7 @@ package graphic.io;
 
 import graphic.Direction;
 import static graphic.io.ImageUtility.scale;
+import static graphic.map.GameMap.DEFAULT_TILE_SIZE;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
@@ -26,12 +27,11 @@ import javax.imageio.ImageIO;
 public class DescriptorLoader {
 
     public final static String FILENAME_PREFIX = "descriptor";
-    public final static DescriptorLoader LOADER = new DescriptorLoader(TextIO.TEXTIO);
 
-    private final TextIO textIO;
+    private final Class<?> clazz;
 
-    public DescriptorLoader(TextIO textIO) {
-        this.textIO = textIO;
+    public DescriptorLoader(Class<?> clazz) {
+        this.clazz = clazz;
     }
 
     public BufferedImage[] loadSprites(String path) throws IOException {
@@ -74,7 +74,7 @@ public class DescriptorLoader {
 
     private ArrayList<String> loadDescriptor(String descriptor) {
         ArrayList<String> list = new ArrayList<>();
-        try ( BufferedReader reader = textIO.getTextReader( descriptor )) {
+        try ( BufferedReader reader = TextIO.getTextReader( descriptor, clazz )) {
             String line;
             while (( line = reader.readLine() ) != null ) {
                 if ( line.startsWith( "#" )) { continue; } // Kommentarzeile überspringen
@@ -125,9 +125,9 @@ public class DescriptorLoader {
         image = image.getSubimage( offset_x, offset_y, image.getWidth(), image.getHeight() );
         switch (alignment) {
             case 'x': case 'X':
-                return TilesetUtility.getSpriteSetHorizontal(image, size_x, number);
+                return TilesetUtility.getSpriteSetHorizontal(image, size_x, number, DEFAULT_TILE_SIZE);
             case 'y': case 'Y':
-                return TilesetUtility.getSpriteSetVertical(image, size_y, number);
+                return TilesetUtility.getSpriteSetVertical(image, size_y, number, DEFAULT_TILE_SIZE);
         }
         throw new IOException("Format not parsable. Sprite_alignment not x nor y.");
     }
@@ -153,14 +153,14 @@ public class DescriptorLoader {
                 for (int i = 0; i < dirImgs.length; ++i) {
                     currentImg = image.getSubimage( 0, i*size_y, image.getWidth(), image.getHeight() );
                     int index = Direction.parseDirection( dir_alignm.charAt( i )).ordinal();
-                    dirImgs[index] = TilesetUtility.getSpriteSetHorizontal(currentImg, size_x, number);
+                    dirImgs[index] = TilesetUtility.getSpriteSetHorizontal(currentImg, size_x, number, DEFAULT_TILE_SIZE);
                     return dirImgs;
                 }
             case 'y': case 'Y':
                 for (int i = 0; i < dirImgs.length; ++i) {
                     currentImg = image.getSubimage( i*size_x, 0, image.getWidth(), image.getHeight() );
                     int index = Direction.parseDirection( dir_alignm.charAt( i )).ordinal();
-                    dirImgs[index] = TilesetUtility.getSpriteSetVertical(currentImg, size_y, number);
+                    dirImgs[index] = TilesetUtility.getSpriteSetVertical(currentImg, size_y, number, DEFAULT_TILE_SIZE);
                     return dirImgs;
                 }
         }

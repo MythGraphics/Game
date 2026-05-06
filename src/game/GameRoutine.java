@@ -17,7 +17,6 @@ import graphic.CollisionActionListener;
 import graphic.CollisionEvent;
 import graphic.io.TextIO;
 import graphic.map.BlockType;
-import static graphic.map.BlockType.ENEMY;
 import graphic.map.GameMap;
 import java.awt.Point;
 import java.util.*;
@@ -33,12 +32,16 @@ public abstract class GameRoutine implements CollisionActionListener {
     final List<String> audioTrackList;
     final List<Enemy> enemyList;
     final Random rand = new Random();
+    final Class<?> clazz;
+    final GameObjectLoader loader;
 
     private final JFrame frame;
 
-    public GameRoutine(Player player, List<Enemy> enemyList, String audioTrackListFileString, JFrame frame) {
+    public GameRoutine(Player player, List<Enemy> enemyList, String audioTrackListFilePath, JFrame frame) {
+        this.clazz          = getClass();
+        this.loader         = new GameObjectLoader(clazz);
         this.player         = player;
-        this.audioTrackList = TextIO.TEXTIO.loadAudioTrackList(audioTrackListFileString);
+        this.audioTrackList = TextIO.loadAudioTrackList( audioTrackListFilePath, clazz );
         this.dialogListener = player.getDialogOutputListener();
         this.frame          = frame;
         if (enemyList == null) {
@@ -46,6 +49,10 @@ public abstract class GameRoutine implements CollisionActionListener {
         } else {
             this.enemyList  = enemyList;
         }
+    }
+
+    public GameObjectLoader getLoader() {
+        return loader;
     }
 
     public List<String> getAudioTrackList() {

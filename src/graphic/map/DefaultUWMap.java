@@ -12,8 +12,12 @@ package graphic.map;
  */
 
 import game.UWMapRoutine;
-import graphic.*;
-import static graphic.io.BinaryIO.BINARYIO;
+import graphic.AnimatedBlock;
+import graphic.Animation;
+import graphic.MoveableSprite;
+import graphic.Sprite;
+import static graphic.io.BinaryIO.TILESET;
+import static graphic.io.BinaryIO.loadImage;
 import graphic.io.TilesetUtility;
 import static graphic.map.BlockType.*;
 import java.awt.Color;
@@ -69,9 +73,9 @@ public class DefaultUWMap extends UWMap {
 
     @Override
     void loadSprites() {
-        wallImg = BINARYIO.loadImage("sprites/land/Stone1.png");
+        wallImg = loadImage("sprites/land/Stone1.png");
         bubbleImg = TilesetUtility.getSpriteSet(
-            BINARYIO.loadImage(BINARYIO.TILESET+"uw/bubble.png"),
+            loadImage(TILESET+"uw/bubble.png"),
             new Point(0, 0),
             0, 0, 225, 1
         )[0];
