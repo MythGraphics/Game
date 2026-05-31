@@ -1,0 +1,65 @@
+/*
+ *
+ */
+
+package graphic;
+
+/**
+ *
+ * @author  Martin Pröhl alias MythGraphics
+ * @version 1.0.0
+ *
+ */
+
+import java.awt.Image;
+import java.awt.Point;
+
+public class AnimatedMoveableSprite extends MoveableSprite {
+
+    final Animation[] aniset;
+
+    public AnimatedMoveableSprite(Animation[] aniset, int x, int y, int blockSize, TileType type, Point maxPoint) {
+        super( getSingleImageSet(aniset), x, y, blockSize, type, maxPoint );
+        this.aniset = aniset;
+    }
+
+    public AnimatedMoveableSprite(Image[][] aniset, int x, int y, int blockSize, TileType type, Point maxPoint) {
+        super( getSingleImageSet(aniset), x, y, blockSize, type, maxPoint );
+        this.aniset = buildAniSet(aniset);
+    }
+
+    public Animation[] getAnimationSet() {
+        return aniset;
+    }
+
+    @Override
+    public void move(Direction direction) {
+        super.move(direction);
+        super.currentImg = aniset[ direction.ordinal() ].getImage();
+    }
+
+    private static Image[] getSingleImageSet(Image[][] aniset) {
+        Image[] set = new Image[ Direction.values().length ];
+        for ( Direction d : Direction.values() ) {
+            set[ d.ordinal() ] = aniset[ d.ordinal() ][0];
+        }
+        return set;
+    }
+
+    private static Image[] getSingleImageSet(Animation[] aniset) {
+        Image[] set = new Image[ Direction.values().length ];
+        for ( Direction d : Direction.values() ) {
+            set[ d.ordinal() ] = aniset[ d.ordinal() ].list.peek();
+        }
+        return set;
+    }
+
+    public final static Animation[] buildAniSet(Image[][] aniset) {
+        Animation[] set = new Animation[aniset.length];
+        for (int i = 0; i < aniset.length; ++i) {
+            set[i] = new Animation( aniset[i] );
+        }
+        return set;
+    }
+
+}

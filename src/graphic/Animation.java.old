@@ -1,0 +1,73 @@
+/*
+ *
+ */
+
+package graphic;
+
+/**
+ *
+ * @author  Martin Pröhl alias MythGraphics
+ * @version 1.0.0
+ *
+ */
+
+import java.awt.Image;
+import java.util.Arrays;
+import java.util.LinkedList;
+
+public class Animation implements HasTileImage {
+
+    /*
+     * defaultLoop: 1 -> 2 -> 3 -> 1 -> 2 -> 3 -> ...
+     * reverseLoop: 1 -> 2 -> 3 -> 2 -> 1 -> 2 -> 3 -> 2 -> ...
+     */
+
+    final LinkedList<Image> list = new LinkedList<>();
+
+    public Animation(Image[] spriteset) {
+        list.addAll( Arrays.asList( spriteset ));
+    }
+
+    public Animation(Image[] spriteset, boolean reverseLoop) {
+        this(spriteset);
+        if (reverseLoop) {
+            for (int i = spriteset.length-2; i > 1; --i) {
+                list.add( spriteset[i] );
+            }
+        }
+    }
+
+    @Override
+    public Image getImage() {
+        Image sprite = list.poll();
+        list.addLast(sprite);
+        return sprite;
+    }
+
+    /**
+     * Halbiert die Animationsgeschwindigkeit.
+     */
+    public void slowDown() {
+        int size = list.size()*2;
+        for (int i = 0; i < size; i+=2) {
+            list.add(i, list.get( i ));
+        }
+    }
+
+    public static Animation[] buildDirectionalImageSet(Image[] imageset) {
+        Animation[] set = new Animation[imageset.length];
+        for (int i = 0; i < imageset.length; ++i) {
+            set[i] = new Animation( new Image[] { imageset[i] });
+        }
+        return set;
+    }
+
+    public static Animation[] buildAnimationSet(Image[][] imageset) {
+        Animation[] set = new Animation[imageset.length];
+        for (int i = 0; i < imageset.length; ++i) {
+            set[i] = new Animation(imageset[i]);
+        }
+        return set;
+    }
+
+}

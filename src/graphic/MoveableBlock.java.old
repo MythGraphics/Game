@@ -1,0 +1,70 @@
+/*
+ *
+ */
+
+package graphic;
+
+/**
+ *
+ * @author  Martin Pröhl alias MythGraphics
+ * @version 1.0.0
+ *
+ */
+
+import java.awt.Point;
+import java.util.Random;
+
+public abstract class MoveableBlock extends Block implements AutoMoveable {
+
+    private final int startX;
+    private final int startY;
+    private final Point maxPoint;
+
+    final int blockSize;
+
+    public MoveableBlock(Block block, Point maxPoint) {
+        super(block.x, block.y, block.width, block.height, block.type);
+        this.startX = x;
+        this.startY = y;
+        this.blockSize = (block.width+block.height)/2;
+        this.maxPoint = maxPoint;
+    }
+
+    public MoveableBlock(int x, int y, int blockSize, TileType type, Point maxPoint) {
+        super(x, y, blockSize, type);
+        this.startX = x;
+        this.startY = y;
+        this.blockSize = blockSize;
+        this.maxPoint = maxPoint;
+    }
+
+    @Override
+    public void moveRandom() {
+        int randi = new Random().nextInt(4);
+        move( Direction.values()[randi] );
+    }
+
+    @Override
+    public void move(Direction direction) {
+        switch (direction) {
+            case RIGHT  -> super.x += blockSize;
+            case LEFT   -> super.x -= blockSize;
+            case UP     -> super.y -= blockSize;
+            case DOWN   -> super.y += blockSize;
+        }
+        if ( super.x < 0 ) { super.x = 0; }
+        if ( super.y < 0 ) { super.y = 0; }
+        if ( super.x >= maxPoint.x ) { super.x = maxPoint.x-blockSize; }
+        if ( super.y >= maxPoint.y ) { super.y = maxPoint.y-blockSize; }
+        setImage(direction);
+    }
+
+    @Override
+    public void reset() {
+        super.x = startX;
+        super.y = startY;
+    }
+
+    abstract void setImage(Direction direction);
+
+}
