@@ -28,12 +28,13 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 
 public class BinaryIO {
 
-    public final static String ZIP_PATH     = "/resources/";
-    public final static String LOCAL_PATH   = "src"+ZIP_PATH;
-    public final static String AUDIO        = "audio/";
-    public final static String IMG          = "img/";
-    public final static String SPRITE       = "sprites/";
-    public final static String TILESET      = "tilesets/";
+    public final static String ZIP_PATH     = "/";
+    public final static String LOCAL_PATH   = "src/";
+    public final static String RESOURCE     = "resources/";
+    public final static String AUDIO        = RESOURCE+"audio/";
+    public final static String IMG          = RESOURCE+"img/";
+    public final static String SPRITE       = RESOURCE+"sprites/";
+    public final static String TILESET      = RESOURCE+"tilesets/";
 
     public static String JAR                = "MythGraphics_Game.jar";
 
@@ -41,15 +42,16 @@ public class BinaryIO {
 
     // new javax.swing.ImageIcon( getClass().getResource( "/path/icon.png" ));
 
-    public static BufferedImage loadImageFromJar(String filepath, String jarname) throws IOException {
+    public static BufferedImage loadImageFromJar(String imgpath, String jarname) throws IOException {
         // jarname ließe sich über graphic.io.PathFinder holen
+        System.out.println("loadImageFromJar: " + imgpath); // debug
         String[] jars = System.getProperty("java.class.path").split(File.pathSeparator);
         for (String jar : jars) {
             if ( jar.contains( jarname )) {
                 try {
-                    return Reader.getImage( new ZipFile(jar), filepath );
+                    return Reader.getImage( new ZipFile( jar ), imgpath );
                 } catch (NullPointerException e) {
-                    throw new IOException( filepath + " konnte nicht aus JAR gelesen werden" );
+                    throw new IOException( imgpath + " konnte nicht aus JAR gelesen werden" );
                 }
             }
         }
@@ -57,6 +59,7 @@ public class BinaryIO {
     }
 
     public static BufferedImage loadImageFromFS(String imgpath) throws IOException {
+        System.out.println("loadImageFromFS: " + imgpath); // debug
         if ( imgpath == null || imgpath.isBlank() ) {
             return null;
         }
@@ -84,13 +87,19 @@ public class BinaryIO {
      * @return BufferedImage
      */
     public static BufferedImage loadImage(String imgpath, String jar) {
-        if ( imgpath == null || imgpath.isBlank() ) { return null; }
-        try { return loadImageFromFS(LOCAL_PATH+imgpath); }
-        catch (IOException e) {
+        if ( imgpath == null || imgpath.isBlank() ) {
+            return null;
+        }
+        try {
+            return loadImageFromFS(LOCAL_PATH+imgpath);
+        }
+        catch (IOException ignore) {
             // ignorieren und versuchen, von JAR zu laden
             /* System.err.println( "Laden des Bildes von Dateisystem fehlgeschlagen: " + e.getMessage() ); */
         }
-        try { return loadImageFromJar(ZIP_PATH+imgpath, jar); }
+        try {
+            return loadImageFromJar(ZIP_PATH+imgpath, jar);
+        }
         catch (IOException e) {
             System.err.println( "Laden des Bildes aus JAR fehlgeschlagen: " + e.getMessage() );
             return null;

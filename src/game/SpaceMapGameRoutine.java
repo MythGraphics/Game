@@ -33,7 +33,6 @@ public class SpaceMapGameRoutine extends MartialGameRoutine {
 
     public final static String PROLOG_BG = "bg/interior_of_a_spaceship_by_parker_west.jpg";
 
-    private LootManager lootManager = new LootManager();
     private Player player;
     private Enemy enemy;
 
@@ -42,9 +41,9 @@ public class SpaceMapGameRoutine extends MartialGameRoutine {
         setAudioTrackList("SpaceMapAudioTrackList.txt");
         initPlayer(frame);
         try {
-            initProperties();
+            enemy = loader.loadNextEnemy();
         } catch (IOException e) {
-            System.err.println( "Initialisieren der Routine fehlgeschlagen - Abbruch!" );
+            System.err.println( "Initialisieren der Spiel-Routine fehlgeschlagen - Abbruch!" );
             System.err.println( "Ursache: " + e.getMessage() );
             System.exit(255);
             return;
@@ -65,10 +64,6 @@ public class SpaceMapGameRoutine extends MartialGameRoutine {
         player.addItemActionListener(frame);
         player.setPlayerAsMinion( CombatFactory.getDefaultSoldier( player.getHealth() ));
         player.setImg( loadImage( SPRITE+"player/man1.png" ));
-    }
-
-    private void initProperties() throws IOException {
-        enemy = loader.loadNextEnemy();
     }
 
     @Override
@@ -114,7 +109,7 @@ public class SpaceMapGameRoutine extends MartialGameRoutine {
 
     @Override
     void loot(Combatant enemy) {
-        Ammo loot = lootManager.createAmmo(enemy, AmmoType.PROJECTILE);
+        Ammo loot = LootManager.createAmmo(enemy, AmmoType.PROJECTILE);
         player.getInventory().add(loot);
         dialogListener.show( new Message(
             "Da liegt doch was!\n" + loot.toString(), player

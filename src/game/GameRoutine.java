@@ -29,7 +29,6 @@ public abstract class GameRoutine implements CollisionActionListener {
     final CycleList<Point> portals = new CycleList<>();
     final Map<BlockType, TextBox> dialogMap = new HashMap<>();
     final Random rand = new Random();
-    final Class<?> clazz;
     final GameObjectLoader loader;
     final GameFrame frame;
 
@@ -38,8 +37,7 @@ public abstract class GameRoutine implements CollisionActionListener {
     public GameRoutine(GameFrame frame) {
         this.frame          = frame;
         this.dialogListener = frame.textFrame;
-        this.clazz          = getClass();
-        this.loader         = new GameObjectLoader(clazz);
+        this.loader         = new GameObjectLoader( getClass() );
     }
 
     abstract Player getPlayer();
@@ -49,7 +47,7 @@ public abstract class GameRoutine implements CollisionActionListener {
     }
 
     public void setAudioTrackList(String audioTrackListFilePath) {
-        this.audioTrackList = TextIO.loadAudioTrackList(audioTrackListFilePath, clazz);
+        this.audioTrackList = TextIO.loadAudioTrackList( audioTrackListFilePath, getClass() );
     }
 
     public List<String> getAudioTrackList() {

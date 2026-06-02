@@ -20,8 +20,7 @@ import game.item.ReUsableItem;
 import game.item.UsableItem;
 import graphic.CollisionEvent;
 import static graphic.io.BinaryIO.TILESET;
-import static graphic.io.BinaryIO.loadImage;
-import graphic.io.TilesetUtility;
+import graphic.io.DescriptorLoader;
 import static graphic.map.BlockType.ENVIRONMENT_A;
 import static graphic.map.BlockType.TEXTSIGN;
 import java.io.IOException;
@@ -30,7 +29,7 @@ import java.util.LinkedList;
 
 public class LandMapGameRoutine extends GameRoutine {
 
-    final LinkedList<Item> items; // Items, die zufällig (10%) in der Landschaft gefunden werden können
+    final LinkedList<Item> items = new LinkedList<>(); // Items, die zufällig (10%) in der Landschaft gefunden werden können
 
     private Npc npc;
     private Item qObj;
@@ -38,9 +37,8 @@ public class LandMapGameRoutine extends GameRoutine {
 
     public LandMapGameRoutine(GameFrame frame) {
         super(frame);
-        this.items = new LinkedList<>();
+        initPlayer(frame);
         try {
-            initPlayer(frame);
             addDialog( TEXTSIGN, getLoader().loadNextDialog( player ));
             addDialog( ENVIRONMENT_A, getLoader().loadNextDialog( player ));
             npc = getLoader().loadNextNpc(player);
@@ -62,11 +60,10 @@ public class LandMapGameRoutine extends GameRoutine {
             item = (UsableItem) getLoader().loadNextItem(player);
             item.addItemEffect( new ItemEffect( "einfacher", PRÄFIX, CREDIT, item.getPrice() ));
             items.add(item);
-
             Collections.shuffle(items); // Item-Liste durchmischen
         } catch (IOException e) {
-            System.err.println("Initialisieren der Haupt-Routine fehlgeschlagen.");
-            System.err.println( e.getMessage() );
+            System.err.println( "Initialisieren der Spiel-Routine fehlgeschlagen - Abbruch!" );
+            System.err.println( "Ursache: " + e.getMessage() );
             System.exit(255);
         }
     }
@@ -75,9 +72,17 @@ public class LandMapGameRoutine extends GameRoutine {
         Resource health = new Resource( "Gesundheit", HEALTH, 1000, 1000 );
         health.addResourceChangeListener(frame);
         player = new Player(GameFrame.playerName, frame.textFrame, health);
-        player.setImg( TilesetUtility.getSpriteSetHorizontal(
+        DescriptorLoader dLoader = new DescriptorLoader( getClass() );
+        try {
+            player.setImg( dLoader.loadSpriteSets(TILESET+"player/" )[0][0] );
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+/*      player.setImg( TilesetUtility.getSpriteSetHorizontal(
             loadImage( TILESET+"player/girl_red_swimsuit.png" ), 140, 200, 4
         )[0]);
+ */
     }
 
     @Override

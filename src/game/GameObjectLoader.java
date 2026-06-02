@@ -65,8 +65,8 @@ public class GameObjectLoader {
     public Item loadNextItem(Player player) throws IOException {
         int id = ID.getNextItemId();
         Properties p = loadProperties( buildFileString( ITEM, id ));
-        Item item;
         String type = p.getProperty("type");
+        Item item;
         switch ( type.toLowerCase() ) {
             case "usable"   -> item = new UsableItem( id, p.getProperty( "name" ));
             case "reusable" -> item = new ReUsableItem( id, p.getProperty( "name" ));

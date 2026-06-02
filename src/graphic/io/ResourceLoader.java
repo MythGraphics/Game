@@ -11,19 +11,18 @@ package graphic.io;
  *
  */
 
+import static graphic.io.BinaryIO.*;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.stream.Collectors;
 
-public class RessourceLoader {
+public class ResourceLoader {
 
-    public final static String ZIP_PATH     = "/resources/";
-    public final static String LOCAL_PATH   = "src"+ZIP_PATH;
     public final static String EMPTY_ERROR = "Parameter null oder leer.";
     public final static String FS_ERROR    = "Laden von Dateisystem fehlgeschlagen: ";
     public final static String JAR_ERROR   = "Laden von JAR fehlgeschlagen: ";
 
-    private RessourceLoader() {}
+    private ResourceLoader() {}
 
     public static String loadTextFileFromJar(String fileName, Class clazz) throws IOException {
         if ( fileName == null || fileName.isBlank() ) {
@@ -63,10 +62,10 @@ public class RessourceLoader {
             System.err.println( fileName + ": " + FS_ERROR + e.getMessage() );
         }
         try {
-            return loadTextFileFromFS(LOCAL_PATH+fileName);
+            return loadTextFileFromFS(LOCAL_PATH+RESOURCE+fileName);
         }
         catch (IOException e) {
-            System.err.println( LOCAL_PATH+fileName + ": " + FS_ERROR + e.getMessage() );
+            System.err.println( LOCAL_PATH+RESOURCE+fileName + ": " + FS_ERROR + e.getMessage() );
         }
 
         // versuchen, von JAR zu laden
@@ -77,10 +76,10 @@ public class RessourceLoader {
             System.err.println( fileName + ": " + JAR_ERROR + e.getMessage() );
         }
         try {
-            return loadTextFileFromJar(ZIP_PATH+fileName, clazz);
+            return loadTextFileFromJar(ZIP_PATH+RESOURCE+fileName, clazz);
         }
         catch (IOException e) {
-            System.err.println( ZIP_PATH+fileName + ": " + JAR_ERROR + e.getMessage() );
+            System.err.println( ZIP_PATH+RESOURCE+fileName + ": " + JAR_ERROR + e.getMessage() );
         }
 
         System.err.println("Nichts zum Laden gefunden.");

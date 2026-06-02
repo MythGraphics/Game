@@ -12,9 +12,7 @@ package graphic.io;
  */
 
 import graphic.Direction;
-import static graphic.io.ImageUtility.scale;
 import static graphic.map.GameMap.DEFAULT_TILE_SIZE;
-import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
@@ -22,7 +20,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
-import javax.imageio.ImageIO;
 
 public class DescriptorLoader {
 
@@ -44,20 +41,20 @@ public class DescriptorLoader {
         return list.toArray(BufferedImage[]::new);
     }
 
-    public Image[][] loadSpriteSets(String path) throws IOException {
+    public BufferedImage[][] loadSpriteSets(String path) throws IOException {
         return loadDescriptor2(path, FileExt.SET);
     }
 
-    public Image[][] loadAnimatedSprites(String path) throws IOException {
+    public BufferedImage[][] loadAnimatedSprites(String path) throws IOException {
         return loadDescriptor2(path, FileExt.ANI);
     }
 
-    public Image[][] loadMoveableSprites(String path) throws IOException {
+    public BufferedImage[][] loadMoveableSprites(String path) throws IOException {
         return loadDescriptor2(path, FileExt.MOVEABLE_SPRITE);
     }
 
-    public Image[][][] loadMoveableAnimatedSprites(String path) throws IOException {
-        ArrayList<Image[][]> list = new ArrayList<>();
+    public BufferedImage[][][] loadMoveableAnimatedSprites(String path) throws IOException {
+        ArrayList<BufferedImage[][]> list = new ArrayList<>();
         String descriptor = getFileString(path, FileExt.MOVEABLE_ANI);
         ArrayList<String> entries = loadDescriptor(descriptor);
         for ( String line : entries ) {
@@ -68,7 +65,7 @@ public class DescriptorLoader {
 
     private static String getFileString(String path, FileExt ext) {
         if ( path == null ) { path = "."; }
-        if ( !path.endsWith( File.separator )) { path += File.separator; }
+        path = getDirPath(path);
         return path + FILENAME_PREFIX + ext.getFileExtension();
     }
 
@@ -86,12 +83,20 @@ public class DescriptorLoader {
         return list;
     }
 
+    public final static String getDirPath(String path) {
+        if ( !path.contains("/") && !path.endsWith( File.pathSeparator )) {
+            path += File.separator;
+        }
+        return path;
+    }
+
     private static BufferedImage parseDescriptorLine1(String line, String path) throws IOException {
+        path = getDirPath(path);
         StringTokenizer tokenizer = new StringTokenizer(line, ":", false);
         if ( tokenizer.countTokens() < 5 ) {
             throw new IOException("Format not parsable. Neccessary 5 tokens not found.");
         }
-        BufferedImage image = scale( ImageIO.read( new File( path + tokenizer.nextToken() )), 200 );
+        BufferedImage image = BinaryIO.loadImage( path + tokenizer.nextToken() );
         int offset_x        = Integer.parseInt( tokenizer.nextToken() );
         int offset_y        = Integer.parseInt( tokenizer.nextToken() );
         int size_x          = Integer.parseInt( tokenizer.nextToken() );
@@ -100,8 +105,8 @@ public class DescriptorLoader {
     }
 
     // SpriteSet, AnimatedSprites & MoveableSprites
-    private Image[][] loadDescriptor2(String path, FileExt ext) throws IOException {
-        ArrayList<Image[]> list = new ArrayList<>();
+    private BufferedImage[][] loadDescriptor2(String path, FileExt ext) throws IOException {
+        ArrayList<BufferedImage[]> list = new ArrayList<>();
         String descriptor = getFileString(path, ext);
         ArrayList<String> entries = loadDescriptor(descriptor);
         for ( String line : entries ) {
@@ -110,12 +115,13 @@ public class DescriptorLoader {
         return list.toArray(BufferedImage[][]::new);
     }
 
-    private static Image[] parseDescriptorLine2(String line, String path) throws IOException {
+    private static BufferedImage[] parseDescriptorLine2(String line, String path) throws IOException {
+        path = getDirPath(path);
         StringTokenizer tokenizer = new StringTokenizer(line, ":", false);
         if ( tokenizer.countTokens() < 7 ) {
             throw new IOException("Format not parsable. Neccessary 7 tokens not found.");
         }
-        BufferedImage image = scale( ImageIO.read( new File( path + tokenizer.nextToken() )), 200 );
+        BufferedImage image = BinaryIO.loadImage( path + tokenizer.nextToken() );
         char alignment      = tokenizer.nextToken().charAt(0);
         int offset_x        = Integer.parseInt( tokenizer.nextToken() );
         int offset_y        = Integer.parseInt( tokenizer.nextToken() );
@@ -125,20 +131,21 @@ public class DescriptorLoader {
         image = image.getSubimage( offset_x, offset_y, image.getWidth(), image.getHeight() );
         switch (alignment) {
             case 'x': case 'X':
-                return TilesetUtility.getSpriteSetHorizontal(image, size_x, number, DEFAULT_TILE_SIZE);
+                return TilesetUtility.getSpriteSetHorizontal(image, size_x, 0, number);
             case 'y': case 'Y':
-                return TilesetUtility.getSpriteSetVertical(image, size_y, number, DEFAULT_TILE_SIZE);
+                return TilesetUtility.getSpriteSetVertical(image, size_y, 0, number);
         }
         throw new IOException("Format not parsable. Sprite_alignment not x nor y.");
     }
 
-    private static Image[][] parseDescriptorLine3(String line, String path) throws IOException {
+    private static BufferedImage[][] parseDescriptorLine3(String line, String path) throws IOException {
+        path = getDirPath(path);
         StringTokenizer tokenizer = new StringTokenizer(line, ":", false);
-        Image[][] dirImgs = new BufferedImage[4][];
+        BufferedImage[][] dirImgs = new BufferedImage[4][];
         if ( tokenizer.countTokens() < 8 ) {
             throw new IOException("Format not parsable. Neccessary 8 tokens not found.");
         }
-        BufferedImage image = scale( ImageIO.read( new File( path + tokenizer.nextToken() )), 200 );
+        BufferedImage image = BinaryIO.loadImage( path + tokenizer.nextToken() );
         char alignment      = tokenizer.nextToken().charAt(0);
         String dir_alignm   = tokenizer.nextToken();
         int offset_x        = Integer.parseInt( tokenizer.nextToken() );
@@ -153,14 +160,14 @@ public class DescriptorLoader {
                 for (int i = 0; i < dirImgs.length; ++i) {
                     currentImg = image.getSubimage( 0, i*size_y, image.getWidth(), image.getHeight() );
                     int index = Direction.parseDirection( dir_alignm.charAt( i )).ordinal();
-                    dirImgs[index] = TilesetUtility.getSpriteSetHorizontal(currentImg, size_x, number, DEFAULT_TILE_SIZE);
+                    dirImgs[index] = TilesetUtility.getSpriteSetHorizontal(currentImg, size_x, 0, number);
                     return dirImgs;
                 }
             case 'y': case 'Y':
                 for (int i = 0; i < dirImgs.length; ++i) {
                     currentImg = image.getSubimage( i*size_x, 0, image.getWidth(), image.getHeight() );
                     int index = Direction.parseDirection( dir_alignm.charAt( i )).ordinal();
-                    dirImgs[index] = TilesetUtility.getSpriteSetVertical(currentImg, size_y, number, DEFAULT_TILE_SIZE);
+                    dirImgs[index] = TilesetUtility.getSpriteSetVertical(currentImg, size_y, 0, number);
                     return dirImgs;
                 }
         }
