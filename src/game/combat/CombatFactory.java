@@ -17,6 +17,7 @@ import static game.combat.ArmorType.*;
 import static game.combat.CombatantType.*;
 import static game.combat.DamageType.*;
 import static game.combat.WeaponType.*;
+import static graphic.io.BinaryIO.SPRITE;
 import static graphic.io.BinaryIO.loadImage;
 import static graphic.io.ImageUtility.scale;
 import java.util.*;
@@ -221,7 +222,7 @@ public class CombatFactory {
         c.addArmor( new Armor( "Asbestschuppen", ASBEST, 50 ));
         c.addWeapon( new Weapon( -1, "rasiermesserscharfe Klauen", DOLCH, PHYSISCH, 25 ));
         c.addWeapon( new Weapon( -1, "langer, spitzer Stachel", SCHWERT, PHYSISCH, 10 ));
-        c.setImg( scale( loadImage( "sprites/minion/zerg.png" ), 100 ));
+        c.setImg( scale( loadImage( SPRITE+"minion/zerg.png" ), 100 ));
         return c;
     }
 
@@ -231,7 +232,7 @@ public class CombatFactory {
         c.addArmor( new Armor( "Chitinschuppen", MECHANISCH, 20 ));
         c.addWeapon( new Weapon( -1, "rasiermesserscharfe Klauen", DOLCH, PHYSISCH, 25 ));
         c.addWeapon( new Weapon( -1, "giftiger Stachel", SCHWERT, GIFT, 10 ));
-        c.setImg( scale( loadImage( "sprites/minion/zerg.png" ), 100 ));
+        c.setImg( scale( loadImage( SPRITE+"minion/zerg.png" ), 100 ));
         return c;
     }
 
@@ -241,7 +242,7 @@ public class CombatFactory {
         c.addArmor( new Armor( "Chitinschuppen", MECHANISCH, 20 ));
         c.addWeapon( new Weapon( -1, "rasiermesserscharfe Klauen", DOLCH, PHYSISCH, 25 ));
         c.addWeapon( new Weapon( -1, "langer, spitzer Stachel", SCHWERT, PHYSISCH, 10 ));
-        c.setImg( scale( loadImage( "sprites/minion/zerg.png" ), 100 ));
+        c.setImg( scale( loadImage( SPRITE+"minion/zerg.png" ), 100 ));
         return c;
     }
 
@@ -251,7 +252,7 @@ public class CombatFactory {
         c.addArmor( new Armor( "Dicke Haut", MECHANISCH, 20 ));
         c.addWeapon( new Weapon( -1, "rasiermesserscharfe Klauen", DOLCH, PHYSISCH, 25 ));
         c.addWeapon( new Weapon( -1, "säurehaltiger Stachel", SCHWERT, SÄURE, 10 ));
-        c.setImg( scale( loadImage( "sprites/minion/zerg.png" ), 100 ));
+        c.setImg( scale( loadImage( SPRITE+"minion/zerg.png" ), 100 ));
         return c;
     }
 
@@ -261,7 +262,7 @@ public class CombatFactory {
         c.addArmor( new Armor( "Wolfram-Iridium-Schuppen", MECHANISCH, 30 ));
         c.addWeapon( new Weapon( -1, "rasiermesserscharfe Klauen", DOLCH, PHYSISCH, 5 ));
         c.addWeapon( new Weapon( -1, "langer, spitzer Stachel", SCHWERT, PHYSISCH, 10 ));
-        c.setImg( scale( loadImage( "sprites/minion/zerg.png" ), 100 ));
+        c.setImg( scale( loadImage( SPRITE+"minion/zerg.png" ), 100 ));
         return c;
     }
 
@@ -270,7 +271,7 @@ public class CombatFactory {
         c.addArmor( new Armor( "Chitinpanzerplatten", MECHANISCH, 75 ));
         c.addWeapon( new Weapon( -1, "rasiermesserscharfe Klauen", DOLCH, PHYSISCH, 5 ));
         c.addWeapon( new Weapon( -1, "langer, spitzer Stachel", SCHWERT, PHYSISCH, 10 ));
-        c.setImg( scale( loadImage( "sprites/minion/zerg.png" ), 100 ));
+        c.setImg( scale( loadImage( SPRITE+"minion/zerg.png" ), 100 ));
         return c;
     }
 

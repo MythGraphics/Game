@@ -21,8 +21,7 @@ import game.item.LootManager;
 import graphic.CollisionEvent;
 import graphic.TextFrame;
 import graphic.io.BinaryIO;
-import static graphic.io.BinaryIO.SPRITE;
-import static graphic.io.BinaryIO.loadImage;
+import static graphic.io.BinaryIO.*;
 import graphic.io.TextIO;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -31,7 +30,7 @@ import java.io.IOException;
 
 public class SpaceMapGameRoutine extends MartialGameRoutine {
 
-    public final static String PROLOG_BG = "bg/interior_of_a_spaceship_by_parker_west.jpg";
+    public final static String PROLOG_BG = RESOURCE+"bg/interior_of_a_spaceship_by_parker_west.jpg";
 
     private Player player;
     private Enemy enemy;

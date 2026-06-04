@@ -95,7 +95,7 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        Main.mapType = "land";
+        Main.mapType = "space";
         Main.main(null);
     }
 

@@ -11,8 +11,6 @@ package graphic.map;
  *
  */
 
-import game.Resource;
-import static game.Resource.ResourceType.AIR;
 import graphic.AnimatedBlock;
 import graphic.Animation;
 import graphic.MoveableSprite;
