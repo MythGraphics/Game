@@ -18,23 +18,28 @@ import java.util.EventObject;
 public class CollisionEvent extends EventObject {
 
     public final CollisionType cType; // im Grunde redundant, da über Block ( getType().getCollisionType() ) zu erhalten
-    public final Block block;
+    public final Block target, collider;
 
-    public CollisionEvent(GameMap source, CollisionType cType, Block block) {
+    public CollisionEvent(GameMap source, CollisionType cType, Block target, Block collider) {
         super(source);
-        this.cType = cType;
-        this.block = block;
+        this.cType      = cType;
+        this.target     = target;
+        this.collider   = collider;
     }
 
     public CollisionType getCollisionType() {
         if ( cType == null ) {
-            return block.getType().getCollisionType();
+            return target.getType().getCollisionType();
         }
         return cType;
     }
 
-    public Block getBlock() {
-        return block;
+    public Block getCollider() {
+        return collider;
+    }
+
+    public Block getTarget() {
+        return target;
     }
 
 }

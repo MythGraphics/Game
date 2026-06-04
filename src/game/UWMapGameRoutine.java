@@ -56,10 +56,10 @@ public class UWMapGameRoutine extends GameRoutine implements ResourceConsumeList
     @Override
     public void collisionPerformed(CollisionEvent e) {
         super.collisionPerformed(e);
-        switch( e.getBlock().getType() ) {
+        switch( e.getTarget().getType() ) {
             case BUBBLE -> {
                 getPlayer().getResource(AIR).recharge(100);
-                ((GameMap) e.getSource() ).removeBlock( e.getBlock() );
+                ((GameMap) e.getSource() ).removeBlock( e.getTarget() );
             }
         }
     }

@@ -18,9 +18,15 @@ public enum BlockType implements HasMapChar {
     // basic types; passable
     SPACE           (' ', CollisionType.NONE,           true),  // default space
     SPACEHOLDER     ('.', CollisionType.NONE,           true),  // spaceholder for big sprites
-    CORPSE          ('C', CollisionType.INTERACTIVE,    true),  // interactive corpse
     PORTAL          ('O', CollisionType.PORTAL,         true),  // portal
     EXIT            ('#', CollisionType.EXIT,           true),  // map exit
+
+    // interactive corpses: passable
+    CORPSE          ('c', CollisionType.INTERACTIVE,    true),  // interactive corpse
+    CORPSE_ENEMY    ('e', CollisionType.INTERACTIVE,    true),  // interactive enemy corpse
+    CORPSE_NPC      ('n', CollisionType.INTERACTIVE,    true),  // interactive npc corpse
+    CORPSE_PLAYER   ('p', CollisionType.INTERACTIVE,    true),  // interactive player corpse
+    UNDEAD_CORPES   ('u', CollisionType.INTERACTIVE,    true),  // interactive undead corpse
 
     // special/map-dependent types; passable
     BUBBLE          ('B', CollisionType.INTERACTIVE,    true),  // (air) bubble

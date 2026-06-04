@@ -75,25 +75,26 @@ public class DefaultSpaceMap extends GameMap {
     @Override
     void loadSprites() {
         Image[][] tileset = TilesetUtility.getAnimationSet(
-            loadImage(TILESET+"spaceship/creatures2.png"), 0, 0, 32, 32, 3
+            loadImage( TILESET+"spaceship/creatures2.png" ), 0, 0, 32, 32, 3
         );
         Image[] corpseset = TilesetUtility.getSpriteSet(
-            loadImage(TILESET+"spaceship/creatures2.png"), new Point(3*32, 0), 0, 0, 32, -1
+            loadImage( TILESET+"spaceship/creatures2.png" ), new Point( 3*32, 0 ), 0, 0, 32, -1
         );
-        imgMap.put(ENVIRONMENT_A, loadImage(SPRITE+"land/Straw1.png"));
-        imgMap.put(WALL0, loadImage(SPRITE+"spaceship/wall1.png"));
-        imgMap.put(WALL1, loadImage(SPRITE+"spaceship/wall2.png"));
-        imgMap.put(WALL2, loadImage(SPRITE+"spaceship/wall3.png"));
-        imgMap.put(WALL3, loadImage(SPRITE+"spaceship/wall4.png"));
-        imgMap.put(WALL4, loadImage(SPRITE+"spaceship/wall5.png"));
-        imgMap.put(WALL5, loadImage(SPRITE+"spaceship/wall6.png"));
-        imgMap.put(WALL6, loadImage(SPRITE+"spaceship/wall7.png"));
-        imgMap.put(WALL7, loadImage(SPRITE+"spaceship/wall8.png"));
-        imgMap.put(SPACE, loadImage(SPRITE+"spaceship/floor.png"));
-        imgMap.put(CORPSE, corpseset[5]);
+        imgMap.put( ENVIRONMENT_A, loadImage( SPRITE+"land/Straw1.png" ));
+        imgMap.put( WALL0, loadImage( SPRITE+"spaceship/wall1.png" ));
+        imgMap.put( WALL1, loadImage( SPRITE+"spaceship/wall2.png" ));
+        imgMap.put( WALL2, loadImage( SPRITE+"spaceship/wall3.png" ));
+        imgMap.put( WALL3, loadImage( SPRITE+"spaceship/wall4.png" ));
+        imgMap.put( WALL4, loadImage( SPRITE+"spaceship/wall5.png" ));
+        imgMap.put( WALL5, loadImage( SPRITE+"spaceship/wall6.png" ));
+        imgMap.put( WALL6, loadImage( SPRITE+"spaceship/wall7.png" ));
+        imgMap.put( WALL7, loadImage( SPRITE+"spaceship/wall8.png" ));
+        imgMap.put( SPACE, loadImage( SPRITE+"spaceship/floor.png" ));
+        imgMap.put( CORPSE_ENEMY, corpseset[5] );
+        imgMap.put( CORPSE_PLAYER, corpseset[3] );
         enemyAni = new Animation(tileset[5], true);
         playerAni = Animation.buildDirectionalAnimationSet( TilesetUtility.getAnimationSet(
-            loadImage(TILESET+"spaceship/spacemarine.png"), 0, 0, 32, 32, 3
+            loadImage( TILESET+"spaceship/spacemarine.png" ), 0, 0, 32, 32, 3
         ));
         for (Animation a : playerAni) {
             a.slowDown();
@@ -104,7 +105,9 @@ public class DefaultSpaceMap extends GameMap {
     Block getBlock(BlockType bType, int x, int y, int tileSize) {
         switch (bType) {
             case PLAYER:
-                return new MoveableSprite( playerAni, x, y, tileSize, PLAYER, getMaxPoint() );
+                MoveableSprite player = new MoveableSprite( playerAni, x, y, tileSize, PLAYER, getMaxPoint() );
+                player.setDeadImage( imgMap.get( CORPSE_PLAYER ));
+                return player;
             case ENVIRONMENT_A:
             case WALL0:
             case WALL1:
@@ -122,7 +125,7 @@ public class DefaultSpaceMap extends GameMap {
             case ENEMY:
                 // da sich mehrere Gegner die selbe Animation teilen, diese kopieren
                 AnimatedBlock enemy = new AnimatedBlock( enemyAni.copy(), x, y, tileSize, ENEMY );
-                enemy.setDeadImage( imgMap.get( CORPSE ));
+                enemy.setDeadImage( imgMap.get( CORPSE_ENEMY ));
                 return enemy;
         }
         return super.getBlock(bType, x, y, tileSize);

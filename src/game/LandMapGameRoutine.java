@@ -61,7 +61,7 @@ public class LandMapGameRoutine extends GameRoutine {
             item.addItemEffect( new ItemEffect( "einfacher", PRÄFIX, CREDIT, item.getPrice() ));
             items.add(item);
             Collections.shuffle(items); // Item-Liste durchmischen
-        } catch (IOException e) {
+        } catch (IOException | NullPointerException e) {
             System.err.println( "Initialisieren der Spiel-Routine fehlgeschlagen - Abbruch!" );
             System.err.println( "Ursache: " + e.getMessage() );
             System.exit(255);
@@ -108,7 +108,7 @@ public class LandMapGameRoutine extends GameRoutine {
                 }
             }
             case INTERACTIVE -> {
-                switch ( e.getBlock().getType() ) {
+                switch ( e.getTarget().getType() ) {
                     case NPC -> {
                         if (player.hasActiveQuest()) {
                             player.deliverQuest();

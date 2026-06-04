@@ -61,11 +61,11 @@ public abstract class GameRoutine implements CollisionActionListener {
     @Override
     public void collisionPerformed(CollisionEvent e) {
         System.out.println( "(debug) cType: " + e.getCollisionType() );
-        System.out.println( "(debug) bType: " + e.getBlock().getType() );
+        System.out.println( "(debug) bType: " + e.getTarget().getType() );
         switch( e.getCollisionType() ) {
-            case TEXT, ENV_IMPASS -> dialogListener.show( dialogMap.get( e.block.getType() ));
+            case TEXT, ENV_IMPASS -> dialogListener.show( dialogMap.get( e.getTarget().getType() ));
             case PORTAL -> {
-                Point target = e.getBlock().getPosition();
+                Point target = e.getTarget().getPosition();
                 portals.addIfAbsent(target);
                 if ( portals.size() < 2 ) {
                     // Wenn weniger als 2 Portale bekannt sind, bleibt der Spieler wo er ist.

@@ -49,16 +49,16 @@ public abstract class GameMap extends JPanel implements ActionListener {
     private Timer renderLoop;
 
     public GameMap(String[] tileMap, int tileSize, Dimension visibleSize) {
-        this.tileMap    = tileMap;
-        this.tileSize   = tileSize;
-        visibleBoard    = visibleSize;
-        visibleHeight   = visibleSize.height;
-        visibleWidth    = visibleSize.width;
-        rowCount        = tileMap.length;
-        columnCount     = tileMap[0].length();
-        boardWidth      = columnCount * tileSize;
-        boardHeight     = rowCount * tileSize;
-        board           = new Dimension(boardWidth, boardHeight);
+        this.tileMap        = tileMap;
+        this.tileSize       = tileSize;
+        visibleBoard        = visibleSize;
+        visibleHeight       = visibleSize.height;
+        visibleWidth        = visibleSize.width;
+        rowCount            = tileMap.length;
+        columnCount         = tileMap[0].length();
+        boardWidth          = columnCount * tileSize;
+        boardHeight         = rowCount * tileSize;
+        board               = new Dimension(boardWidth, boardHeight);
         blocks_prerender    = new ArrayList<>(); // ohne Spieler, Enemy, NPC
         blocks              = new ArrayList<>(); // alle anderen Blocks (nackte Map)
         collisionListeners  = new ArrayList<>();
@@ -236,16 +236,16 @@ public abstract class GameMap extends JPanel implements ActionListener {
      * Feuert Event bei Kollision Player->Block
      * @param block Kollisionsblock
      */
-    void fireEvent(Block block) {
+    void fireEvent(Block target, Block collider) {
         System.out.println(
-            "collision with block type "    + block.getType() +
-            " at "                          + block.x + "," + block.y +
-            " (column "                     + (block.x/block.getWidth()+1) +    // +1, um keine Indizes auszugeben
-            ", row "                        + (block.y/block.getHeight()+1) +   // +1, um keine Indizes auszugeben
-            ") as collision type "          + block.getType().getCollisionType()
+            "collision with block type "    + target.getType() +
+            " at "                          + target.x + "," + target.y +
+            " (column "                     + ( target.x / target.getWidth() + 1 ) +  // +1, um keine Indizes auszugeben
+            ", row "                        + ( target.y / target.getHeight() + 1 ) + // +1, um keine Indizes auszugeben
+            ") as collision type "          + target.getType().getCollisionType()
         );
         collisionListeners.forEach( actionListener -> actionListener.collisionPerformed(
-            new CollisionEvent( this, block.getType().getCollisionType(), block )
+            new CollisionEvent( this, target.getType().getCollisionType(), target, collider )
         ));
     }
 
@@ -330,7 +330,7 @@ public abstract class GameMap extends JPanel implements ActionListener {
     final void handleBlockCollision(Collection<Block> blocks) {
         blocks.forEach( block -> {
             if ( collision( block, player )) {
-                fireEvent(block);
+                fireEvent(block, player);
                 if ( !block.type.passable ) {
                     resetPlayerPosition();
                 }

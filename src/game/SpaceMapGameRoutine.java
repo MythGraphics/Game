@@ -19,6 +19,7 @@ import static game.combat.CombatFactory.Group.ZERG;
 import game.combat.Combatant;
 import game.item.LootManager;
 import graphic.CollisionEvent;
+import graphic.DeadOrAlive;
 import graphic.TextFrame;
 import graphic.io.BinaryIO;
 import static graphic.io.BinaryIO.*;
@@ -41,7 +42,7 @@ public class SpaceMapGameRoutine extends MartialGameRoutine {
         initPlayer(frame);
         try {
             enemy = loader.loadNextEnemy();
-        } catch (IOException e) {
+        } catch (IOException | NullPointerException e) {
             System.err.println( "Initialisieren der Spiel-Routine fehlgeschlagen - Abbruch!" );
             System.err.println( "Ursache: " + e.getMessage() );
             System.exit(255);
@@ -57,7 +58,7 @@ public class SpaceMapGameRoutine extends MartialGameRoutine {
         credit.addResourceChangeListener(frame);
         Resource air     = new Resource( "Sauerstoff", AIR, 1000, 1000 );
         air.addResourceChangeListener(frame);
-        Resource stamina = new Resource( "Ausdauer", STAMINA, 100, 50 );
+        Resource stamina = new Resource( "Ausdauer", STAMINA, 100, 100 );
         stamina.addResourceChangeListener(frame);
         player = new Player(GameFrame.playerName, frame.textFrame, health, credit, air, stamina);
         player.addItemActionListener(frame);
@@ -71,8 +72,9 @@ public class SpaceMapGameRoutine extends MartialGameRoutine {
     }
 
     @Override
-    public void playerMinionDead(Combatant playerMinion) {
-        // ToDo implementieren
+    public void enemyDead(Combatant enemyMinion, DeadOrAlive target) {
+        super.enemyDead(enemyMinion, target);
+        loot(enemyMinion);
     }
 
     @Override
@@ -106,8 +108,7 @@ public class SpaceMapGameRoutine extends MartialGameRoutine {
         textFrame.show(title, text, bg);
     }
 
-    @Override
-    void loot(Combatant enemy) {
+    private void loot(Combatant enemy) {
         Ammo loot = LootManager.createAmmo(enemy, AmmoType.PROJECTILE);
         player.getInventory().add(loot);
         dialogListener.show( new Message(
@@ -118,7 +119,7 @@ public class SpaceMapGameRoutine extends MartialGameRoutine {
     @Override
     public void collisionPerformed(CollisionEvent e) {
         super.collisionPerformed(e);
-        switch( e.getBlock().getType() ) {
+        switch( e.getTarget().getType() ) {
             case ENVIRONMENT_A -> {
                 player.getDialogOutputListener().show( new Message(
                     "Warum liegt hier eigentlich Stroh rum?", player
