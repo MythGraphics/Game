@@ -29,10 +29,15 @@ public class UWMapGameRoutine extends GameRoutine implements ResourceConsumeList
         initPlayer(map, frame);
     }
 
+    @Override
+    public Player getPlayer() {
+        return player;
+    }
+
     private void initPlayer(UWMap map, GameFrame frame) {
         Resource health = new Resource("Gesundheit", HEALTH, 1000, 1000);
         health.addResourceChangeListener(frame);
-        Resource air = map.getUWResource();
+        Resource air = map.getResource();
         air.addResourceChangeListener(frame);
         air.addResourceConsumeListener(this);
         player = new Player(GameFrame.playerName, frame.textFrame, health, air);
@@ -46,11 +51,6 @@ public class UWMapGameRoutine extends GameRoutine implements ResourceConsumeList
         if (overuse > 0 && r.getType() == AIR ) {
             player.getResource(HEALTH).forceConsume(overuse);
         }
-    }
-
-    @Override
-    public Player getPlayer() {
-        return player;
     }
 
     @Override

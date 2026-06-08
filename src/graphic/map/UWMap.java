@@ -11,12 +11,13 @@ package graphic.map;
  *
  */
 
+import game.HasResource;
 import game.Resource;
 import static game.Resource.ResourceType.AIR;
 import static graphic.map.BlockType.WATERLINE;
 import java.awt.event.ActionEvent;
 
-public abstract class UWMap extends GameMap {
+public abstract class UWMap extends GameMap implements HasResource {
 
     public final int resourceCost = 1;
     public final Resource air;
@@ -32,7 +33,8 @@ public abstract class UWMap extends GameMap {
         this.air = air;
     }
 
-    public Resource getUWResource() {
+    @Override
+    public Resource getResource() {
         return air;
     }
 

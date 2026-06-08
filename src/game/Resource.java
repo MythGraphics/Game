@@ -16,10 +16,10 @@ import java.util.ArrayList;
 public class Resource implements HasName {
 
     public enum ResourceType {
-        HEALTH,     // Gesundheitsressource für Gegner-Interaktion
-        MANA,       // Sekundär-Resource ohne spezifischen Zweck
-        AIR,        // Ressource für Environment-Interaktion
-        STAMINA,    // Ressource für Map-Interaktion
+        HEALTH,     // Primär-Ressource; Gesundheitsressource für Gegner-Interaktion
+        MANA,       // Sekundär-Ressource ohne spezifischen Zweck
+        AIR,        // map-spezifische Ressource
+        STAMINA,    // allgemeine Ressource für Map-/Environment-Interaktion
         REPUTATION, // Ressource für NPC-Interaktion, Freischaltung von Ereignissen, Quests
         CREDIT,     // Handelsressource
     }
