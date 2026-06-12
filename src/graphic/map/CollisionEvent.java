@@ -2,7 +2,7 @@
  *
  */
 
-package graphic;
+package graphic.map;
 
 /**
  *
@@ -11,8 +11,6 @@ package graphic;
  *
  */
 
-import graphic.map.Block;
-import graphic.map.GameMap;
 import java.util.EventObject;
 
 public class CollisionEvent extends EventObject {

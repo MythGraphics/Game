@@ -71,7 +71,7 @@ public class DefaultUWMap extends UWMap {
     }
 
     @Override
-    void loadSprites() {
+    protected void loadSprites() {
         playerImg = TilesetUtility.getSpriteSetVertical(
             loadImage(TILESET+"player/lpc_female_blond/idle2.png"), 0, tileSize, 4
         );

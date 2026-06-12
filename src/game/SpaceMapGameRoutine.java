@@ -18,7 +18,7 @@ import game.combat.CombatFactory;
 import static game.combat.CombatFactory.Group.ZERG;
 import game.combat.Combatant;
 import game.item.LootManager;
-import graphic.CollisionEvent;
+import graphic.map.CollisionEvent;
 import graphic.DeadOrAlive;
 import graphic.TextFrame;
 import graphic.io.BinaryIO;

@@ -13,8 +13,8 @@ package game;
 
 import game.combat.CombatFrame;
 import game.combat.Combatant;
-import graphic.CollisionEvent;
-import static graphic.CollisionType.ENEMY;
+import graphic.map.CollisionEvent;
+import static graphic.map.CollisionType.ENEMY;
 import graphic.DeadOrAlive;
 import java.util.ArrayList;
 import java.util.List;

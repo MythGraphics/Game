@@ -13,7 +13,7 @@ package game;
 
 import static game.Resource.ResourceType.AIR;
 import static game.Resource.ResourceType.HEALTH;
-import graphic.CollisionEvent;
+import graphic.map.CollisionEvent;
 import static graphic.io.BinaryIO.TILESET;
 import static graphic.io.BinaryIO.loadImage;
 import graphic.io.TilesetUtility;

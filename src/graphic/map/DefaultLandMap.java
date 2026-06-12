@@ -75,7 +75,7 @@ public class DefaultLandMap extends GameMap {
     }
 
     @Override
-    void loadSprites() {
+    protected void loadSprites() {
         playerImg = TilesetUtility.getSpriteSetVertical(
             loadImage( TILESET+"player/lpc_female_blond/idle2.png" ), 0, DEFAULT_TILE_SIZE, 4
         );

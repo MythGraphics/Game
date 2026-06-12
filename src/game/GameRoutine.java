@@ -11,8 +11,8 @@ package game;
  *
  */
 
-import graphic.CollisionActionListener;
-import graphic.CollisionEvent;
+import graphic.map.CollisionActionListener;
+import graphic.map.CollisionEvent;
 import graphic.io.TextIO;
 import graphic.map.BlockType;
 import graphic.map.GameMap;

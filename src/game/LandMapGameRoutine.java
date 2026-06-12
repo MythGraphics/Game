@@ -18,7 +18,7 @@ import static game.item.ItemEffect.ItemEffectType.PRÄFIX;
 import static game.item.ItemEffect.ItemEffectType.SUFFIX;
 import game.item.ReUsableItem;
 import game.item.UsableItem;
-import graphic.CollisionEvent;
+import graphic.map.CollisionEvent;
 import static graphic.io.BinaryIO.TILESET;
 import graphic.io.DescriptorLoader;
 import static graphic.map.BlockType.ENVIRONMENT_A;

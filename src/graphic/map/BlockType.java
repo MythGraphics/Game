@@ -11,9 +11,9 @@ package graphic.map;
  *
  */
 
-import graphic.CollisionType;
-
 public enum BlockType implements HasMapChar {
+
+    PANEL           (Character.MIN_VALUE, CollisionType.BOUNDARY, false), // map boundary
 
     // basic types; passable
     SPACE           (' ', CollisionType.NONE,           true),  // default space

@@ -73,7 +73,7 @@ public class DefaultSpaceMap extends GameMap {
     }
 
     @Override
-    void loadSprites() {
+    protected void loadSprites() {
         Image[][] tileset = TilesetUtility.getAnimationSet(
             loadImage( TILESET+"spaceship/creatures2.png" ), 0, 0, 32, 32, 3
         );

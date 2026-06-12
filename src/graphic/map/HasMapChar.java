@@ -11,8 +11,6 @@ package graphic.map;
  *
  */
 
-import graphic.CollisionType;
-
 public interface HasMapChar {
 
     char getMapChar();

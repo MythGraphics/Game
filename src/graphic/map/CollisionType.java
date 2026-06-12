@@ -2,7 +2,7 @@
  *
  */
 
-package graphic;
+package graphic.map;
 
 /**
  *
@@ -13,6 +13,7 @@ package graphic;
 
 public enum CollisionType {
 
+    BOUNDARY,       // map boundary
     ENV_IMPASS,     // interactive non-passable environment
     ENV_PASS,       // interactive passable environment
     ENEMY,

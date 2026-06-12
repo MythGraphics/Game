@@ -85,7 +85,7 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
         }
 
         initComponents();
-        initMoreComponents();
+        initMainUI();
         initGameUI();
 
         super.requestFocus();
@@ -468,7 +468,7 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
 
         // GameRoutine laden
         if (loadCmdInput) {
-            // Fernsteuerung aktiv -> rudimentäre GameRoutine laden
+            // Fernsteuerung aktiv
             routine = new RemoteGameRoutine(this);
             return;
         }
@@ -497,7 +497,7 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
         return getProgressBarUI(Color.BLACK, Color.WHITE);
     }
 
-    private void initMoreComponents() {
+    private void initMainUI() {
         jGamePanel.setBackground( map.getAmbientColor() );
 
         resourceMap.put(HEALTH, jProgressBarHealth);
@@ -554,7 +554,6 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
             }
             textFrame.show( params[1], params[0], params[2] );
         });
-
         System.out.println("Remote-Steuerung bereit.");
     }
 

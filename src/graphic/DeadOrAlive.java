@@ -11,6 +11,8 @@ package graphic;
  *
  */
 
+import graphic.HasImage;
+
 public interface DeadOrAlive extends HasImage {
 
     void swap();

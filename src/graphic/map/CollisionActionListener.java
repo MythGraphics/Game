@@ -2,7 +2,7 @@
  *
  */
 
-package graphic;
+package graphic.map;
 
 /**
  *
