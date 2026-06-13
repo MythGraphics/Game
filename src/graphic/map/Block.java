@@ -23,7 +23,6 @@ public abstract class Block implements HasImage {
     protected BlockType type;
     protected int x;
     protected int y;
-    protected boolean dead = false;
 
     public Block(Point pos, Dimension dim, BlockType type) {
         this(pos.x, pos.y, dim.width, dim.height, type);

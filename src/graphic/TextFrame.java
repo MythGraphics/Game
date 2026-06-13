@@ -11,13 +11,18 @@ package graphic;
  *
  */
 
-import game.*;
+import game.HasDialog;
+import game.HasUIImage;
+import game.InteractiveObject;
+import game.Message;
 import graphic.io.BinaryIO;
 import static graphic.io.ImageUtility.scale;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedList;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -30,6 +35,8 @@ public class TextFrame extends JFrame implements DialogOutputListener {
     public final static Color DEFAULT_BG_COLOR      = new Color(242, 242, 242);
 
     final TextOverImageRenderer texter;
+
+    private final Collection<DialogCloseListener> closeListeners = new ArrayList<>();
 
     private boolean standalone = false;
     private Dimension size = DEFAULT_SIZE;
@@ -261,6 +268,11 @@ public class TextFrame extends JFrame implements DialogOutputListener {
         System.out.println("TextFrame is closing ...");
         texter.dispose();
         super.dispose();
+        closeListeners.forEach( listener -> listener.dialogClosePerformed() );
+    }
+
+    public void addCloseListener(DialogCloseListener listener) {
+        closeListeners.add(listener);
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

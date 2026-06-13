@@ -19,6 +19,8 @@ import java.awt.Point;
 
 public abstract class DeadOrAliveBlock extends Block implements DeadOrAlive {
 
+    protected boolean dead = false;
+
     public DeadOrAliveBlock(Point pos, Dimension dim, BlockType type) {
         this(pos.x, pos.y, dim.width, dim.height, type);
     }

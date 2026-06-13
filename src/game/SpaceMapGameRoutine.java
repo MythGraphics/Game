@@ -18,12 +18,12 @@ import game.combat.CombatFactory;
 import static game.combat.CombatFactory.Group.ZERG;
 import game.combat.Combatant;
 import game.item.LootManager;
-import graphic.map.CollisionEvent;
 import graphic.DeadOrAlive;
 import graphic.TextFrame;
 import graphic.io.BinaryIO;
 import static graphic.io.BinaryIO.*;
 import graphic.io.TextIO;
+import graphic.map.CollisionEvent;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
@@ -33,13 +33,19 @@ public class SpaceMapGameRoutine extends MartialGameRoutine {
 
     public final static String PROLOG_BG = RESOURCE+"bg/interior_of_a_spaceship_by_parker_west.jpg";
 
+    private final BufferedImage textFrameBG;
+
     private Player player;
     private Enemy enemy;
+    private int enemies = 0;
+    private boolean victory = false;
 
     public SpaceMapGameRoutine(GameFrame frame) {
-        super(null, frame);
+        super(frame);
         setAudioTrackList("SpaceMapAudioTrackList.txt");
         initPlayer(frame);
+        textFrameBG = BinaryIO.loadImage(PROLOG_BG);
+        enemies = frame.getCurrentMap().getEnemyCount();
         try {
             enemy = loader.loadNextEnemy();
         } catch (IOException | NullPointerException e) {
@@ -48,6 +54,9 @@ public class SpaceMapGameRoutine extends MartialGameRoutine {
             System.exit(255);
             return;
         }
+        frame.textFrame.addCloseListener( () -> {
+            if (victory) { frame.dispose(); }
+        });
         showProlog();
     }
 
@@ -75,6 +84,10 @@ public class SpaceMapGameRoutine extends MartialGameRoutine {
     public void enemyDead(Combatant enemyMinion, DeadOrAlive target) {
         super.enemyDead(enemyMinion, target);
         loot(enemyMinion);
+        --enemies;
+        if (enemies == 0) {
+            showEpilog();
+        }
     }
 
     @Override
@@ -91,14 +104,13 @@ public class SpaceMapGameRoutine extends MartialGameRoutine {
 
     public final void showProlog() {
         String prolog = TextIO.loadProlog( getClass() );
-        BufferedImage bg = BinaryIO.loadImage(PROLOG_BG);
-        showMessageScreen("Prolog", prolog, bg);
+        showMessageScreen("Prolog", prolog, textFrameBG);
     }
 
     public void showEpilog() {
+        victory = true;
         String epilog = TextIO.loadEpilog( getClass() );
-        BufferedImage bg = BinaryIO.loadImage(PROLOG_BG);
-        showMessageScreen("Epilog", epilog, bg);
+        showMessageScreen("Epilog", epilog, textFrameBG);
     }
 
     public void showMessageScreen(String title, String text, BufferedImage bg) {
@@ -122,8 +134,11 @@ public class SpaceMapGameRoutine extends MartialGameRoutine {
         switch( e.getTarget().getType() ) {
             case ENVIRONMENT_A -> {
                 player.getDialogOutputListener().show( new Message(
-                    "Warum liegt hier eigentlich Stroh rum?", player
+                    "Warum liegt hier überhaupt Stroh rum?", player
                 ));
+            }
+            case EXIT -> {
+                showEpilog();
             }
         }
     }

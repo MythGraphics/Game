@@ -13,23 +13,29 @@ package game;
 
 import game.combat.CombatFrame;
 import game.combat.Combatant;
+import graphic.DeadOrAlive;
 import graphic.map.CollisionEvent;
 import static graphic.map.CollisionType.ENEMY;
-import graphic.DeadOrAlive;
 import java.util.ArrayList;
 import java.util.List;
 
 public abstract class MartialGameRoutine extends GameRoutine {
 
+    final GameFrame frame;
     final List<Enemy> enemyList;
 
     public MartialGameRoutine(List<Enemy> enemyList, GameFrame frame) {
-        super(frame);
+        super(frame.textFrame);
+        this.frame = frame;
         if (enemyList == null) {
             this.enemyList = new ArrayList<>();
         } else {
             this.enemyList = enemyList;
         }
+    }
+
+    public MartialGameRoutine(GameFrame frame) {
+        this(null, frame);
     }
 
     /**

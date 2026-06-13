@@ -11,7 +11,7 @@ package game.item;
  *
  */
 
-import game.DialogOutputListener;
+import graphic.DialogOutputListener;
 import game.Message;
 import game.TextBox;
 import static game.item.ItemActionType.*;

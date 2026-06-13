@@ -11,6 +11,7 @@ package game;
  *
  */
 
+import graphic.DialogOutputListener;
 import audio.AudioPlayer;
 import game.Resource.ResourceType;
 import static game.Resource.ResourceType.*;
@@ -44,15 +45,13 @@ import util.EnumHelper;
 
 public class GameFrame extends JFrame implements ItemEffectListener, ItemActionListener, ResourceChangeListener {
 
-    public final static String CMD_ERROR1 = "Befehl nicht ausführbar. Argumente unzureichend.";
+    public final static String CMD_ERROR1   = "Befehl nicht ausführbar. Argumente unzureichend.";
 
-    public static String playerName = "Teufelsmaus";
+    public static String playerName         = "Teufelsmaus";
+    public static boolean loadCmdInput      = false;
+    public static Color menuColor           = new Color(255, 255, 255);
 
     public final TextFrame textFrame;
-
-    public Color menuColor = new Color(255, 255, 255);
-
-    static boolean loadCmdInput = false;
 
     private final Map<JLabel, ReUsable> iconMap;
     private final Map<ResourceType, JProgressBar> resourceMap;
@@ -736,6 +735,14 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
     public void itemEffectPerformed(Player p) {
         // ToDo implementieren (über Player ?)
         System.out.println("itemEffectPerformed!");
+    }
+
+    public GameMap getCurrentMap() {
+        return map;
+    }
+
+    public GameRoutine getCurrentRoutine() {
+        return routine;
     }
 
     @Override

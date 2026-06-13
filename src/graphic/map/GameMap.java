@@ -198,7 +198,7 @@ public abstract class GameMap extends JPanel implements ActionListener {
                 }
                 x = c*tileSize;
                 y = r*tileSize;
-                loadTileMapChar( tileMapChar, x, y, tileSize );
+                loadTileMapChar(tileMapChar, x, y, tileSize);
             }
         }
         loadSpaceTile();
@@ -254,9 +254,9 @@ public abstract class GameMap extends JPanel implements ActionListener {
             new CollisionEvent(
                 this,
                 CollisionType.BOUNDARY,
-                new Block(-1, -1, -1, PANEL) {
+                new Block(collider.x, collider.y, 0, BOUNDARY) {
                     @Override
-                    public BufferedImage getImage() { return null; }
+                    public Image getImage() { return null; }
                 },
                 collider
             )
@@ -472,6 +472,18 @@ public abstract class GameMap extends JPanel implements ActionListener {
 
     private void drawPlayer(Graphics2D g2d, int offsetX, int offsetY, Block player) {
         g2d.drawImage( player.getImage(), player.x-offsetX, player.y-offsetY, player.width, player.height, null );
+    }
+
+    public int getEnemyCount() {
+        int value = 0;
+        for (Block block : blocks) {
+            if (block instanceof DeadOrAliveBlock doaBlock) {
+                if ( doaBlock.getType() == ENEMY && !doaBlock.isDead() ) {
+                    ++value;
+                }
+            }
+        }
+        return value;
     }
 
 }

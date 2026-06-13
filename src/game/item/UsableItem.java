@@ -12,7 +12,7 @@ package game.item;
  *
  */
 
-import game.DialogOutputListener;
+import graphic.DialogOutputListener;
 import game.Message;
 import game.Player;
 import game.Resource;

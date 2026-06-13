@@ -11,10 +11,11 @@ package game;
  *
  */
 
-import graphic.map.CollisionActionListener;
-import graphic.map.CollisionEvent;
+import graphic.DialogOutputListener;
 import graphic.io.TextIO;
 import graphic.map.BlockType;
+import graphic.map.CollisionActionListener;
+import graphic.map.CollisionEvent;
 import graphic.map.GameMap;
 import java.awt.Point;
 import java.util.HashMap;
@@ -30,13 +31,11 @@ public abstract class GameRoutine implements CollisionActionListener {
     final Map<BlockType, TextBox> dialogMap = new HashMap<>();
     final Random rand = new Random();
     final GameObjectLoader loader;
-    final GameFrame frame;
 
     private List<String> audioTrackList;
 
-    public GameRoutine(GameFrame frame) {
-        this.frame          = frame;
-        this.dialogListener = frame.textFrame;
+    public GameRoutine(DialogOutputListener dialogListener) {
+        this.dialogListener = dialogListener;
         this.loader         = new GameObjectLoader( getClass() );
     }
 

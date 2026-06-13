@@ -13,10 +13,10 @@ package game;
 
 import static game.Resource.ResourceType.AIR;
 import static game.Resource.ResourceType.HEALTH;
-import graphic.map.CollisionEvent;
 import static graphic.io.BinaryIO.TILESET;
 import static graphic.io.BinaryIO.loadImage;
 import graphic.io.TilesetUtility;
+import graphic.map.CollisionEvent;
 import graphic.map.GameMap;
 import graphic.map.UWMap;
 
@@ -25,7 +25,7 @@ public class UWMapGameRoutine extends GameRoutine implements ResourceConsumeList
     private Player player;
 
     public UWMapGameRoutine(UWMap map, GameFrame frame) {
-        super(frame);
+        super(frame.textFrame);
         initPlayer(map, frame);
     }
 

@@ -13,10 +13,10 @@ package game;
 
 public class RemoteGameRoutine extends GameRoutine {
 
-    private final Player player;
+    final Player player;
 
     public RemoteGameRoutine(GameFrame frame) {
-        super(frame);
+        super(frame.textFrame);
         this.player = new Player(GameFrame.playerName, frame.textFrame);
     }
 
