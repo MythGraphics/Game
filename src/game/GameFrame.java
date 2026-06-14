@@ -11,15 +11,14 @@ package game;
  *
  */
 
-import graphic.DialogOutputListener;
 import audio.AudioPlayer;
 import game.Resource.ResourceType;
 import static game.Resource.ResourceType.*;
 import game.combat.Combatant;
 import game.item.*;
+import graphic.DialogOutputListener;
 import graphic.TextFrame;
 import static graphic.io.BinaryIO.AUDIO;
-import static graphic.io.BinaryIO.ZIP_PATH;
 import graphic.io.ImageUtility;
 import graphic.map.*;
 import java.awt.Color;
@@ -651,7 +650,7 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
 
         String audioFilePath = audioTrackList.get(index);
         try {
-            audioPlayer = new AudioPlayer( ZIP_PATH+AUDIO+audioFilePath, true );
+            audioPlayer = new AudioPlayer( AUDIO+audioFilePath, true );
             new Thread(audioPlayer).start();
         } catch (UnsupportedAudioFileException | LineUnavailableException | IOException e) {
             System.err.println( "Fehler bei Audio-Wiedergabe: " + e.getMessage() );
