@@ -11,7 +11,7 @@ package game.combat;
  *
  */
 
-import graphic.DialogOutputListener;
+import graphic.texter.DialogOutputListener;
 import game.Message;
 import game.item.IsItem;
 import game.item.Item;

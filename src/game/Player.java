@@ -11,7 +11,7 @@ package game;
  *
  */
 
-import graphic.DialogOutputListener;
+import graphic.texter.DialogOutputListener;
 import game.Resource.ResourceType;
 import static game.Resource.ResourceType.CREDIT;
 import static game.Resource.ResourceType.HEALTH;

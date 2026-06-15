@@ -69,7 +69,7 @@ public class Main {
                 case "--textframe" -> {
                     String[] args2 = new String[args.length-1-i];
                     System.arraycopy(args, i+1, args2, 0, args2.length);
-                    graphic.TextFrame.main(args2);
+                    graphic.texter.TextFrame.main(args2);
                 }
                 case "--version" -> System.out.println(NAME + " v" + VERSION);
                 default -> {

@@ -19,7 +19,7 @@ import static game.combat.CombatFactory.Group.ZERG;
 import game.combat.Combatant;
 import game.item.LootManager;
 import graphic.DeadOrAlive;
-import graphic.TextFrame;
+import graphic.texter.TextFrame;
 import graphic.io.BinaryIO;
 import static graphic.io.BinaryIO.*;
 import graphic.io.TextIO;

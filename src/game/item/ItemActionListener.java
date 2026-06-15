@@ -11,7 +11,7 @@ package game.item;
  *
  */
 
-import graphic.DialogOutputListener;
+import graphic.texter.DialogOutputListener;
 
 // für das Inventar
 public interface ItemActionListener {

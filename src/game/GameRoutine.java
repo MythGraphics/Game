@@ -11,7 +11,7 @@ package game;
  *
  */
 
-import graphic.DialogOutputListener;
+import graphic.texter.DialogOutputListener;
 import graphic.io.TextIO;
 import graphic.map.BlockType;
 import graphic.map.CollisionActionListener;

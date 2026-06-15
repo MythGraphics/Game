@@ -11,7 +11,7 @@ package game.item;
  *
  */
 
-import graphic.DialogOutputListener;
+import graphic.texter.DialogOutputListener;
 import game.Message;
 import game.Player;
 import game.Resource;

@@ -11,8 +11,8 @@ package game.combat;
  *
  */
 
-import graphic.MultiTextRenderer;
-import graphic.TextRenderer;
+import graphic.texter.MultiTextRenderer;
+import graphic.texter.TextRenderer;
 import java.awt.EventQueue;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
