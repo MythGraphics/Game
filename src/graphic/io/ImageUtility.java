@@ -30,18 +30,17 @@ public class ImageUtility {
             return null;
         }
 
-        // Originale Breite und Höhe des Bildes
-        int originalWidth = image.getWidth();
+        int originalWidth  = image.getWidth();
         int originalHeight = image.getHeight();
 
-        double widthRatio = (double) targetWidth / originalWidth;
+        double widthRatio  = (double) targetWidth  / originalWidth;
         double heightRatio = (double) targetHeight / originalHeight;
 
         // Das kleinere Verhältnis verwenden, um das Seitenverhältnis beizubehalten
         double ratio = Math.min(widthRatio, heightRatio);
 
         // Neue Breite und Höhe berechnen
-        int newWidth = (int) (originalWidth * ratio);
+        int newWidth  = (int) (originalWidth  * ratio);
         int newHeight = (int) (originalHeight * ratio);
 
         // Bild skalieren
@@ -80,7 +79,7 @@ public class ImageUtility {
      * @return Ein neues, gespiegeltes BufferedImage
      */
     public static BufferedImage flipImage(BufferedImage inputImage, boolean horizontal) {
-        int width = inputImage.getWidth();
+        int width  = inputImage.getWidth();
         int height = inputImage.getHeight();
 
         // Erstelle ein neues Bild mit denselben Dimensionen und Typ

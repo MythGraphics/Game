@@ -25,7 +25,7 @@ public class CollisionEvent extends EventObject {
         this.collider   = collider;
     }
 
-    public CollisionType getCollisionType() {
+    public CollisionType getType() {
         if ( cType == null ) {
             return target.getType().getCollisionType();
         }

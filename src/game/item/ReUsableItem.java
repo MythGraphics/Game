@@ -11,10 +11,10 @@ package game.item;
  *
  */
 
-import graphic.texter.DialogOutputListener;
 import game.Message;
 import game.Player;
 import game.Resource;
+import graphic.texter.DialogOutputListener;
 import java.util.LinkedList;
 
 public class ReUsableItem extends UsableItem implements ReUsable {
@@ -39,8 +39,8 @@ public class ReUsableItem extends UsableItem implements ReUsable {
     }
 
     private void revokeEffect(Player player, ItemEffect effect) {
-        Resource r = player.getResource(effect.resource);
-        r.buffMax(-effect.buffMax);
+        Resource r = player.getResource(effect.rType);
+        effect.buff(r);
     }
 
     @Override

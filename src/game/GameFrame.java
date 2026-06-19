@@ -76,7 +76,6 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
         };
         initGameCore(mapType);
         player = routine.getPlayer();
-        menuColor = ColorLibrary.invert( map.getAmbientColor() );
 
         if (loadCmdInput) {
             initRemote();
@@ -93,7 +92,7 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        Main.mapType = "space";
+        Main.mapType = "land";
         Main.main(null);
     }
 
@@ -721,13 +720,14 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
 
     @Override
     public void resourceChangePerformed(Resource resource) {
+        if ( resource.getType() == CREDIT ) {
+            creditField.setText( String.valueOf( resource.getValue() ));
+            return;
+        }
         JProgressBar ui = resourceMap.get( resource.getType() );
         ui.setMaximum( resource.getMax() );
         ui.setValue( resource.getValue() );
         ui.setString( getProgressBarString( ui ));
-        if ( resource.getType() == CREDIT ) {
-            creditField.setText( String.valueOf( resource.getValue() ));
-        }
     }
 
     @Override

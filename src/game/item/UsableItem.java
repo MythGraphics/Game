@@ -12,12 +12,12 @@ package game.item;
  *
  */
 
-import graphic.texter.DialogOutputListener;
 import game.Message;
 import game.Player;
 import game.Resource;
 import static game.item.ItemEffect.ItemEffectType.PRÄFIX;
 import static game.item.ItemEffect.ItemEffectType.SUFFIX;
+import graphic.texter.DialogOutputListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -58,9 +58,8 @@ public class UsableItem extends Item implements Usable {
     }
 
     private void applyEffect(Player player, ItemEffect effect) {
-        Resource r = player.getResource(effect.resource);
-        r.buffMax(effect.buffMax);
-        r.recharge(effect.value2add);
+        Resource r = player.getResource(effect.rType);
+        effect.buff(r);
     }
 
     @Override
@@ -76,11 +75,11 @@ public class UsableItem extends Item implements Usable {
         StringBuilder sb = new StringBuilder( super.getName() );
         for (int i = 0; i < itemEffectList.size(); ++i) {
             if ( itemEffectList.get(i) != null ) {
-                if ( itemEffectList.get(i).type == PRÄFIX ) {
+                if ( itemEffectList.get(i).eType == PRÄFIX ) {
                     sb.insert( 0, " " );
                     sb.insert( 0, itemEffectList.get(i).name );
                 }
-                if ( itemEffectList.get(i).type == SUFFIX ) {
+                if ( itemEffectList.get(i).eType == SUFFIX ) {
                     sb.append( " " );
                     sb.append( itemEffectList.get(i).name );
                 }

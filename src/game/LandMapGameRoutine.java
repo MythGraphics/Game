@@ -14,8 +14,8 @@ package game;
 import static game.Resource.ResourceType.*;
 import game.item.Item;
 import game.item.ItemEffect;
-import static game.item.ItemEffect.ItemEffectType.PRÄFIX;
-import static game.item.ItemEffect.ItemEffectType.SUFFIX;
+import static game.item.ItemEffect.ItemEffectType.*;
+import static game.item.ItemEffect.ValueType.*;
 import game.item.ReUsableItem;
 import game.item.UsableItem;
 import static graphic.io.BinaryIO.TILESET;
@@ -46,8 +46,8 @@ public class LandMapGameRoutine extends GameRoutine {
             // load quest
             ReUsableItem qItem = new ReUsableItem(-1, "Halskette");
             qItem.addItemEffect(
-                new ItemEffect("Neptunes", PRÄFIX, HEALTH, 0, 200),
-                new ItemEffect("des Delfins", SUFFIX, AIR, 0, 200)
+                new ItemEffect("Neptunes", PRÄFIX, HEALTH, 100, PERCENT, false),
+                new ItemEffect("des Delfins", SUFFIX, AIR, 100, PERCENT, false)
             );
             int questID = ID.getNextQuestId();
             qObj = getLoader().loadQuest(questID, npc, qItem, player);
@@ -55,10 +55,10 @@ public class LandMapGameRoutine extends GameRoutine {
 
             // load environment items
             UsableItem item = (UsableItem) getLoader().loadNextItem(player);
-            item.addItemEffect( new ItemEffect( "Blutsaugender", PRÄFIX, HEALTH, 20, 20 ));
+            item.addItemEffect( new ItemEffect( "Blutsaugender", PRÄFIX, HEALTH, 20, PERCENT, false ));
             items.add(item);
             item = (UsableItem) getLoader().loadNextItem(player);
-            item.addItemEffect( new ItemEffect( "einfacher", PRÄFIX, CREDIT, item.getPrice() ));
+            item.addItemEffect( new ItemEffect( "einfacher", PRÄFIX, CREDIT, item.getPrice(), ABSOLUTE ));
             items.add(item);
             Collections.shuffle(items); // Item-Liste durchmischen
         } catch (IOException | NullPointerException e) {
@@ -69,12 +69,16 @@ public class LandMapGameRoutine extends GameRoutine {
     }
 
     private void initPlayer(GameFrame frame) {
-        Resource health = new Resource( "Gesundheit", HEALTH, 1000, 1000 );
+        Resource health = new Resource("Gesundheit", HEALTH, 1000, 1000);
+        Resource air    = new Resource("Luft", AIR, 100, 100);
+        Resource money  = new Resource("Credits", CREDIT, 1000, 0);
         health.addResourceChangeListener(frame);
-        player = new Player(GameFrame.playerName, frame.textFrame, health);
+        air.addResourceChangeListener(frame);
+        money.addResourceChangeListener(frame);
+        player = new Player(GameFrame.playerName, frame.textFrame, health, air, money);
         DescriptorLoader dLoader = new DescriptorLoader( getClass() );
         try {
-            player.setImg( dLoader.loadSpriteSets(TILESET+"player/" )[0][0] );
+            player.setImg( dLoader.loadSpriteSets( TILESET+"player/" )[0][0] );
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -93,7 +97,7 @@ public class LandMapGameRoutine extends GameRoutine {
     @Override
     public void collisionPerformed(CollisionEvent e) {
         super.collisionPerformed(e);
-        switch( e.getCollisionType() ) {
+        switch( e.getType() ) {
             case ENV_PASS -> {
                 if ( rand.nextInt(100) < 90 ) {
                     break;

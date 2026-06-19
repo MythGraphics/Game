@@ -49,7 +49,7 @@ public class DefaultLandMap extends GameMap {
         "X                                             X",
         "X   I T O                                     X",
         "X                                             X",
-        "X                    P                        X",
+        "X     P                                       X",
         "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
         "VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV",
     };

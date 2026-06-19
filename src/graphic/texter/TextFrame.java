@@ -187,7 +187,7 @@ public class TextFrame extends JFrame implements DialogOutputListener {
     public final void setBackground(Color color) {
         try {
             super.getContentPane().setBackground(color);
-        } catch (NullPointerException e) {}
+        } catch (NullPointerException ignore) {}
     }
 
     private void jPanel1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanel1MouseClicked

@@ -12,6 +12,7 @@ package game;
  */
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Resource implements HasName {
 
@@ -25,15 +26,15 @@ public class Resource implements HasName {
     }
 
     final String name;
+    final int baseMax;
 
     private final ResourceType type;
-    private final ArrayList<ResourceChangeListener> changeListeners     = new ArrayList<>();
-    private final ArrayList<ResourceConsumeListener> consumeListeners   = new ArrayList<>();
-    private final ArrayList<ResourceRechargeListener> rechargeListeners = new ArrayList<>();
+    private final List<ResourceChangeListener> changeListeners     = new ArrayList<>();
+    private final List<ResourceConsumeListener> consumeListeners   = new ArrayList<>();
+    private final List<ResourceRechargeListener> rechargeListeners = new ArrayList<>();
 
-    private int defaultMax  = 100;
-    private int max         = 100;
-    private int value       = 0;
+    private int max   = 0;
+    private int value = 0;
 
     public Resource(String name, ResourceType type) {
         this(name, type, 100);
@@ -46,7 +47,7 @@ public class Resource implements HasName {
     public Resource(String name, ResourceType type, int max, int value) {
         this.name       = name;
         this.type       = type;
-        this.defaultMax = max;
+        this.baseMax    = max;
         this.max        = max;
         this.value      = value;
     }
@@ -76,54 +77,75 @@ public class Resource implements HasName {
         return value;
     }
 
-    public void setValueAsPercentage(int percentMax) {
-        value = max*percentMax/100;
-        fireEvent();
+    public void addValue(int value) {
+        if (value == 0) {
+            return;
+        }
+        this.value += value;
+        fireChangeEvent();
+        fireRechargeEvent(value, 0);
     }
 
     public void setValue(int value) {
+        if (this.value == value) {
+            return;
+        }
         int oldValue = this.value;
         this.value = value;
-        fireEvent();
+        fireChangeEvent();
+        if (oldValue < value) {
+            fireRechargeEvent(value-oldValue, 0);
+        }
+    }
+
+    public void setValueAsMaxPercentage(int percentMax) {
+        if (value == max*percentMax/100) {
+            return;
+        }
+        int oldValue = value;
+        value = max*percentMax/100;
+        fireChangeEvent();
         if (oldValue < value) {
             fireRechargeEvent(value-oldValue, 0);
         }
     }
 
     public void setMax(int value) {
-        defaultMax = value;
         max = value;
-        fireEvent();
+        fireChangeEvent();
     }
 
-    public void setMaxAndFill(int value) {
+    public void buffMax(int value) {
+        max += max;
+        fireChangeEvent();
+    }
+
+    public void setMaxAndFill(int max) {
         int oldValue = this.value;
-        defaultMax = value;
-        max = value;
-        this.value = value;
-        fireEvent();
+        this.max = max;
+        this.value = max;
+        fireChangeEvent();
         if (oldValue < this.value) {
             fireRechargeEvent(this.value-oldValue, 0);
         }
     }
 
-    public void buffMaxAsPercentage(int percentMax) {
-        max += defaultMax*percentMax/100;
-        fireEvent();
-    }
-
-    public void buffMax(int value) {
-        max += max;
-        fireEvent();
+    public void setMaxAsPercentage(int percentMax) {
+        max += baseMax*percentMax/100;
+        fireChangeEvent();
     }
 
     public void resetMax() {
-        max = defaultMax;
-        fireEvent();
+        max = baseMax;
+        fireChangeEvent();
     }
 
     public int getMax() {
         return max;
+    }
+
+    public int getBaseMax() {
+        return baseMax;
     }
 
     /**
@@ -140,7 +162,7 @@ public class Resource implements HasName {
             overuse = -value;
             value = 0;
         }
-        fireEvent();
+        fireChangeEvent();
         fireConsumeEvent(quantity-overuse, overuse);
         return overuse;
     }
@@ -156,7 +178,7 @@ public class Resource implements HasName {
     public boolean consume(int quantity) {
         if ( value >= quantity ) {
             value -= quantity;
-            fireEvent();
+            fireChangeEvent();
             fireConsumeEvent(quantity, 0);
             return true;
         }
@@ -178,7 +200,27 @@ public class Resource implements HasName {
             overCharge = value-max;
             value = max;
         }
-        fireEvent();
+        fireChangeEvent();
+        fireRechargeEvent(value-oldValue, overCharge);
+    }
+
+    /**
+     * Recharges the resource up to percent max.
+     * Does NOT fire any event, if value is already at max.
+     * @param percentCharge The amount of resource to be (re-)charged in % of max.
+     */
+    public void rechargeAsPercentageMax(int percentCharge) {
+        if (value == max) {
+            return;
+        }
+        int oldValue = value;
+        int overCharge = 0;
+        value += value*(percentCharge/100);
+        if ( value > max ) {
+            overCharge = value-max;
+            value = max;
+        }
+        fireChangeEvent();
         fireRechargeEvent(value-oldValue, overCharge);
     }
 
@@ -190,7 +232,7 @@ public class Resource implements HasName {
         rechargeListeners.forEach( listener -> listener.resourceRechargePerformed( this, charge, overCharge ));
     }
 
-    private void fireEvent() {
+    private void fireChangeEvent() {
         changeListeners.forEach( listener -> listener.resourceChangePerformed( this ));
     }
 

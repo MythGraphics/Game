@@ -76,7 +76,7 @@ public abstract class MartialGameRoutine extends GameRoutine {
     @Override
     public void collisionPerformed(CollisionEvent e) {
         super.collisionPerformed(e);
-        switch( e.getCollisionType() ) {
+        switch( e.getType() ) {
             case ENEMY -> {
                 Combatant playerMinion = getPlayer().getPlayerAsMinion();
                 Combatant enemyMinion  = getEnemy().getMinion();

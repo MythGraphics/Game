@@ -15,8 +15,8 @@ import game.InteractiveObject;
 import game.Message;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
-import java.awt.Image;
 import java.awt.Point;
+import java.awt.image.BufferedImage;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -24,10 +24,11 @@ public class TextOverImageRenderer extends TextRenderer {
 
     final LinkedList<Message> msgs = new LinkedList<>();
 
-    private Image bg;
+    private BufferedImage bg;
     private Message msg;
     private Dimension imgSize; // default: null
     private boolean typeOverImage = false;
+    private boolean keepAspectRatio = true;
 
     public TextOverImageRenderer(Point p) {
         super(p);
@@ -79,22 +80,40 @@ public class TextOverImageRenderer extends TextRenderer {
         setTextPosition( new Point( TextRenderer.D, TextRenderer.D ));
     }
 
-    private void setBackground(Image bg) {
+    private void setBackground(BufferedImage bg) {
         this.bg = bg;
         if (imgSize == null) {
             scaleImageOnSize();
         }
     }
 
-    public void setBackground(Image bg, Dimension imgSize) {
+    public void setBackground(BufferedImage bg, Dimension imgSize) {
         setImageSize(imgSize);
         setBackground(bg);
+    }
+
+    public static Dimension getScaledDimension(BufferedImage image, Dimension targetDim) {
+        if (image == null) {
+            return targetDim;
+        }
+        int originalWidth  = image.getWidth();
+        int originalHeight = image.getHeight();
+        double widthRatio  = (double) targetDim.width  / originalWidth;
+        double heightRatio = (double) targetDim.height / originalHeight;
+        double ratio = Math.min(widthRatio, heightRatio);
+        int width  = (int) (originalWidth  * ratio);
+        int height = (int) (originalHeight * ratio);
+        return new Dimension(width, height);
+    }
+
+    public void keepAspectRatio(boolean keepAspectRatio) {
+        this.keepAspectRatio = keepAspectRatio;
     }
 
     /**
      * Sets the size of the background image.
      * NULL for full size.
-     * @param imgSize The image size
+     * @param imgSize target image size
      */
     public void setImageSize(Dimension imgSize) {
         this.imgSize = imgSize;
@@ -114,8 +133,8 @@ public class TextOverImageRenderer extends TextRenderer {
                 // volle Panel-Größe nutzen
                 g2d.drawImage(bg, 0, 0, getWidth(), getHeight(), null);
             } else {
-                // imgSize nutzen
-                g2d.drawImage(bg, 0, 0, imgSize.width, imgSize.height, null);
+                Dimension size = keepAspectRatio ? getScaledDimension(bg, this.imgSize) : this.imgSize;
+                g2d.drawImage(bg, 0, 0, size.width, size.height, null);
             }
         }
         super.draw(g2d);

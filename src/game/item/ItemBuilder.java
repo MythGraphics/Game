@@ -13,6 +13,7 @@ package game.item;
 
 import game.ID;
 import game.Resource.ResourceType;
+import static game.item.ItemEffect.ValueType.*;
 import game.item.ItemEffect.ItemEffectType;
 import static game.item.ItemEffect.ItemEffectType.PRÄFIX;
 import static game.item.ItemEffect.ItemEffectType.SUFFIX;
@@ -48,15 +49,6 @@ public class ItemBuilder {
         itemGUIImages.add(guiImg);
     }
 
-    public void addEffect(String effectName, int value, int buff, ItemEffectType effectType, ResourceType r) {
-        ItemEffect ie = new ItemEffect(effectName, effectType, r, value, buff);
-        if ( effectType == PRÄFIX ) {
-            itemEffectList_prä.add(ie);
-        } else {
-            itemEffectList_suff.add(ie);
-        }
-    }
-
     public Item createRandomItem() {
         Random r = new Random();
         int rintItem = r.nextInt( itemNames.size() );
@@ -74,7 +66,7 @@ public class ItemBuilder {
     public static UsableItem createCoinPouch(String suffix, int value) {
         UsableItem item = new UsableItem( 0, "Münzbeutel" );
         item.setPrice(value);
-        item.addItemEffect( new ItemEffect( suffix, SUFFIX, ResourceType.CREDIT, value ));
+        item.addItemEffect( new ItemEffect( suffix, SUFFIX, ResourceType.CREDIT, value, ABSOLUTE ));
         return item;
     }
 
