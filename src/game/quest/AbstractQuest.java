@@ -15,7 +15,6 @@ import game.HasDialog;
 import game.HasID;
 import game.InteractiveObject;
 import game.Message;
-import game.item.IsItem;
 import game.item.Item;
 import static game.quest.QuestStatus.*;
 import java.util.ArrayList;
@@ -53,7 +52,7 @@ public abstract class AbstractQuest implements HasDialog, HasID {
     }
 
     abstract List<Message> getMessageList();
-    abstract IsItem getReward();
+    abstract Item getReward();
 
     public Item getQuestObjective() {
         return objective;
@@ -115,7 +114,7 @@ public abstract class AbstractQuest implements HasDialog, HasID {
      * Spieler erhält das Belohnungsitem.
      * @return Belohnung
      */
-    public IsItem deliver() {
+    public Item deliver() {
         if ( status == READY ) {
             status = COMPLETE;
             return getReward();
@@ -128,7 +127,7 @@ public abstract class AbstractQuest implements HasDialog, HasID {
      * @param questObject QuestObjective
      * @return Belohnung
      */
-    public IsItem deliver(Item questObject) {
+    public Item deliver(Item questObject) {
         if ( check( questObject )) {
             return deliver();
         }

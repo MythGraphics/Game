@@ -11,6 +11,7 @@ package game;
  *
  */
 
+@FunctionalInterface
 public interface ResourceConsumeListener {
 
     void resourceConsumePerformed(Resource r, int use, int overuse);

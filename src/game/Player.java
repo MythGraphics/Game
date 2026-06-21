@@ -11,23 +11,28 @@ package game;
  *
  */
 
-import graphic.texter.DialogOutputListener;
 import game.Resource.ResourceType;
 import static game.Resource.ResourceType.CREDIT;
 import static game.Resource.ResourceType.HEALTH;
-import game.item.*;
+import game.item.Item;
+import static game.item.ItemEvent.ItemActionType.REMOVE;
+import game.item.ReUsableItem;
+import game.item.UsableItem;
 import game.quest.Quest;
 import game.quest.QuestListener;
 import static game.quest.QuestStatus.ACTIVE;
 import static game.quest.QuestStatus.READY;
-import java.util.*;
+import graphic.texter.DialogOutputListener;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class Player extends InteractiveObject implements HasHealth, Trader {
 
     private final Map<ResourceType, Resource> resources; // Health, ...
-    private final ArrayList<Usable> items; // aktive, also angelegte Items
-    private final Collection<ItemActionListener> itemActionListeners; // feuert bei Änderung an aktiven Spieler-Items
-    private final Collection<QuestListener> questListeners; // feuert bei Änderung des Quest-Status
+    private final ArrayList<UsableItem> items; // aktive, also angelegte Items
+    private final List<QuestListener> questListeners; // feuert bei Änderung des Quest-Status
     private final DialogOutputListener dialogListener; // Dialog-Ausgabe
     private final InventoryManager inventory;
     private final MinionManager minions;
@@ -51,8 +56,7 @@ public class Player extends InteractiveObject implements HasHealth, Trader {
             addResource(r);
         }
         items = new ArrayList<>();
-        itemActionListeners = new HashSet<>();
-        questListeners = new HashSet<>();
+        questListeners = new ArrayList<>();
         inventory = new InventoryManager(this);
         minions = new MinionManager();
     }
@@ -82,12 +86,6 @@ public class Player extends InteractiveObject implements HasHealth, Trader {
 
     public game.combat.Player getPlayerAsMinion() {
         return playerMinion;
-    }
-
-    private void fireItemEvent(IsItem item, ItemActionType action) {
-        itemActionListeners.forEach( listener -> listener.itemActionPerformed(
-            item, action, dialogListener
-        ));
     }
 
     private void fireQuestEvent(Quest quest) {
@@ -129,22 +127,18 @@ public class Player extends InteractiveObject implements HasHealth, Trader {
         getResource(CREDIT).recharge(credits);
     }
 
-    public void addItemActionListener(ItemActionListener listener) {
-        itemActionListeners.add(listener);
-    }
-
     public void addQuestListener(QuestListener listener) {
         questListeners.add(listener);
     }
 
-    void addActiveItem(ReUsable item) {
+    void addActiveItem(ReUsableItem item) {
         items.add(item);
     }
 
-    public ReUsable removeActiveItem(ReUsable item) {
+    public ReUsableItem removeItem(ReUsableItem item) {
         if ( items.remove( item )) {
             item.remove(this); // ItemEffekt zurücksetzen
-            fireItemEvent(item, ItemActionType.REMOVE);
+            item.fireEvent(this, REMOVE);
             return item;
         } else {
             return null;
@@ -188,6 +182,11 @@ public class Player extends InteractiveObject implements HasHealth, Trader {
             return false;
         }
         return ( quest.getStatus() == READY ) || ( quest.getStatus() == ACTIVE );
+    }
+
+    @Override
+    public InteractiveObject clone() throws CloneNotSupportedException {
+        throw new CloneNotSupportedException( "Clone on " + getClass() + " not supported." );
     }
 
 }

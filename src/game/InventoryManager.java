@@ -11,9 +11,9 @@ package game;
  *
  */
 
-import game.item.IsItem;
 import game.item.Item;
-import game.item.ItemActionType;
+import static game.item.ItemEvent.ItemActionType.BUY;
+import static game.item.ItemEvent.ItemActionType.SELL;
 
 public class InventoryManager extends Inventory {
 
@@ -24,21 +24,16 @@ public class InventoryManager extends Inventory {
     }
 
     @Override
-    void fireEvent(IsItem item, ItemActionType action) {
-        item.itemActionPerformed( item, action, player.getDialogOutputListener() );
-    }
-
-    @Override
     public Player getOwner() {
         return player;
     }
 
     public boolean buy(Trader buyer, Trader seller, Item item) {
-        boolean b = trade(buyer, seller, item);
-        if (b) {
-            fireEvent(item, ItemActionType.BUY);
+        boolean success = trade(buyer, seller, item);
+        if (success) {
+            item.fireEvent(this, BUY);
         }
-        return b;
+        return success;
     }
 
     /**
@@ -49,23 +44,23 @@ public class InventoryManager extends Inventory {
      * @return TRUE, wenn erfolgreich, FALSE, wenn nicht.
      */
     public boolean sell(Trader seller, Trader buyer, Item item) {
-        boolean b = trade(buyer, seller, item);
-        if (b) {
-            fireEvent(item, ItemActionType.SELL);
+        boolean success = trade(buyer, seller, item);
+        if (success) {
+            item.fireEvent(this, SELL);
         }
-        return b;
+        return success;
     }
 
     private static boolean trade(Trader buyer, Trader seller, Item item) {
         if ( item.getPrice() > buyer.getCredits() ) {
             return false; // nicht genug Credits
         }
-        boolean b = seller.getInventory().hasItem(item);
-        if (!b) {
+        boolean success = seller.getInventory().hasItem(item);
+        if (!success) {
             return false; // Item nicht vorhanden
         }
-        b = seller.getInventory().remove(item);
-        if (!b) {
+        success = seller.getInventory().remove(item);
+        if (!success) {
             return false; // Verkäufer rückt Item nicht heraus
         }
         seller.addCredits( item.getPrice() );

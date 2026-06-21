@@ -11,11 +11,9 @@ package game.item;
  *
  */
 
-import graphic.texter.DialogOutputListener;
-
-// für das Inventar
+@FunctionalInterface
 public interface ItemActionListener {
 
-    void itemActionPerformed(IsItem item, ItemActionType action, DialogOutputListener dialogListener);
+    void itemActionPerformed(ItemEvent e);
 
 }

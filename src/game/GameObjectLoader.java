@@ -15,9 +15,8 @@ import static game.GameObject.*;
 import game.combat.CombatFactory.Group;
 import game.combat.*;
 import game.item.Item;
-import game.item.ItemActionType;
-import static game.item.ItemActionType.FIND;
-import static game.item.ItemActionType.USE;
+import game.item.ItemEvent.ItemActionType;
+import static game.item.ItemEvent.ItemActionType.*;
 import game.item.ReUsableItem;
 import game.item.UsableItem;
 import game.quest.Quest;
@@ -34,7 +33,7 @@ import static util.EnumHelper.getEnumFromString;
 
 public class GameObjectLoader {
 
-    public record PropertiesHelper(int index, boolean isPlayer, ItemActionType itemActionType, String value)
+    public record PropertiesHelper(int index, boolean isPlayer, ItemActionType actionType, String value)
     implements Comparable<PropertiesHelper> {
         @Override
         public int compareTo(PropertiesHelper other) {
@@ -45,8 +44,9 @@ public class GameObjectLoader {
     public final static String FILEXT = ".properties";
 
     // Gruppe 1: (\\d*) fängt die Ziffern, Gruppe 2: (player)? fängt das Wort
-    public final static Pattern PATTERN_FIND = Pattern.compile("^onFind(\\d*)(player)?$");
-    public final static Pattern PATTERN_USE  = Pattern.compile("^onUse(\\d*)(player)?$");
+    public final static Pattern PATTERN_FIND   = Pattern.compile("^onFind(\\d*)(player)?$");
+    public final static Pattern PATTERN_USE    = Pattern.compile("^onUse(\\d*)(player)?$");
+    public final static Pattern PATTERN_REMOVE = Pattern.compile("^onRemove(\\d*)(player)?$");
 
     private final Class<?> clazz;
 
@@ -82,8 +82,9 @@ public class GameObjectLoader {
         List<PropertiesHelper> helperList = new ArrayList<>();
         for ( Map.Entry<Object, Object> entry : p.entrySet() ) {
             String key = entry.getKey().toString();
-            Matcher matcherFind = PATTERN_FIND.matcher(key);
-            Matcher matcherUse  = PATTERN_USE.matcher(key);
+            Matcher matcherFind   = PATTERN_FIND.matcher(key);
+            Matcher matcherUse    = PATTERN_USE.matcher(key);
+            Matcher matcherRemove = PATTERN_REMOVE.matcher(key);
             if ( matcherFind.matches() ) {
                 helperList.add( getHelper( entry, matcherFind, FIND ));
             } else if ( matcherUse.matches() ) {
@@ -92,24 +93,37 @@ public class GameObjectLoader {
                     continue;
                 }
                 helperList.add( getHelper( entry, matcherUse, USE ));
+            } else if ( matcherRemove.matches() ) {
+                if ( !( item instanceof ReUsableItem )) {
+                    System.err.println( "\"onRemove\" auf Item-Klasse " + item.getClass() + " nicht anwendbar." );
+                    continue;
+                }
+                helperList.add( getHelper( entry, matcherRemove, REMOVE ));
             }
         }
         Collections.sort(helperList);
         for (PropertiesHelper helper : helperList) {
-            switch (helper.itemActionType) {
-                case FIND ->
+            switch (helper.actionType) {
+                case FIND -> {
                     item.addMessageOnFind( new Message( helper.value(), helper.isPlayer() ? player : item ));
-                case USE ->
-                    ((UsableItem) (item)).addMessageOnUse(
+                }
+                case USE -> {
+                    ((UsableItem) item).addMessageOnUse(
                         new Message( helper.value(), helper.isPlayer() ? player : item )
                     );
+                }
+                case REMOVE -> {
+                    ((ReUsableItem) item).addMessageOnRemove(
+                        new Message( helper.value(), helper.isPlayer() ? player : item )
+                    );
+                }
             }
         }
 
         return item;
     }
 
-    private PropertiesHelper getHelper(Map.Entry<Object, Object> entry, Matcher matcher, ItemActionType type) {
+    private PropertiesHelper getHelper(Map.Entry<Object, Object> entry, Matcher matcher, ItemActionType actionType) {
         // Ziffer auslesen (wenn keine da ist, -1 für die Reihenfolge)
         String digits = matcher.group(1);
         int index = digits.isEmpty() ? -1 : Integer.parseInt(digits);
@@ -118,7 +132,7 @@ public class GameObjectLoader {
         boolean isPlayer = matcher.group(2) != null;
         String value = entry.getValue().toString();
 
-        return new PropertiesHelper( index, isPlayer, type, value );
+        return new PropertiesHelper(index, isPlayer, actionType, value);
     }
 
     public Npc loadNextNpc(Player player) throws IOException {

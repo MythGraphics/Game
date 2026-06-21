@@ -11,6 +11,7 @@ package game;
  *
  */
 
+@FunctionalInterface
 public interface PlayerActionListener {
 
     public void playerActionPerformed(Player player);

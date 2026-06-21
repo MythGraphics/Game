@@ -11,16 +11,22 @@ package game.item;
  *
  */
 
-import graphic.texter.DialogOutputListener;
+import game.HasDialog;
+import game.HasName;
 import game.Message;
 import game.TextBox;
-import static game.item.ItemActionType.*;
+import game.item.ItemEvent.ItemActionType;
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
-public class Item extends TextBox implements IsItem, Tradable, ItemActionListener {
+public class Item extends TextBox implements Tradable, HasName {
 
     protected final LinkedList<Message> msgListOnBuy  = new LinkedList<>();
     protected final LinkedList<Message> msgListOnSell = new LinkedList<>();
+
+    private final List<ItemMessageListener> messageListeners = new ArrayList<>();
+    private final List<ItemActionListener>  actionListeners  = new ArrayList<>();
 
     private int price = 0;
     private String description = "";
@@ -31,37 +37,44 @@ public class Item extends TextBox implements IsItem, Tradable, ItemActionListene
 
     Item(Item item) {
         super(item);
-        item.setPrice( item.getPrice() );
-        for ( Message m : msgListOnBuy ) {
-            item.addMessageOnBuy(m);
+        this.setPrice( item.getPrice() );
+        this.setDescription( item.getDescription() );
+        for ( Message m : item.getDialog( ItemActionType.BUY )) {
+            this.addMessageOnBuy(m);
         }
-        for ( Message m : msgListOnSell ) {
-            item.addMessageOnSell(m);
+        for ( Message m : item.getDialog( ItemActionType.SELL )) {
+            this.addMessageOnSell(m);
         }
-        for ( Message m : super.getDialog() ) {
-            item.addMessageOnFind(m);
+        for ( Message m : item.getDialog( ItemActionType.FIND )) {
+            this.addMessageOnFind(m);
         }
     }
 
-    @Override
-    public void setDescription(String description) {
+    public final void setDescription(String description) {
         this.description = description;
     }
 
-    @Override
     public String getDescription() {
         return description;
     }
 
-    public void addMessageOnFind(Message msg) {
+    public void addItemMessageListener(ItemMessageListener listener) {
+        messageListeners.add(listener);
+    }
+
+    public void addItemActionListener(ItemActionListener listener) {
+        actionListeners.add(listener);
+    }
+
+    public final void addMessageOnFind(Message msg) {
         super.msgList.add(msg);
     }
 
-    public void addMessageOnSell(Message msg) {
+    public final void addMessageOnSell(Message msg) {
         msgListOnSell.add(msg);
     }
 
-    public void addMessageOnBuy(Message msg) {
+    public final void addMessageOnBuy(Message msg) {
         msgListOnBuy.add(msg);
     }
 
@@ -70,17 +83,29 @@ public class Item extends TextBox implements IsItem, Tradable, ItemActionListene
         return price;
     }
 
-    public void setPrice(int price) {
+    public final void setPrice(int price) {
         this.price = price;
     }
 
     @Override
-    public void itemActionPerformed(IsItem item, ItemActionType action, DialogOutputListener dialogListener) {
-        switch (action) {
-            case FIND -> dialogListener.show( () -> super.msgList );
-            case SELL -> dialogListener.show( () -> msgListOnSell );
-            case BUY  -> dialogListener.show( () -> msgListOnBuy );
+    public LinkedList<Message> getDialog() {
+        throw new UnsupportedOperationException("getDialog() ohne Parameter hier nicht unterstützt.");
+    }
+
+    public LinkedList<Message> getDialog(ItemActionType actionType) {
+        switch (actionType) {
+            case FIND: return super.msgList;
+            case SELL: return msgListOnSell;
+            case BUY:  return msgListOnBuy;
+            default:   return new LinkedList<>();
         }
+    }
+
+    public void fireEvent(Object source, ItemActionType actionType) {
+        HasDialog dialog = () -> getDialog(actionType);
+        ItemEvent event = new ItemEvent(source, this, actionType, dialog);
+        messageListeners.forEach( listener -> listener.showItemMessage( event ));
+        actionListeners.forEach(  listener -> listener.itemActionPerformed( event ));
     }
 
     @Override
@@ -90,11 +115,7 @@ public class Item extends TextBox implements IsItem, Tradable, ItemActionListene
 
     @Override
     public Item clone() throws CloneNotSupportedException {
-        if ( this.getClass() == Item.class ) {
-            return new Item(this);
-        } else {
-            throw new CloneNotSupportedException("Item.clone(): Methode von erbender Klasse nicht unterstützt.");
-        }
+        return new Item(this);
     }
 
 }

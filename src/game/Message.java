@@ -36,4 +36,9 @@ public class Message {
         return source;
     }
 
+    @Override
+    public String toString() {
+        return "Nachricht von " + source.getName() + ": " + text;
+    }
+
 }

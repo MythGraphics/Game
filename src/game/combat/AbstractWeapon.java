@@ -11,20 +11,15 @@ package game.combat;
  *
  */
 
-import graphic.texter.DialogOutputListener;
 import game.Message;
-import game.item.IsItem;
-import game.item.Item;
-import game.item.ItemActionType;
-import game.item.ReUsable;
+import game.item.ItemEvent.ItemActionType;
+import static game.item.ItemEvent.ItemActionType.USE;
+import game.item.ReUsableItem;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 import javax.swing.ImageIcon;
 
-public abstract class AbstractWeapon extends Item implements Blockable, ReUsable {
+public abstract class AbstractWeapon extends ReUsableItem implements Blockable {
 
     final WeaponType wType;
 
@@ -58,12 +53,15 @@ public abstract class AbstractWeapon extends Item implements Blockable, ReUsable
     abstract Damage getDamage(DamageType dType);
 
     @Override
-    public void itemActionPerformed(IsItem item, ItemActionType action, DialogOutputListener dialogListener) {
-        super.itemActionPerformed(item, action, dialogListener);
-        switch (action) {
-            case ItemActionType.USE -> dialogListener.show( new Message( toString(), this ));
-
+    public LinkedList<Message> getDialog(ItemActionType actionType) {
+        switch (actionType) {
+            case USE -> {
+                LinkedList<Message> list = new LinkedList<>();
+                list.add( new Message( toString(), this ));
+                return list;
+            }
         }
+        return super.getDialog(actionType);
     }
 
     @Override
@@ -88,7 +86,7 @@ public abstract class AbstractWeapon extends Item implements Blockable, ReUsable
     }
 
     @Override
-    public ReUsable remove(game.Player player) {
+    public ReUsableItem remove(game.Player player) {
         player.getPlayerAsMinion().getWeaponList().remove(this);
         return this;
     }

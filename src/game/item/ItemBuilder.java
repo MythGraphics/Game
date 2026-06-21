@@ -13,34 +13,35 @@ package game.item;
 
 import game.ID;
 import game.Resource.ResourceType;
-import static game.item.ItemEffect.ValueType.*;
-import game.item.ItemEffect.ItemEffectType;
-import static game.item.ItemEffect.ItemEffectType.PRÄFIX;
-import static game.item.ItemEffect.ItemEffectType.SUFFIX;
+import static game.item.ItemEffect.ItemEffectType.*;
+import static game.item.ItemEffect.ValueType.ABSOLUTE;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class ItemBuilder {
 
     private final List<String> itemNames;
     private final List<BufferedImage> itemBGImages;
     private final List<Image> itemGUIImages;
-    private final List<ItemEffect> itemEffectList_prä   = new ArrayList<>();
-    private final List<ItemEffect> itemEffectList_suff  = new ArrayList<>();
+    private final List<ItemEffect> itemEffectList_prä;
+    private final List<ItemEffect> itemEffectList_suf;
 
     public ItemBuilder() {
-        this.itemNames = new ArrayList<>();
-        this.itemBGImages = new ArrayList<>();
-        this.itemGUIImages = new ArrayList<>();
+        this.itemNames          = new ArrayList<>();
+        this.itemBGImages       = new ArrayList<>();
+        this.itemGUIImages      = new ArrayList<>();
+        this.itemEffectList_prä = new ArrayList<>();
+        this.itemEffectList_suf = new ArrayList<>();
     }
 
-    public ItemBuilder(List<String> names, List<BufferedImage> bgImgs, List<Image> guiImgs) {
-        this.itemNames      = names;
-        this.itemBGImages   = bgImgs;
-        this.itemGUIImages  = guiImgs;
+    public ItemBuilder(List<String> names, List<BufferedImage> bgImgs, List<Image> guiImgs,
+                       List<ItemEffect> effectList_prä, List<ItemEffect> effectList_suf) {
+        this.itemNames          = names;
+        this.itemBGImages       = bgImgs;
+        this.itemGUIImages      = guiImgs;
+        this.itemEffectList_prä = effectList_prä;
+        this.itemEffectList_suf = effectList_suf;
     }
 
     public void addItem(String name, BufferedImage bgImg, Image guiImg) {
@@ -49,17 +50,24 @@ public class ItemBuilder {
         itemGUIImages.add(guiImg);
     }
 
-    public Item createRandomItem() {
+    public void addItemEffect(ItemEffect itemEffect) {
+        switch ( itemEffect.getEffectType() ) {
+            case PRÄFIX -> itemEffectList_prä.add(itemEffect);
+            case SUFFIX -> itemEffectList_suf.add(itemEffect);
+        }
+    }
+
+    public ReUsableItem createRandomItem() {
         Random r = new Random();
         int rintItem = r.nextInt( itemNames.size() );
         int rintPrä  = r.nextInt( itemEffectList_prä.size() );
-        int rintSuff = r.nextInt( itemEffectList_suff.size() );
+        int rintSuf  = r.nextInt( itemEffectList_suf.size() );
         return createItem(
             itemNames.get(rintItem),
             itemBGImages.get(rintItem),
             itemGUIImages.get(rintItem),
             itemEffectList_prä.get(rintPrä),
-            itemEffectList_suff.get(rintSuff)
+            itemEffectList_suf.get(rintSuf)
         );
     }
 
@@ -71,10 +79,10 @@ public class ItemBuilder {
     }
 
     public static ReUsableItem createItem(
-        String name, BufferedImage bgImg, Image uiImg, ItemEffect effect_prä, ItemEffect effect_suff
+        String name, BufferedImage bgImg, Image uiImg, ItemEffect effect_prä, ItemEffect effect_suf
     ) {
         ReUsableItem item = new ReUsableItem( ID.getNextItemId(), name );
-        item.addItemEffect(effect_prä, effect_suff);
+        item.addItemEffect(effect_prä, effect_suf);
         item.setImg(bgImg);
         item.setIcon(uiImg);
         return item;

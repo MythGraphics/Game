@@ -234,7 +234,7 @@ public class TextFrame extends JFrame implements DialogOutputListener {
         show( dialog.getDialog() );
     }
 
-    private void show(LinkedList<Message> dialog) {
+    public void show(LinkedList<Message> dialog) {
         if ( dialog == null || dialog.isEmpty() ) {
             return;
         }

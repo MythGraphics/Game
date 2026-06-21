@@ -4,15 +4,15 @@
 
 package graphic.texter;
 
-import game.HasDialog;
-import game.Message;
-
 /**
  *
  * @author  Martin Pröhl alias MythGraphics
  * @version 1.0.0
  *
  */
+
+import game.HasDialog;
+import game.Message;
 
 public interface DialogOutputListener {
 

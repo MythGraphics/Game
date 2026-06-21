@@ -11,12 +11,12 @@ package game;
  *
  */
 
-import graphic.texter.DialogOutputListener;
 import graphic.io.TextIO;
 import graphic.map.BlockType;
 import graphic.map.CollisionActionListener;
 import graphic.map.CollisionEvent;
 import graphic.map.GameMap;
+import graphic.texter.DialogOutputListener;
 import java.awt.Point;
 import java.util.HashMap;
 import java.util.List;

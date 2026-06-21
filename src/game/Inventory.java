@@ -11,12 +11,11 @@ package game;
  *
  */
 
-import game.item.IsItem;
-import game.item.ItemActionType;
-import static game.item.ItemActionType.FIND;
-import static game.item.ItemActionType.USE;
-import game.item.ReUsable;
-import game.item.Usable;
+import game.item.Item;
+import static game.item.ItemEvent.ItemActionType.FIND;
+import static game.item.ItemEvent.ItemActionType.USE;
+import game.item.ReUsableItem;
+import game.item.UsableItem;
 import graphic.ui.InventoryCellRenderer;
 import java.util.HashMap;
 import java.util.Map;
@@ -24,25 +23,24 @@ import javax.swing.DefaultListModel;
 
 public abstract class Inventory {
 
-    private final Map<IsItem, Integer> inventory = new HashMap<>(); // Item mit Stapelgröße
-    private final DefaultListModel<IsItem> listModel = new DefaultListModel<>();
+    private final Map<Item, Integer> inventory      = new HashMap<>(); // Item mit Stapelgröße
+    private final DefaultListModel<Item> listModel  = new DefaultListModel<>();
 
     public Inventory() {}
 
     abstract Player getOwner();
-    abstract void fireEvent(IsItem item, ItemActionType action);
 
-    public boolean hasItem(IsItem item) {
+    public boolean hasItem(Item item) {
         return inventory.containsKey(item);
     }
 
-    public void add(IsItem item) {
+    public void add(Item item) {
         int amount = inventory.getOrDefault(item, 0);
         inventory.put(item, amount+1);
         if (amount == 0) { // Das Item war noch nicht im Inventar
             listModel.addElement(item);
         }
-        fireEvent(item, FIND);
+        item.fireEvent(this, FIND);
     }
 
     /**
@@ -51,23 +49,23 @@ public abstract class Inventory {
      * @param item Das Item.
      * @return Gibt des Erfolg der Aktion zurück.
      */
-    public boolean use(IsItem item) {
-        if ( item == null || !( item instanceof Usable )) {
+    public boolean use(Item item) {
+        if ( item == null || !( item instanceof UsableItem )) {
             return false;
         }
-        Usable usable = (Usable) item;
-        boolean b = remove(usable); // entfernt Item aus dem Inventar
-        if (b) {
+        UsableItem usable = (UsableItem) item;
+        boolean success = remove(usable); // entfernt Item aus dem Inventar
+        if (success) {
             usable.use( getOwner() );
-            fireEvent(usable, USE);
+            usable.fireEvent(this, USE);
         }
-        if (item instanceof ReUsable reuse) {
+        if (item instanceof ReUsableItem reuse) {
             getOwner().addActiveItem(reuse);
         }
-        return b;
+        return success;
     }
 
-    public boolean remove(IsItem item) {
+    public boolean remove(Item item) {
         int amount = inventory.getOrDefault(item, 0);
         --amount;
         if ( amount < 0 ) {
@@ -82,7 +80,7 @@ public abstract class Inventory {
         return true;
     }
 
-    public DefaultListModel<IsItem> getListModel() {
+    public DefaultListModel<Item> getListModel() {
         return listModel;
     }
 

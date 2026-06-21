@@ -11,6 +11,7 @@ package game;
  *
  */
 
+@FunctionalInterface
 public interface ResourceChangeListener {
 
     void resourceChangePerformed(Resource r);

@@ -11,6 +11,7 @@ package game;
  *
  */
 
+@FunctionalInterface
 public interface ResourceRechargeListener {
 
     void resourceRechargePerformed(Resource r, int charge, int overCharge);

@@ -11,6 +11,7 @@ package graphic.texter;
  *
  */
 
+@FunctionalInterface
 public interface DialogCloseListener {
 
     void dialogClosePerformed();

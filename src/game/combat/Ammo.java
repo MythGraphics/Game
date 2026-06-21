@@ -11,15 +11,14 @@ package game.combat;
  *
  */
 
-import graphic.texter.DialogOutputListener;
 import game.Message;
-import game.item.IsItem;
-import game.item.Item;
-import game.item.ItemActionType;
-import game.item.Usable;
+import game.item.ItemEvent.ItemActionType;
+import static game.item.ItemEvent.ItemActionType.USE;
+import game.item.UsableItem;
+import java.util.LinkedList;
 import java.util.List;
 
-public class Ammo extends Item implements Usable {
+public class Ammo extends UsableItem {
 
     private final int stackSize;
     private final AmmoType aType;
@@ -52,12 +51,15 @@ public class Ammo extends Item implements Usable {
     }
 
     @Override
-    public void itemActionPerformed(IsItem item, ItemActionType action, DialogOutputListener dialogListener) {
-        super.itemActionPerformed(item, action, dialogListener);
-        switch (action) {
-            case ItemActionType.USE  -> dialogListener.show( new Message( toString(), this ));
-
+    public LinkedList<Message> getDialog(ItemActionType actionType) {
+        switch (actionType) {
+            case USE -> {
+                LinkedList<Message> list = new LinkedList<>();
+                list.add( new Message( toString(), this ));
+                return list;
+            }
         }
+        return super.getDialog(actionType);
     }
 
     public int getStack() {

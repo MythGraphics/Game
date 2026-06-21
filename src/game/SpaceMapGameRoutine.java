@@ -19,11 +19,11 @@ import static game.combat.CombatFactory.Group.ZERG;
 import game.combat.Combatant;
 import game.item.LootManager;
 import graphic.DeadOrAlive;
-import graphic.texter.TextFrame;
 import graphic.io.BinaryIO;
 import static graphic.io.BinaryIO.*;
 import graphic.io.TextIO;
 import graphic.map.CollisionEvent;
+import graphic.texter.TextFrame;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
@@ -70,7 +70,6 @@ public class SpaceMapGameRoutine extends MartialGameRoutine {
         Resource stamina = new Resource( "Ausdauer", STAMINA, 100, 100 );
         stamina.addResourceChangeListener(frame);
         player = new Player(GameFrame.playerName, frame.textFrame, health, credit, air, stamina);
-        player.addItemActionListener(frame);
         player.setPlayerAsMinion( CombatFactory.getDefaultSoldier( player.getHealth() ));
         player.setImg( loadImage( SPRITE+"player/man1.png" ));
     }

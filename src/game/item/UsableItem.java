@@ -17,23 +17,30 @@ import game.Player;
 import game.Resource;
 import static game.item.ItemEffect.ItemEffectType.PRÄFIX;
 import static game.item.ItemEffect.ItemEffectType.SUFFIX;
-import graphic.texter.DialogOutputListener;
+import game.item.ItemEvent.ItemActionType;
+import static game.item.ItemEvent.ItemActionType.USE;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-public class UsableItem extends Item implements Usable {
+public class UsableItem extends Item {
 
-    protected final LinkedList<Message> msgListOnUse  = new LinkedList<>();
-
-    private final List<ItemEffect> itemEffectList   = new ArrayList<>(); // Liste der Item Effekte auf Spieler Ressourcen
+    final List<ItemEffect> itemEffectList  = new ArrayList<>(); // Liste der Item Effekte auf Spieler-Ressourcen
+    final LinkedList<Message> msgListOnUse = new LinkedList<>();
 
     public UsableItem(int id, String name) {
         super(id, name);
     }
 
-    public void addMessageOnUse(Message msg) {
+    UsableItem(UsableItem item) {
+        super(item);
+        for ( Message m : item.getDialog( ItemActionType.USE )) {
+            this.addMessageOnUse(m);
+        }
+    }
+
+    public final void addMessageOnUse(Message msg) {
         msgListOnUse.add(msg);
     }
 
@@ -45,16 +52,15 @@ public class UsableItem extends Item implements Usable {
         return itemEffectList;
     }
 
-    @Override
     public boolean use(Player player) {
-        boolean b = false;
+        boolean success = false;
         for (int i = 0; i < getItemEffectList().size(); ++i) {
             if ( getItemEffectList().get(i) != null ) {
                 applyEffect( player, getItemEffectList().get( i ));
-                b = true;
+                success = true;
             }
         }
-        return b;
+        return success;
     }
 
     private void applyEffect(Player player, ItemEffect effect) {
@@ -63,10 +69,10 @@ public class UsableItem extends Item implements Usable {
     }
 
     @Override
-    public void itemActionPerformed(IsItem item, ItemActionType action, DialogOutputListener dialogListener) {
-        super.itemActionPerformed(item, action, dialogListener);
-        switch (action) {
-            case ItemActionType.USE -> dialogListener.show( () -> msgListOnUse );
+    public LinkedList<Message> getDialog(ItemActionType actionType) {
+        switch (actionType) {
+            case USE: return msgListOnUse;
+            default:  return super.getDialog(actionType);
         }
     }
 
@@ -86,6 +92,17 @@ public class UsableItem extends Item implements Usable {
             }
         }
         return sb.toString();
+    }
+
+    @Override
+    public Item clone() throws CloneNotSupportedException {
+        if ( this.getClass() == UsableItem.class ) {
+            return new UsableItem(this);
+        } else {
+            throw new CloneNotSupportedException(
+                getClass() + ": clone() von erbender Klasse nicht unterstützt."
+            );
+        }
     }
 
 }

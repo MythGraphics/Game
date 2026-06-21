@@ -19,7 +19,6 @@ import game.item.*;
 import static graphic.io.BinaryIO.AUDIO;
 import graphic.io.ImageUtility;
 import graphic.map.*;
-import graphic.texter.DialogOutputListener;
 import graphic.texter.TextFrame;
 import java.awt.Color;
 import java.awt.Graphics;
@@ -39,21 +38,21 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JProgressBar;
 import javax.swing.plaf.basic.BasicProgressBarUI;
-import util.ColorLibrary;
 import util.EnumHelper;
 
-public class GameFrame extends JFrame implements ItemEffectListener, ItemActionListener, ResourceChangeListener {
+public class GameFrame extends JFrame implements ItemEffectListener, ItemActionListener, ItemMessageListener,
+                                                 ResourceChangeListener {
 
-    public final static String CMD_ERROR1   = "Befehl nicht ausführbar. Argumente unzureichend.";
+    public final static String CMD_ERROR1                       = "Befehl nicht ausführbar. Argumente unzureichend.";
 
-    public static String playerName         = "Teufelsmaus";
-    public static boolean loadCmdInput      = false;
-    public static Color menuColor           = new Color(255, 255, 255);
+    public static String playerName                             = "Teufelsmaus";
+    public static boolean loadCmdInput                          = false;
+    public static Color menuColor                               = new Color(255, 255, 255);
 
-    public final TextFrame textFrame;
+    public final TextFrame textFrame                            = new TextFrame(false);
 
-    private final Map<JLabel, ReUsable> iconMap;
-    private final Map<ResourceType, JProgressBar> resourceMap;
+    private final Map<JLabel, ReUsableItem> iconMap             = new HashMap<>();
+    private final Map<ResourceType, JProgressBar> resourceMap   = new HashMap<>();
     private final MouseAdapter iconMouseAdapter;
     private final Player player;
 
@@ -65,10 +64,7 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
 
     // MapType: land, space, uw
     public GameFrame(String[] tileMap, String mapType) {
-        this.textFrame          = new TextFrame(false);
-        this.iconMap            = new HashMap<>();
-        this.resourceMap        = new HashMap<>();
-        this.iconMouseAdapter   = new MouseAdapter() {
+        this.iconMouseAdapter = new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent evt) {
                 iconLabelMouseClicked(evt);
@@ -606,7 +602,7 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
             // rechter Mausbutton
             // Item ablegen, heißt: Effekt rückgängig machen und Item zurück ins Inventar legen
             jIconPanel.remove(jLabel); // Icon (JLabel) aus UI entfernen
-            player.removeActiveItem( iconMap.remove( jLabel ));
+            player.getInventory().add( player.removeItem( iconMap.remove( jLabel )));
         }
         if ( evt.getButton() == MouseEvent.BUTTON1 ) {
             // linker Mausbutton
@@ -687,33 +683,36 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
     private void jRightListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jRightListMouseClicked
         if ( evt.getClickCount() >= 2 ) {
             // Doppelklick
-            IsItem item = jRightList.getSelectedValue();
+            Item item = jRightList.getSelectedValue();
             boolean used = player.getInventory().use(item);
             if (!used) {
-                System.out.println( item + " nicht verwendbar." );
+                System.out.println(item + " nicht verwendbar.");
             } else {
-                System.out.println( item + " benutzt."); // debug
+                System.out.println(item + " benutzt."); // debug
             }
         }
     }//GEN-LAST:event_jRightListMouseClicked
 
     @Override
-    public void itemActionPerformed(IsItem item, ItemActionType action, DialogOutputListener dialogListener) {
-        switch (action) {
-            case ItemActionType.USE -> {
-                if (item instanceof ReUsable reu) {
+    public void showItemMessage(ItemEvent e) {
+        textFrame.show( e.dialog() );
+    }
+
+    @Override
+    public void itemActionPerformed(ItemEvent e) {
+        switch ( e.actionType() ) {
+            case USE -> {
+                if ( e.item() instanceof ReUsableItem reu ) {
                     // Item im UI anzeigen
                     JLabel icon = new JLabel();
                     icon.setIcon( reu.getIcon() );
                     icon.addMouseListener(iconMouseAdapter);
                     iconMap.put(icon, reu);
                     jIconPanel.add(icon);
-                } else {
-                    // ToDo ggf. repaint des Player-UI erforderlich
                 }
             }
-            case ItemActionType.REMOVE -> {
-                System.out.println( item.getName() + " zurück ins Inventar gelegt.");
+            case REMOVE -> {
+                System.out.println( e.item().getName() + " zurück ins Inventar gelegt.");
             }
         }
     }
@@ -772,7 +771,7 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
     private javax.swing.JProgressBar jProgressBarRep;
     private javax.swing.JProgressBar jProgressBarRes1;
     private javax.swing.JProgressBar jProgressBarRes2;
-    private javax.swing.JList<IsItem> jRightList;
+    private javax.swing.JList<Item> jRightList;
     private javax.swing.JPanel jRightPanel;
     private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JPanel jTopPanel;

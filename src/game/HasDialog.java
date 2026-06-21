@@ -13,9 +13,10 @@ package game;
 
 import java.util.LinkedList;
 
+@FunctionalInterface
 public interface HasDialog {
 
-    // A Dialog is a LinkedList of Messages.
+    // A dialog is a linked list of messages.
     LinkedList<Message> getDialog();
 
 }
