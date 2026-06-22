@@ -238,7 +238,9 @@ public class TextFrame extends JFrame implements DialogOutputListener {
         if ( dialog == null || dialog.isEmpty() ) {
             return;
         }
-        super.setVisible(true);
+        if ( !texter.isRunning() ) {
+            super.setVisible(true);
+        }
         while ( dialog.peek() != null ) {
             texter.show( dialog.poll() );
         }

@@ -33,10 +33,18 @@ import static util.EnumHelper.getEnumFromString;
 
 public class GameObjectLoader {
 
-    public record PropertiesHelper(int index, boolean isPlayer, ItemActionType actionType, String value)
-    implements Comparable<PropertiesHelper> {
+    public record PropertiesHelperItem(int index, boolean isPlayer, ItemActionType actionType, String value)
+    implements Comparable<PropertiesHelperItem> {
         @Override
-        public int compareTo(PropertiesHelper other) {
+        public int compareTo(PropertiesHelperItem other) {
+            return Integer.compare(this.index, other.index);
+        }
+    }
+
+    public record PropertiesHelperText(int index, boolean isPlayer, String text)
+    implements Comparable<PropertiesHelperText> {
+        @Override
+        public int compareTo(PropertiesHelperText other) {
             return Integer.compare(this.index, other.index);
         }
     }
@@ -44,9 +52,10 @@ public class GameObjectLoader {
     public final static String FILEXT = ".properties";
 
     // Gruppe 1: (\\d*) fängt die Ziffern, Gruppe 2: (player)? fängt das Wort
-    public final static Pattern PATTERN_FIND   = Pattern.compile("^onFind(\\d*)(player)?$");
-    public final static Pattern PATTERN_USE    = Pattern.compile("^onUse(\\d*)(player)?$");
-    public final static Pattern PATTERN_REMOVE = Pattern.compile("^onRemove(\\d*)(player)?$");
+    public final static Pattern PATTERN_FIND    = Pattern.compile("^onFind(\\d*)(player)?$");
+    public final static Pattern PATTERN_USE     = Pattern.compile("^onUse(\\d*)(player)?$");
+    public final static Pattern PATTERN_REMOVE  = Pattern.compile("^onRemove(\\d*)(player)?$");
+    public final static Pattern PATTERN_DEFAULT = Pattern.compile("^(\\d+)(player)?$");
 
     private final Class<?> clazz;
 
@@ -79,30 +88,30 @@ public class GameObjectLoader {
         item.setImg( scale( loadImage( p.getProperty( "img" )), 200 ));
         item.setIcon( loadImage( p.getProperty( "uiImg" )));
 
-        List<PropertiesHelper> helperList = new ArrayList<>();
+        List<PropertiesHelperItem> helperList = new ArrayList<>();
         for ( Map.Entry<Object, Object> entry : p.entrySet() ) {
             String key = entry.getKey().toString();
             Matcher matcherFind   = PATTERN_FIND.matcher(key);
             Matcher matcherUse    = PATTERN_USE.matcher(key);
             Matcher matcherRemove = PATTERN_REMOVE.matcher(key);
             if ( matcherFind.matches() ) {
-                helperList.add( getHelper( entry, matcherFind, FIND ));
+                helperList.add( getItemHelper( entry, matcherFind, FIND ));
             } else if ( matcherUse.matches() ) {
                 if ( !( item instanceof UsableItem )) {
                     System.err.println( "\"onUse\" auf Item-Klasse " + item.getClass() + " nicht anwendbar." );
                     continue;
                 }
-                helperList.add( getHelper( entry, matcherUse, USE ));
+                helperList.add( getItemHelper( entry, matcherUse, USE ));
             } else if ( matcherRemove.matches() ) {
                 if ( !( item instanceof ReUsableItem )) {
                     System.err.println( "\"onRemove\" auf Item-Klasse " + item.getClass() + " nicht anwendbar." );
                     continue;
                 }
-                helperList.add( getHelper( entry, matcherRemove, REMOVE ));
+                helperList.add( getItemHelper( entry, matcherRemove, REMOVE ));
             }
         }
         Collections.sort(helperList);
-        for (PropertiesHelper helper : helperList) {
+        for (PropertiesHelperItem helper : helperList) {
             switch (helper.actionType) {
                 case FIND -> {
                     item.addMessageOnFind( new Message( helper.value(), helper.isPlayer() ? player : item ));
@@ -123,7 +132,8 @@ public class GameObjectLoader {
         return item;
     }
 
-    private PropertiesHelper getHelper(Map.Entry<Object, Object> entry, Matcher matcher, ItemActionType actionType) {
+    private static PropertiesHelperItem getItemHelper(Map.Entry<Object, Object> entry, Matcher matcher,
+                                                      ItemActionType actionType) {
         // Ziffer auslesen (wenn keine da ist, -1 für die Reihenfolge)
         String digits = matcher.group(1);
         int index = digits.isEmpty() ? -1 : Integer.parseInt(digits);
@@ -132,7 +142,19 @@ public class GameObjectLoader {
         boolean isPlayer = matcher.group(2) != null;
         String value = entry.getValue().toString();
 
-        return new PropertiesHelper(index, isPlayer, actionType, value);
+        return new PropertiesHelperItem(index, isPlayer, actionType, value);
+    }
+
+    private static PropertiesHelperText getTextHelper(Map.Entry<Object, Object> entry, Matcher matcher) {
+        // Ziffer auslesen (wenn keine da ist, -1 für die Reihenfolge)
+        String digits = matcher.group(1);
+        int index = digits.isEmpty() ? -1 : Integer.parseInt(digits);
+
+        // prüfen ob "player" gematcht hat
+        boolean isPlayer = matcher.group(2) != null;
+        String text = entry.getValue().toString();
+
+        return new PropertiesHelperText(index, isPlayer, text);
     }
 
     public Npc loadNextNpc(Player player) throws IOException {
@@ -140,7 +162,7 @@ public class GameObjectLoader {
         Properties p = loadProperties( buildFileString( NPC, id ));
         Npc npc = new Npc( id, p.getProperty( "name" ));
         npc.setImg( scale( loadImage( p.getProperty( "img" )), 200 ));
-        npc.getDialog().add( new Message( p.getProperty( "text" ), npc ));
+        npc.addMessage( new Message( p.getProperty( "text" ), npc ));
         return npc;
     }
 
@@ -304,12 +326,18 @@ public class GameObjectLoader {
         loadText(p, qObj, player);
     }
 
-    private static void loadText(Properties p, TextBox gObj, Player player) {
-        for (int i = 0; p.containsKey( String.valueOf( i )) || p.containsKey(i+"p"); ++i) {
-            try { gObj.addMessage( new Message( p.getProperty( String.valueOf( i )), gObj )); }
-            catch (NullPointerException e) {}
-            try { gObj.addMessage( new Message( p.getProperty( i+"p" ), player )); }
-            catch (NullPointerException e) {}
+    private static void loadText(Properties p, TextBox gameObj, Player player) {
+        List<PropertiesHelperText> helperList = new ArrayList<>();
+        for ( Map.Entry<Object, Object> entry : p.entrySet() ) {
+            String key = entry.getKey().toString();
+            Matcher matcher = PATTERN_DEFAULT.matcher(key);
+            if ( matcher.matches() ) {
+                helperList.add( getTextHelper( entry, matcher ));
+            }
+        }
+        Collections.sort(helperList);
+        for (PropertiesHelperText helper : helperList) {
+            gameObj.addMessage( new Message( helper.text(), helper.isPlayer() ? player : gameObj ));
         }
     }
 

@@ -128,12 +128,12 @@ public class LandMapGameRoutine extends GameRoutine {
             case INTERACTIVE -> {
                 switch ( e.getTarget().getType() ) {
                     case NPC -> {
-                        if (player.hasActiveQuest()) {
+                        dialogListener.show(npc);
+                        if ( player.hasActiveQuest() ) {
                             player.deliverQuest();
                             dialogListener.show( player.getQuest() );
                             return;
                         }
-                        dialogListener.show(npc);
                         if ( npc.hasQuest() ) {
                             dialogListener.show( npc.getQuest() );
                             player.acceptQuest( npc.getQuest() );

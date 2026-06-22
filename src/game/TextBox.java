@@ -47,7 +47,7 @@ public class TextBox extends InteractiveObject implements HasDialog, HasID {
 
     @Override
     public LinkedList<Message> getDialog() {
-        return getDialogCopy();
+        return msgList;
     }
 
     public LinkedList<Message> getDialogCopy() {
