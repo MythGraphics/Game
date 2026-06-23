@@ -12,7 +12,7 @@ package game.quest;
  */
 
 import game.InteractiveObject;
-import game.Message;
+import graphic.texter.Message;
 import game.item.Item;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;

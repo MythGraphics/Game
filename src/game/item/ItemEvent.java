@@ -11,7 +11,7 @@ package game.item;
  *
  */
 
-import game.HasDialog;
+import graphic.texter.HasDialog;
 
 public record ItemEvent(Object source, Item item, ItemActionType actionType, HasDialog dialog) {
 

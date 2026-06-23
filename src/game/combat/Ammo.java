@@ -11,7 +11,7 @@ package game.combat;
  *
  */
 
-import game.Message;
+import graphic.texter.Message;
 import game.item.ItemEvent.ItemActionType;
 import static game.item.ItemEvent.ItemActionType.USE;
 import game.item.UsableItem;

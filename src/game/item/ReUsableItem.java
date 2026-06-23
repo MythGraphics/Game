@@ -12,7 +12,7 @@ package game.item;
  */
 
 import game.HasUIImage;
-import game.Message;
+import graphic.texter.Message;
 import game.Player;
 import game.Resource;
 import game.item.ItemEvent.ItemActionType;

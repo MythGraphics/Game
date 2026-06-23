@@ -23,6 +23,7 @@ import graphic.io.BinaryIO;
 import static graphic.io.BinaryIO.*;
 import graphic.io.TextIO;
 import graphic.map.CollisionEvent;
+import graphic.texter.Message;
 import graphic.texter.TextFrame;
 import java.awt.Color;
 import java.awt.Dimension;

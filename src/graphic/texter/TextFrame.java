@@ -11,10 +11,8 @@ package graphic.texter;
  *
  */
 
-import game.HasDialog;
 import game.HasUIImage;
 import game.InteractiveObject;
-import game.Message;
 import graphic.io.BinaryIO;
 import static graphic.io.ImageUtility.scale;
 import java.awt.Color;
@@ -86,7 +84,7 @@ public class TextFrame extends JFrame implements DialogOutputListener {
         texter.addActionListener( new TextRenderingActionListener() {
             @Override
             public void textRenderingStarted() {
-                setNamePlate( texter.getCurrentMessage().getSource().getName() );
+                setNamePlate( texter.getCurrentMessage().getSource().toString() );
             }
             @Override
             public void textRenderingStopped() {}

@@ -12,7 +12,7 @@ package game.item;
  *
  */
 
-import game.Message;
+import graphic.texter.Message;
 import game.Player;
 import game.Resource;
 import static game.item.ItemEffect.ItemEffectType.PRÄFIX;

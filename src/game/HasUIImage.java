@@ -19,7 +19,7 @@ public interface HasUIImage {
 
     public final static Dimension DEFAULT_ICON_DIMENSION = new Dimension(32, 32);
 
-    public BufferedImage getImg(); // Bild/Hintergrund für TextBox
-    public ImageIcon getIcon();
+    BufferedImage getImg(); // Bild/Hintergrund für TextBox
+    ImageIcon getIcon();
 
 }

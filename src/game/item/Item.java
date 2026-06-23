@@ -11,9 +11,9 @@ package game.item;
  *
  */
 
-import game.HasDialog;
+import graphic.texter.HasDialog;
 import game.HasName;
-import game.Message;
+import graphic.texter.Message;
 import game.TextBox;
 import game.item.ItemEvent.ItemActionType;
 import java.util.ArrayList;

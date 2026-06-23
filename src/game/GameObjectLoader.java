@@ -23,6 +23,7 @@ import game.quest.Quest;
 import static graphic.io.BinaryIO.loadImage;
 import static graphic.io.ImageUtility.scale;
 import graphic.io.TextIO;
+import graphic.texter.Message;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.io.IOException;

@@ -11,6 +11,8 @@ package game;
  *
  */
 
+import graphic.texter.HasDialog;
+import graphic.texter.Message;
 import java.util.LinkedList;
 
 public class TextBox extends InteractiveObject implements HasDialog, HasID {

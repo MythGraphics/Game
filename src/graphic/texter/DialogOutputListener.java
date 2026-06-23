@@ -11,9 +11,6 @@ package graphic.texter;
  *
  */
 
-import game.HasDialog;
-import game.Message;
-
 public interface DialogOutputListener {
 
     void show(HasDialog dialog);

@@ -11,10 +11,10 @@ package game.quest;
  *
  */
 
-import game.HasDialog;
+import graphic.texter.HasDialog;
 import game.HasID;
 import game.InteractiveObject;
-import game.Message;
+import graphic.texter.Message;
 import game.item.Item;
 import static game.quest.QuestStatus.*;
 import java.util.ArrayList;

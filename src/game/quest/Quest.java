@@ -11,7 +11,7 @@ package game.quest;
  *
  */
 
-import game.Message;
+import graphic.texter.Message;
 import game.item.Item;
 import java.util.List;
 
