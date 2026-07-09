@@ -43,7 +43,7 @@ import util.EnumHelper;
 public class GameFrame extends JFrame implements ItemEffectListener, ItemActionListener, ItemMessageListener,
                                                  ResourceChangeListener {
 
-    public final static String CMD_ERROR1                       = "Befehl nicht ausführbar. Argumente unzureichend.";
+    public final static String CMD_ERROR_ARGS                   = "Befehl nicht ausführbar. Argumente unzureichend.";
 
     public static String playerName                             = "Teufelsmaus";
     public static boolean loadCmdInput                          = false;
@@ -526,7 +526,7 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
         remote.addCommand( "move", args -> {
             StringTokenizer tokenizer = new StringTokenizer(args, ", ", false);
             if ( tokenizer.countTokens() < 2 ) {
-                System.err.println(CMD_ERROR1);
+                System.err.println(CMD_ERROR_ARGS);
                 return;
             }
             map.movePlayer( Integer.parseInt( tokenizer.nextToken() ), Integer.parseInt( tokenizer.nextToken() ));
@@ -534,7 +534,7 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
         remote.addCommand( "port", args -> {
             StringTokenizer tokenizer = new StringTokenizer(args, ", ", false);
             if ( tokenizer.countTokens() < 2 ) {
-                System.err.println(CMD_ERROR1);
+                System.err.println(CMD_ERROR_ARGS);
                 return;
             }
             map.setPlayerPosition( Integer.parseInt( tokenizer.nextToken() ), Integer.parseInt( tokenizer.nextToken() ));
@@ -600,7 +600,7 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
         }
         if ( evt.getButton() == MouseEvent.BUTTON3 ) {
             // rechter Mausbutton
-            // Item ablegen, heißt: Effekt rückgängig machen und Item zurück ins Inventar legen
+            // Item ablegen: heißt: Effekt rückgängig machen und Item zurück ins Inventar legen
             jIconPanel.remove(jLabel); // Icon (JLabel) aus UI entfernen
             player.getInventory().add( player.removeItem( iconMap.remove( jLabel )));
         }
