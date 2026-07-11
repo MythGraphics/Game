@@ -98,7 +98,7 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        Main.tileMap = DescriptorLoader.loadMap( MAP.getFilePath( "land" ), GameFrame.class );
+        Main.tileMap = DescriptorLoader.loadMap( MAP.getFilePath( "land" ), Main.class );
         Main.main(null);
     }
 

@@ -12,6 +12,7 @@ package game;
  */
 
 import graphic.io.DescriptorLoader;
+import static graphic.io.FileExt.MAP;
 import graphic.map.TileMap;
 import java.awt.EventQueue;
 
@@ -20,7 +21,7 @@ public class Main {
     public final static String NAME    = "MythGraphics Game";
     public final static String VERSION = "0.0.1 alpha";
 
-    public static TileMap tileMap;
+    public static TileMap tileMap = DescriptorLoader.loadMap( MAP.getFilePath( "space" ), Main.class );
 
     private Main() {}
 
