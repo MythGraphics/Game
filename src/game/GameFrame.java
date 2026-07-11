@@ -16,7 +16,10 @@ import game.Resource.ResourceType;
 import static game.Resource.ResourceType.*;
 import game.combat.Combatant;
 import game.item.*;
+import game.routine.*;
 import static graphic.io.BinaryIO.AUDIO;
+import graphic.io.DescriptorLoader;
+import static graphic.io.FileExt.MAP;
 import graphic.io.ImageUtility;
 import graphic.map.*;
 import graphic.texter.TextFrame;
@@ -62,15 +65,22 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
     private ConsoleInputController remote;
     private AudioPlayer audioPlayer;
 
-    // MapType: land, space, uw
+    public GameFrame(TileMap tileMap) {
+        this( tileMap.tiles(), tileMap.type() );
+    }
+
     public GameFrame(String[] tileMap, String mapType) {
+        this( tileMap, EnumHelper.getEnumFromString( MapType.class, mapType ));
+    }
+
+    public GameFrame(String[] tileMap, MapType mapType) {
         this.iconMouseAdapter = new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent evt) {
                 iconLabelMouseClicked(evt);
             }
         };
-        initGameCore(mapType);
+        initGameCore( new TileMap( tileMap, mapType ));
         player = routine.getPlayer();
 
         if (loadCmdInput) {
@@ -88,7 +98,7 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        Main.mapType = "land";
+        Main.tileMap = DescriptorLoader.loadMap( MAP.getFilePath( "land" ), GameFrame.class );
         Main.main(null);
     }
 
@@ -440,20 +450,19 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void initGameCore(String mapType) {
-        MapType mType = EnumHelper.getEnumFromString(MapType.class, mapType);
+    private void initGameCore(TileMap tileMap) {
         // Map laden
-        switch (mType) {
-            case SPACE  -> this.map = new DefaultSpaceMap();
-            case LAND   -> this.map = new DefaultLandMap();
-            case UW     -> this.map = new DefaultUWMap();
+        switch ( tileMap.type() ) {
+            case SPACE  -> this.map = new DefaultSpaceMap( tileMap.tiles() );
+            case LAND   -> this.map = new DefaultLandMap(  tileMap.tiles() );
+            case UW     -> this.map = new DefaultUWMap(    tileMap.tiles() );
             default     -> {
                 System.err.println("Initialisieren der Map fehlgeschlagen - Typ unbekannt - Abbruch!");
                 System.exit(255);
                 return;
             }
         }
-        if (map == null) {
+        if (this.map == null) {
             System.err.println("Laden der Map fehlgeschlagen - Abbruch!");
             System.exit(255);
             return;
@@ -465,12 +474,12 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
             routine = new RemoteGameRoutine(this);
             return;
         }
-        switch (mType) {
+        switch ( tileMap.type() ) {
             case SPACE  -> this.routine = new SpaceMapGameRoutine(this);
             case LAND   -> this.routine = new LandMapGameRoutine(this);
-            case UW     -> this.routine = new UWMapGameRoutine((UWMap) map, this);
+            case UW     -> this.routine = new UWMapGameRoutine((UWMap) this.map, this);
         }
-        map.addCollisionActionListener(routine);
+        this.map.addCollisionActionListener(routine);
     }
 
     public static BasicProgressBarUI getProgressBarUI(Color foregroundTextColor, Color backgroundTextColor) {

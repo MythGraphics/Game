@@ -12,7 +12,7 @@ package game;
  */
 
 import graphic.io.DescriptorLoader;
-import graphic.map.MapType;
+import graphic.map.TileMap;
 import java.awt.EventQueue;
 
 public class Main {
@@ -20,8 +20,7 @@ public class Main {
     public final static String NAME    = "MythGraphics Game";
     public final static String VERSION = "0.0.1 alpha";
 
-    public static String mapType = MapType.SPACE.toString();
-    public static String[] tileMap;
+    public static TileMap tileMap;
 
     private Main() {}
 
@@ -32,10 +31,6 @@ public class Main {
         if ( args == null || args.length == 0 ) {
             runGUI();
             return;
-        }
-
-        if ( !args[0].startsWith( "--" )) {
-            mapType = args[0];
         }
 
         for (int i = 0; i < args.length; ++i) {
@@ -81,9 +76,13 @@ public class Main {
     }
 
     private static void runGUI() {
-        EventQueue.invokeLater( () -> {
-            new GameFrame(tileMap, mapType).setVisible(true);
-        });
+        if (tileMap != null) {
+            EventQueue.invokeLater( () -> {
+                new GameFrame(tileMap).setVisible(true);
+            });
+        } else {
+            System.err.println("Kein Map zum Laden angegeben!");
+        }
     }
 
     private static void printHelp() {

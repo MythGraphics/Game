@@ -12,16 +12,21 @@ package graphic.io;
  */
 
 import graphic.Direction;
-import static graphic.map.GameMap.DEFAULT_TILE_SIZE;
+import graphic.map.MapType;
+import graphic.map.TileMap;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
+import util.EnumHelper;
 
 public class DescriptorLoader {
+
+    public final static String MAP = TextIO.MAP;
 
     public final static String FILENAME_PREFIX = "descriptor";
 
@@ -64,7 +69,9 @@ public class DescriptorLoader {
     }
 
     private static String getFileString(String path, FileExt ext) {
-        if ( path == null ) { path = "."; }
+        if ( path == null ) {
+            path = ".";
+        }
         path = getDirPath(path);
         return path + FILENAME_PREFIX + ext.getFileExtension();
     }
@@ -174,25 +181,55 @@ public class DescriptorLoader {
         throw new IOException("Format not parsable. Sprite alignment not x nor y.");
     }
 
-    public static String[] loadMap(String path) {
-        ArrayList<String> list = new ArrayList<>();
-        File mapfile;
-        mapfile = new File( getFileString( path, FileExt.MAP ));
-        if ( !mapfile.exists() ) {
-            System.err.println("MapFile don't exists.");
-            return null;
+    /**
+     * Lädt die TileMap vom Dateisystem.
+     * @param path Pfad der Map-Datei.
+     * @return TileMap
+     */
+    public static TileMap loadMap(String path) {
+        File mapFile;
+        mapFile = new File(path);
+        if ( !mapFile.exists() ) {
+            System.err.println("MapFile don't exists: " + path);
+            System.err.println("... maybe not a problem ...");
+            mapFile = new File( FileExt.MAP.getFilePath( path ));
+            if ( !mapFile.exists() ) {
+                System.err.println( "MapFile don't exists: " + mapFile.getPath() );
+                return null;
+            }
         }
-        try ( BufferedReader in = new BufferedReader( new FileReader( mapfile ))) {
-            in.lines().forEach((line) -> {
-                if ( line.charAt(0) != ';' ) {
-                    list.add(line);
-                }
-            });
+
+        try ( BufferedReader in = new BufferedReader( new FileReader( mapFile ))) {
+            // erste Zeile ist MapType
+            MapType type = EnumHelper.getEnumFromString( MapType.class, in.readLine() );
+            List<String> list = in.lines()
+                                  .filter( line -> !line.isEmpty() )
+                                  .toList();
+            TileMap map = new TileMap( list.toArray( String[]::new ), type );
+            return map;
         } catch (IOException e) {
             System.err.println("Fehler beim Lesen der Map-Datei: " + e.getMessage() );
             return null;
         }
-        return list.toArray(String[]::new);
     }
 
+    /**
+     * Lädt die TileMap.
+     * @param path Pfad der Map-Datei.
+     * @param clazz Klassen-Referenz
+     * @return TileMap
+     */
+    public static TileMap loadMap(String path, Class clazz) {
+        String mapString = TextIO.loadTextFile(path, clazz);
+        if ( mapString == null || mapString.isBlank() ) {
+            System.err.println("MapFile ist NULL oder leer: " + path);
+            return null;
+        }
+        List<String> mapList = mapString.lines()
+                                        .filter( line -> !line.isEmpty() )
+                                        .toList();
+        MapType type = EnumHelper.getEnumFromString( MapType.class, mapList.get( 0 ));
+        String[] mapData = mapList.subList( 1, mapList.size() ).toArray(String[]::new);
+        return new TileMap(mapData, type);
+    }
 }

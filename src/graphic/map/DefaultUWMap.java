@@ -24,41 +24,11 @@ import java.awt.Point;
 
 public class DefaultUWMap extends UWMap {
 
-    public final static String[] DEFAULT_TILE_MAP = {
-        "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-        "X                                             #",
-        "X                                             X",
-        "X                                             X",
-        "X                                             X",
-        "X                                             X",
-        "X                                             X",
-        "X                                             X",
-        "X                                             X",
-        "X                                             X",
-        "X                                             X",
-        "X                                             X",
-        "X                                             X",
-        "X                                             X",
-        "X                                             X",
-        "X                                             X",
-        "X                                             X",
-        "X-                                            X",
-        "X                                             X",
-        "X    B                                        X",
-        "X                                             X",
-        "P.                                            X",
-        "..                                            X",
-        "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-    };
     public final static Color AMBIENT_COLOR = new Color(12, 80, 200);
 
     private Image[] playerImg;
     private Image wallImg, bubbleImg;
     private Animation npcAni;
-
-    public DefaultUWMap() {
-        this(DEFAULT_TILE_MAP);
-    }
 
     public DefaultUWMap(String[] tileMap) {
         super(tileMap);

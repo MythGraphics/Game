@@ -7,7 +7,7 @@ package graphic.io;
 /**
  *
  * @author  Martin Pröhl alias MythGraphics
- * @version 1.0.0
+ * @version 1.0.1
  *
  */
 
@@ -24,6 +24,7 @@ public class TextIO {
     public final static String LOCAL_PATH   = "src/";
 
     public final static String PROPERTY     = "properties/";
+    public final static String MAP          = BinaryIO.RESOURCE+"maps/";
 
     public final static String EMPTY_ERROR  = "Parameter null oder leer.";
     public final static String FS_ERROR     = "Laden von Dateisystem fehlgeschlagen: ";
@@ -109,12 +110,12 @@ public class TextIO {
         }
     }
 
-    public static String loadTextFile(String fileName, Class<?> clazz) {
-        if ( fileName == null || fileName.isBlank() ) {
+    public static String loadTextFile(String filePath, Class<?> clazz) {
+        if ( filePath == null || filePath.isBlank() ) {
             System.err.println(EMPTY_ERROR);
             return "";
         }
-        try ( BufferedReader in = getTextReader( PROPERTY+fileName, clazz )) {
+        try ( BufferedReader in = getTextReader( filePath, clazz )) {
             return in.lines().collect( Collectors.joining( "\n" ));
         } catch (IOException e) {
             System.err.println( "Fehler beim Lesen der Text-Datei: " + e.getMessage() );
@@ -141,11 +142,11 @@ public class TextIO {
     }
 
     public static String loadProlog(Class<?> clazz) {
-        return loadTextFile("prolog.txt", clazz);
+        return loadTextFile(PROPERTY+"prolog.txt", clazz);
     }
 
     public static String loadEpilog(Class<?> clazz) {
-        return loadTextFile("epilog.txt", clazz);
+        return loadTextFile(PROPERTY+"epilog.txt", clazz);
     }
 
 }

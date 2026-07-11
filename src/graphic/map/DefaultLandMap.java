@@ -27,42 +27,12 @@ import java.util.Map;
 
 public class DefaultLandMap extends GameMap {
 
-    public final static String[] DEFAULT_TILE_MAP = {
-        "..........XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-        "..........J...                                #",
-        ".............. O                              X",
-        "......K.......                                X",
-        "XXXXXX........                                X",
-        "X     ...  N                                  X",
-        "X     ...                                     X",
-        "X                                             X",
-        "X                                             X",
-        "X 11111111 11111111                           X",
-        "X 22222222 22222222                           X",
-        "X 33333333 33333333                           X",
-        "X 44444444 44444444                           X",
-        "X 55555555 55555555                           X",
-        "X 66666666 66666666                           X",
-        "X 77777777 77777777                           X",
-        "X 88888888 88888888                           X",
-        "X                                             X",
-        "X                                             X",
-        "X   I T O                                     X",
-        "X                                             X",
-        "X     P                                       X",
-        "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
-        "VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV",
-    };
     public final static Color AMBIENT_COLOR = new Color(124, 188, 62);
 
     private final Map<BlockType, BufferedImage> imgMap = new HashMap<>();
 
     private Image[] playerImg;
     private Animation npcAni, portalAni;
-
-    public DefaultLandMap() {
-        this(DEFAULT_TILE_MAP);
-    }
 
     public DefaultLandMap(String[] tileMap) {
         super(tileMap);

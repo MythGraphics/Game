@@ -26,41 +26,12 @@ import java.util.Map;
 
 public class DefaultSpaceMap extends GameMap {
 
-    public final static String[] DEFAULT_TILE_MAP = {
-        "vxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxV",
-        "Y                               y",
-        "Y vxxxxxxxV vxxxxxxxV vxxxxxxxV y",
-        "Y Y       y Y       y Y       y y",
-        "Y Y   E   y Y   E   y Y   E   y y",
-        "Y Y       y Y       y Y       y y",
-        "Y W XXXXXXw WXXX XXXw WXXXXXX w y",
-        "Y                               y",
-        "Y vxxxxxxxV vxxxxxxxV vxxxxxxxV y",
-        "Y Y       y Y       y Y       y y",
-        "Y Y   E   y Y   E   y Y   E   y y",
-        "Y Y       y Y       y Y       y y",
-        "Y W XXXXXXw WXXX XXXw WXXXXXX w y",
-        "Y                               y",
-        "Y vxxxxxxxV vxxxxxxxV vxxxxxxxV y",
-        "Y Y       y Y       y Y       y y",
-        "Y Y   E   y Y   E   y Y   E   y y",
-        "Y Y       y Y       y Y       y y",
-        "Y W XXXXXXw WXXX XXXw WXXXXXX w y",
-        "Y I                             y",
-        "Y                               y",
-        "Y                               y",
-        "WXPXXXXXXXXXXXXXXXXXXXXXXXXXXXXXw",
-    };
     public final static Color AMBIENT_COLOR = new Color(50, 50, 50);
 
     private Animation[] playerAni;
     private Animation enemyAni;
 
     private final Map<BlockType, Image> imgMap = new HashMap<>();
-
-    public DefaultSpaceMap() {
-        this(DEFAULT_TILE_MAP);
-    }
 
     public DefaultSpaceMap(String[] tileMap) {
         super(tileMap);

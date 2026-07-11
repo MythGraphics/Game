@@ -7,11 +7,11 @@ package graphic.io;
 /**
  *
  * @author  Martin Pröhl alias MythGraphics
- * @version 1.0.0
+ * @version 1.0.1
  *
  */
 
-import io.Reader;
+import io.ReaderFactory;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsEnvironment;
 import java.awt.Transparency;
@@ -28,6 +28,7 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 
 public class BinaryIO {
 
+    public final static String ZIP_PATH     = "";
     public final static String LOCAL_PATH   = "src/";
 
     public final static String RESOURCE     = "resources/";
@@ -59,7 +60,7 @@ public class BinaryIO {
             System.out.println("ImgPath: " + imgpath); // debug
             if ( jar.contains( jarname )) {
                 try {
-                    return Reader.getImage( new ZipFile( jar ), imgpath );
+                    return ReaderFactory.getImage( new ZipFile( jar ), imgpath );
                 } catch (NullPointerException e) {
                     throw new IOException(imgpath + " konnte nicht aus JAR gelesen werden.");
                 }
