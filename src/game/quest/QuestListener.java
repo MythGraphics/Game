@@ -11,6 +11,7 @@ package game.quest;
  *
  */
 
+@FunctionalInterface
 public interface QuestListener {
 
     void questActionPerformed(Quest quest);
