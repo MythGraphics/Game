@@ -2,7 +2,9 @@
  *
  */
 
-package game;
+package game.resource;
+
+import game.resource.Resource;
 
 /**
  *

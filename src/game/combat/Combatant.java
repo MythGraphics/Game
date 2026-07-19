@@ -12,7 +12,7 @@ package game.combat;
  */
 
 import game.InteractiveObject;
-import game.Resource;
+import game.resource.Resource;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

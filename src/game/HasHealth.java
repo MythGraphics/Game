@@ -11,6 +11,8 @@ package game;
  *
  */
 
+import game.resource.Resource;
+
 public interface HasHealth extends HasName {
 
     Resource getHealth();

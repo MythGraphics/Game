@@ -11,7 +11,7 @@ package game.combat;
  *
  */
 
-import game.Resource;
+import game.resource.Resource;
 import static game.combat.AmmoType.PROJECTILE;
 import static game.combat.ArmorType.*;
 import static game.combat.CombatantType.*;

@@ -12,8 +12,8 @@ package game.quest;
  */
 
 import game.InteractiveObject;
-import graphic.texter.Message;
 import game.item.Item;
+import graphic.texter.Message;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
@@ -30,10 +30,12 @@ public class SelectableQuest extends AbstractQuest implements KeyListener {
         this.questList = questList;
     }
 
-    public static SelectableQuest newInstance( int id,
-                                               String prolog, String[] questText, String[] epilog, String[] complete,
-                                               InteractiveObject source, Item[] reward ) {
-        boolean equalLength = QuestFactory.checkArraysEqualLengths(questText, epilog, complete, reward);
+    public static SelectableQuest newInstance(
+        int id,
+        String prolog, String[] questText, String[] epilog, String[] complete,
+        InteractiveObject source, Item[] reward
+    ) {
+        boolean equalLength = checkArraysEqualLengths(questText, epilog, complete, reward);
         if ( !equalLength ) {
             throw new ArrayIndexOutOfBoundsException("Arrays not equal in length.");
         }
@@ -85,6 +87,19 @@ public class SelectableQuest extends AbstractQuest implements KeyListener {
     @Override
     public Item getReward() {
         return questList.get(selectedIndex).getReward();
+    }
+
+    public static boolean checkArraysEqualLengths(Object[]... arrays) {
+        if (arrays == null || arrays.length == 0) {
+            return true; // Leere Eingabe = alle Arrays gleich lang (oder keine Arrays vorhanden)
+        }
+        int firstArrayLength = arrays[0].length;
+        for (int i = 1; i < arrays.length; i++) {
+            if (( arrays[i] == null ) || ( arrays[i].length != firstArrayLength )) {
+                return false;
+            }
+        }
+        return true;
     }
 
 }

@@ -12,10 +12,12 @@ package game;
  */
 
 import audio.AudioPlayer;
-import game.Resource.ResourceType;
-import static game.Resource.ResourceType.*;
 import game.combat.Combatant;
 import game.item.*;
+import game.resource.Resource;
+import game.resource.Resource.ResourceType;
+import static game.resource.Resource.ResourceType.*;
+import game.resource.ResourceChangeListener;
 import game.routine.*;
 import static graphic.io.BinaryIO.AUDIO;
 import graphic.io.DescriptorLoader;

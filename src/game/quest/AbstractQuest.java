@@ -11,12 +11,12 @@ package game.quest;
  *
  */
 
-import graphic.texter.HasDialog;
 import game.HasID;
 import game.InteractiveObject;
-import graphic.texter.Message;
 import game.item.Item;
 import static game.quest.QuestStatus.*;
+import graphic.texter.HasDialog;
+import graphic.texter.Message;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -37,12 +37,16 @@ public abstract class AbstractQuest implements HasDialog, HasID {
         objective = new Item( id, objectiveName + " #" + id );
     }
 
-    public static List<Message> newMessageList( ArrayList<String> list, InteractiveObject source ) {
+    abstract List<Message> getMessageList();
+    abstract Item getReward();
+
+    public static List<Message> newMessageList(ArrayList<String> list, InteractiveObject source) {
         return newMessageList( list.get(0), list.get(1), list.get(2), list.get(3), source );
     }
 
-    public static List<Message> newMessageList( String prolog, String questText, String epilog, String completed,
-                                                     InteractiveObject source ) {
+    public static List<Message> newMessageList(
+        String prolog, String questText, String epilog, String completed, InteractiveObject source
+    ) {
         ArrayList<Message> msgList = new ArrayList<>(4);
         msgList.add( new Message( prolog, source ));
         msgList.add( new Message( questText, source ));
@@ -50,9 +54,6 @@ public abstract class AbstractQuest implements HasDialog, HasID {
         msgList.add( new Message( completed, source ));
         return msgList;
     }
-
-    abstract List<Message> getMessageList();
-    abstract Item getReward();
 
     public Item getQuestObjective() {
         return objective;

@@ -12,7 +12,7 @@ package game.item;
  */
 
 import game.ID;
-import game.Resource.ResourceType;
+import game.resource.Resource.ResourceType;
 import static game.item.ItemEffect.ItemEffectType.*;
 import static game.item.ItemEffect.ValueType.ABSOLUTE;
 import java.awt.Image;

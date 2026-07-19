@@ -14,7 +14,7 @@ package game.item;
 
 import graphic.texter.Message;
 import game.Player;
-import game.Resource;
+import game.resource.Resource;
 import static game.item.ItemEffect.ItemEffectType.PRÄFIX;
 import static game.item.ItemEffect.ItemEffectType.SUFFIX;
 import game.item.ItemEvent.ItemActionType;

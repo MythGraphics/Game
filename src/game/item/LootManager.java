@@ -101,4 +101,13 @@ public class LootManager {
         return wType.getNamePool()[ rand.nextInt( wType.getNamePool().length )];
     }
 
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("default loot: ").append(defaultLoot).append("\n");
+        sb.append("loot in pool: \n");
+        sb.append(lootPool);
+        return sb.toString();
+    }
+
 }

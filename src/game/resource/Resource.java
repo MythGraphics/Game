@@ -2,7 +2,7 @@
  *
  */
 
-package game;
+package game.resource;
 
 /**
  *
@@ -11,6 +11,7 @@ package game;
  *
  */
 
+import game.HasName;
 import java.util.ArrayList;
 import java.util.List;
 

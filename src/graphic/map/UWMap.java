@@ -11,9 +11,9 @@ package graphic.map;
  *
  */
 
-import game.HasResource;
-import game.Resource;
-import static game.Resource.ResourceType.AIR;
+import game.resource.HasResource;
+import game.resource.Resource;
+import static game.resource.Resource.ResourceType.AIR;
 import static graphic.map.BlockType.WATERLINE;
 import java.awt.event.ActionEvent;
 

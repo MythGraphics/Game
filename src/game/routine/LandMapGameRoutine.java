@@ -11,8 +11,10 @@ package game.routine;
  *
  */
 
-import game.*;
-import static game.Resource.ResourceType.*;
+import game.GameFrame;
+import game.ID;
+import game.Npc;
+import game.Player;
 import game.item.Item;
 import game.item.ItemEffect;
 import static game.item.ItemEffect.ItemEffectType.PRÄFIX;
@@ -21,6 +23,8 @@ import static game.item.ItemEffect.ValueType.ABSOLUTE;
 import static game.item.ItemEffect.ValueType.PERCENT;
 import game.item.ReUsableItem;
 import game.item.UsableItem;
+import game.resource.Resource;
+import static game.resource.Resource.ResourceType.*;
 import static graphic.io.BinaryIO.TILESET;
 import graphic.io.DescriptorLoader;
 import static graphic.map.BlockType.ENVIRONMENT_A;

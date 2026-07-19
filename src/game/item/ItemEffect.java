@@ -11,8 +11,8 @@ package game.item;
  *
  */
 
-import game.Resource;
-import game.Resource.ResourceType;
+import game.resource.Resource;
+import game.resource.Resource.ResourceType;
 import static game.item.ItemEffect.ValueType.ABSOLUTE;
 import static game.item.ItemEffect.ValueType.PERCENT;
 

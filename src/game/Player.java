@@ -11,9 +11,6 @@ package game;
  *
  */
 
-import game.Resource.ResourceType;
-import static game.Resource.ResourceType.CREDIT;
-import static game.Resource.ResourceType.HEALTH;
 import game.item.Item;
 import static game.item.ItemEvent.ItemActionType.REMOVE;
 import game.item.ReUsableItem;
@@ -22,6 +19,10 @@ import game.quest.Quest;
 import game.quest.QuestListener;
 import static game.quest.QuestStatus.ACTIVE;
 import static game.quest.QuestStatus.READY;
+import game.resource.Resource;
+import game.resource.Resource.ResourceType;
+import static game.resource.Resource.ResourceType.CREDIT;
+import static game.resource.Resource.ResourceType.HEALTH;
 import graphic.texter.DialogOutputListener;
 import java.util.ArrayList;
 import java.util.HashMap;

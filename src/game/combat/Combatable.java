@@ -12,7 +12,7 @@ package game.combat;
  */
 
 import game.HasName;
-import game.Resource;
+import game.resource.Resource;
 import java.util.List;
 
 public interface Combatable extends HasName {

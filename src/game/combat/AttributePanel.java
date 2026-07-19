@@ -12,14 +12,14 @@ package game.combat;
  */
 
 import game.HasName;
-import game.Resource;
+import game.resource.Resource;
 import static game.combat.DamageType.*;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.text.DecimalFormat;
 import java.util.List;
 import javax.swing.*;
-import game.ResourceChangeListener;
+import game.resource.ResourceChangeListener;
 
 public class AttributePanel extends JPanel implements BattleActionListener, ResourceChangeListener {
 

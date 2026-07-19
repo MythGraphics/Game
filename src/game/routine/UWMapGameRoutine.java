@@ -13,10 +13,10 @@ package game.routine;
 
 import game.GameFrame;
 import game.Player;
-import game.Resource;
-import static game.Resource.ResourceType.AIR;
-import static game.Resource.ResourceType.HEALTH;
-import game.ResourceConsumeListener;
+import game.resource.Resource;
+import static game.resource.Resource.ResourceType.AIR;
+import static game.resource.Resource.ResourceType.HEALTH;
+import game.resource.ResourceConsumeListener;
 import static graphic.io.BinaryIO.TILESET;
 import static graphic.io.BinaryIO.loadImage;
 import graphic.io.TilesetUtility;

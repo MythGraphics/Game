@@ -14,7 +14,7 @@ package game.item;
 import game.HasUIImage;
 import graphic.texter.Message;
 import game.Player;
-import game.Resource;
+import game.resource.Resource;
 import game.item.ItemEvent.ItemActionType;
 import static game.item.ItemEvent.ItemActionType.REMOVE;
 import java.util.LinkedList;
