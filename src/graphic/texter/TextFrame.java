@@ -7,7 +7,7 @@ package graphic.texter;
 /**
  *
  * @author  Martin Pröhl alias MythGraphics
- * @version 1.0.0
+ * @version 1.0.1
  *
  */
 
@@ -36,28 +36,29 @@ public class TextFrame extends JFrame implements DialogOutputListener {
 
     private final Collection<DialogCloseListener> closeListeners = new ArrayList<>();
 
-    private boolean standalone = false;
+    private boolean standalone = false; // TRUE: self-dispose
     private Dimension size = DEFAULT_SIZE;
 
     public static void main(String[] args) {
         if ( args == null || args.length == 0 ) {
-            System.out.println("Argument 1: Text");
-            System.out.println("Argument 2: Titel (optional)");
-            System.out.println("Argument 3: Pfad-zu-Bild (optional)");
+            System.out.println("Argumente:");
+            System.out.println("  Text");
+            System.out.println("  Titel (optional)");
+            System.out.println("  Bilddatei (optional)");
             return;
         }
-        TextFrame texter = new TextFrame(true);
+        TextFrame textFrame = new TextFrame(true);
         if ( args.length == 1 ) {
-            // nur Text
-            texter.show("", args[0], "");
+            // Text
+            textFrame.show("", args[0], "");
         }
         if ( args.length == 2 ) {
             // Text+Titel
-            texter.show(args[1], args[0], "");
+            textFrame.show(args[1], args[0], "");
         }
         if ( args.length == 3 ) {
             // Text+Titel+Bild
-            texter.show(args[1], args[0], args[2]);
+            textFrame.show(args[1], args[0], args[2]);
         }
     }
 
@@ -158,14 +159,14 @@ public class TextFrame extends JFrame implements DialogOutputListener {
      * @param pos
      */
     public void setPosition(Point pos) {
-        super.setLocation(pos);
+        setLocation(pos);
     }
 
     @Override
     public final void setSize(int width, int height) {
         this.size = new Dimension(width, height);
         super.setSize(width, height);
-        super.setPreferredSize(size);
+        setPreferredSize(size);
 
         if (texter != null) {
             texter.setSize(width, height);
@@ -173,8 +174,8 @@ public class TextFrame extends JFrame implements DialogOutputListener {
         }
 
         // Neuberechnung des Layouts
-        this.revalidate();
-        this.repaint();
+        revalidate();
+        repaint();
     }
 
     public TextOverImageRenderer getTexter() {
@@ -190,10 +191,10 @@ public class TextFrame extends JFrame implements DialogOutputListener {
 
     private void jPanel1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanel1MouseClicked
         if ( !texter.printNext() ) {
-            super.setVisible(false);
-        }
-        if (standalone) {
-            dispose();
+            setVisible(false);
+            if (standalone) {
+                dispose();
+            }
         }
     }//GEN-LAST:event_jPanel1MouseClicked
 
@@ -237,7 +238,7 @@ public class TextFrame extends JFrame implements DialogOutputListener {
             return;
         }
         if ( !texter.isRunning() ) {
-            super.setVisible(true);
+            setVisible(true);
         }
         while ( dialog.peek() != null ) {
             texter.show( dialog.poll() );
@@ -265,7 +266,7 @@ public class TextFrame extends JFrame implements DialogOutputListener {
         if (msg == null) {
             return;
         }
-        super.setVisible(true);
+        setVisible(true);
         texter.show(msg);
     }
 

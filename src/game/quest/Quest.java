@@ -11,8 +11,8 @@ package game.quest;
  *
  */
 
-import graphic.texter.Message;
 import game.item.Item;
+import graphic.texter.Message;
 import java.util.List;
 
 public class Quest extends AbstractQuest {

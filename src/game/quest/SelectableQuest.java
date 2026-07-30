@@ -15,11 +15,10 @@ import game.InteractiveObject;
 import game.item.Item;
 import graphic.texter.Message;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SelectableQuest extends AbstractQuest implements KeyListener {
+public class SelectableQuest extends AbstractQuest {
 
     private final ArrayList<Quest> questList;
 
@@ -49,19 +48,13 @@ public class SelectableQuest extends AbstractQuest implements KeyListener {
         return new SelectableQuest(id, questList);
     }
 
-    @Override
-    public void keyReleased(KeyEvent evt) {}
-
-    @Override
-    public void keyPressed(KeyEvent evt) {}
-
-    @Override
-    public void keyTyped(KeyEvent evt) {
-        selectedIndex = evt.getKeyChar()-1;
+    public boolean select(int index) {
+        selectedIndex = index;
+        return isSelected();
     }
 
     public boolean select(KeyEvent evt) {
-        keyTyped(evt);
+        selectedIndex = evt.getKeyChar()-1;
         return isSelected();
     }
 
