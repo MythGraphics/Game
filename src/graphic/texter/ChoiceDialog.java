@@ -24,11 +24,11 @@ import javax.swing.*;
 
 public class ChoiceDialog<T> extends JDialog {
 
+    private final static int MAX_VISIBLE_ROW_COUNT = 5;
+
     private final JFrame parentFrame;
 
     private JList<T> choiceList;
-    private int selectedIndex = 0; // standardmäßig den ersten Eintrag auswählen
-    private T selectedValue;
 
     // unterstützt Varargs
     @SafeVarargs
@@ -45,47 +45,53 @@ public class ChoiceDialog<T> extends JDialog {
             return;
         }
 
-        selectedValue = options.get(0);
-
         DefaultListModel<T> model = new DefaultListModel<>();
         model.addAll(options);
         choiceList = new JList<>(model);
         choiceList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        choiceList.setVisibleRowCount( options.size() );
+        choiceList.setVisibleRowCount(MAX_VISIBLE_ROW_COUNT);
+        choiceList.setSelectedIndex(0); // standardmäßig den ersten Eintrag auswählen
+
         if (parentFrame != null) {
             choiceList.setBackground( parentFrame.getBackground() );
         }
-
         setUndecorated(true);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLayout( new BorderLayout( 15, 15 ));
         setResizable(false);
         getRootPane().setBorder( BorderFactory.createLineBorder( Color.LIGHT_GRAY, 1 )); // Rahmen hinzufügen, um sich abzuheben
 
-        // Tastatur-Event: Enter wählt das aktuell markierte Element aus
-        choiceList.addKeyListener( new KeyAdapter() {
-            @Override
-            public void keyPressed(KeyEvent e) {
-                if ( e.getKeyCode() == KeyEvent.VK_ENTER ) {
-                    confirmSelection();
+        if (model.size() > 1) {
+            // Tastatur-Event: Enter wählt das aktuell markierte Element aus
+            choiceList.addKeyListener( new KeyAdapter() {
+                @Override
+                public void keyPressed(KeyEvent e) {
+                    if ( e.getKeyCode() == KeyEvent.VK_ENTER ) {
+                        dispose();
+                    }
                 }
-            }
-        });
+            });
 
-        // Maus-Event: Einfacher Klick oder Doppelklick wählt Element aus
-        choiceList.addMouseListener( new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if (e.getClickCount() == 1 || e.getClickCount() == 2) {
-                    confirmSelection();
+            // Maus-Event: Einfacher Klick oder Doppelklick wählt Element aus
+            choiceList.addMouseListener( new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    if (e.getClickCount() == 1 || e.getClickCount() == 2) {
+                        dispose();
+                    }
                 }
-            }
-        });
+            });
+        }
 
-        // ScrollPane für viele Auswahlmöglichkeiten
-        JScrollPane scrollPane = new JScrollPane(choiceList);
-        scrollPane.setBorder( BorderFactory.createEmptyBorder() );
-        add(scrollPane, BorderLayout.CENTER); // CENTER füllt ohne Ränder den gesamten verfügbaren Platz
+        if (model.size() > MAX_VISIBLE_ROW_COUNT) {
+            // ScrollPane für viele Auswahlmöglichkeiten
+            JScrollPane scrollPane = new JScrollPane(choiceList);
+            scrollPane.setBorder( BorderFactory.createEmptyBorder() );
+            add(scrollPane, BorderLayout.CENTER); // CENTER füllt ohne Ränder den gesamten verfügbaren Platz
+        } else {
+            add(choiceList, BorderLayout.CENTER); // CENTER füllt ohne Ränder den gesamten verfügbaren Platz
+        }
+
         pack(); // berechnet die finale Größe des Fensters
     }
 
@@ -103,14 +109,13 @@ public class ChoiceDialog<T> extends JDialog {
         }
     }
 
-    private void confirmSelection() {
-        selectedIndex = choiceList.getSelectedIndex();
-        selectedValue = choiceList.getSelectedValue();
-        dispose();
-    }
-
     @Override
     public void setVisible(boolean visible) {
+        // wenn es nur 1 Option gibt, bleibt der Dialog unsichtbar
+        if (visible && choiceList.getModel().getSize() <= 1) {
+            return;
+        }
+
         if (visible) {
             updatePosition();
             SwingUtilities.invokeLater(choiceList::requestFocusInWindow); // Fokus auf Liste legen
@@ -119,11 +124,11 @@ public class ChoiceDialog<T> extends JDialog {
     }
 
     public int getSelectedIndex() {
-        return selectedIndex;
+        return choiceList.getSelectedIndex();
     }
 
     public T getSelectedValue() {
-        return selectedValue;
+        return choiceList.getSelectedValue();
     }
 
 }

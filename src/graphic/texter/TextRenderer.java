@@ -7,7 +7,7 @@ package graphic.texter;
 /**
  *
  * @author  Martin Pröhl alias MythGraphics
- * @version 1.0.0
+ * @version 1.0.1
  *
  */
 
@@ -56,23 +56,20 @@ public class TextRenderer extends JPanel implements ActionListener {
             return;
         }
 
-        // Hole die echten Maße der aktuellen Schriftart
-        FontMetrics fm = g2d.getFontMetrics(font);
-
-        // Durchschnittliche Breite eines Zeichens (z.B. 'm' bei Monospaced)
+        FontMetrics fm = g2d.getFontMetrics(font); // die echten Maße der aktuellen Schriftart holen
+        // durchschnittliche Breite eines Zeichens (z.B. 'm' bei Monospaced)
         int charWidth = fm.charWidth('m');
         if (charWidth <= 0) {
             charWidth = 7; // fallback
         }
 
-        // Berechne, wie viele Zeichen horizontal Platz haben
+        // berechnet, wie viele Zeichen horizontal Platz haben
         int availableWidth = size.width - pos.x - 2*D; // 2*D als Puffer rechts
         max_char_length = Math.max(1, availableWidth / charWidth);
 
-        // Berechne, wie viele Zeilen vertikal Platz haben
-        int availableHeight = size.height - pos.y;
-        // D ist hier der Zeilenabstand (Line Height)
-        max_line_length = Math.max(1, availableHeight / D);
+        // berechnet, wie viele Zeichen vertikal Platz haben
+        int availableHeight = size.height - pos.y; // berechnet, wie viele Zeilen vertikal Platz haben
+        max_line_length = Math.max(1, availableHeight / D); // D ist hier der Zeilenabstand (Line Height)
     }
 
     public void setTextPosition(Point pos) {

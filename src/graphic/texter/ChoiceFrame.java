@@ -22,21 +22,21 @@ public class ChoiceFrame<T> extends TextFrame {
     private final ChoiceDialog<T> choice;
 
     @SafeVarargs
-    public ChoiceFrame(boolean standalone, T... options) {
-        this( standalone, options != null ? Arrays.asList(options) : List.of() );
+    public ChoiceFrame(T... options) {
+        this( options != null ? Arrays.asList(options) : List.of() );
     }
 
-    public ChoiceFrame(boolean standalone, List<T> options) {
-        this(standalone, DEFAULT_SIZE, DEFAULT_IMG_SIZE, DEFAULT_TEXT_POS, options);
+    public ChoiceFrame(List<T> options) {
+        this(DEFAULT_SIZE, DEFAULT_IMG_SIZE, DEFAULT_TEXT_POS, options);
     }
 
     @SafeVarargs
-    public ChoiceFrame(boolean standalone, Dimension size, Dimension imgSize, Point textPos, T... options) {
-        this( standalone, size, imgSize, textPos, options != null ? Arrays.asList(options) : List.of() );
+    public ChoiceFrame(Dimension size, Dimension imgSize, Point textPos, T... options) {
+        this( size, imgSize, textPos, options != null ? Arrays.asList(options) : List.of() );
     }
 
-    public ChoiceFrame(boolean standalone, Dimension size, Dimension imgSize, Point textPos, List<T> options) {
-        super(standalone, size, imgSize, textPos);
+    public ChoiceFrame(Dimension size, Dimension imgSize, Point textPos, List<T> options) {
+        super(true, size, imgSize, textPos); // standalone=false für den TextFrame macht in diesem Kontext keinen Sinn
         this.choice = new ChoiceDialog<>(this, options);
     }
 
@@ -66,12 +66,17 @@ public class ChoiceFrame<T> extends TextFrame {
         }
         String[] options = Arrays.copyOfRange(args, i+1, args.length-1);
 
-        ChoiceFrame<String> choiceFrame = new ChoiceFrame<>(true, options);
+        ChoiceFrame<String> choiceFrame = new ChoiceFrame<>(options);
         choiceFrame.show(title, text, imgpath);
+        System.out.println( "getroffene Auswahl: " + choiceFrame.getChoice() );
     }
 
-    public ChoiceDialog getChoiceDialog() {
-        return choice;
+    public int getChoiceIndex() {
+        return choice.getSelectedIndex();
+    }
+
+    public T getChoice() {
+        return choice.getSelectedValue();
     }
 
     @Override
@@ -85,13 +90,5 @@ public class ChoiceFrame<T> extends TextFrame {
         super.show(msg);
         choice.setVisible(true);
     }
-
-/*  nicht sinnvoll / funktional
-    @Override
-    public void setVisible(boolean visible) {
-        super.setVisible(visible);
-        choice.setVisible(visible);
-    }
- */
 
 }
