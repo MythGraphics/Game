@@ -54,7 +54,7 @@ public class Damage implements Cloneable {
      * Aktualisiert den Schaden basierend auf des gegebene Attribut.
      * @param a Das zu berücksichtigende Attribut
      */
-    public void buffDamage(Attribute a) {
+    public void buffDamage(DamageAttribute a) {
         for ( EnumMap.Entry<DamageType, Integer> buff : a.getBuffs().entrySet() ) {
             if ( dType == buff.getKey() ) {
                 value += baseDmg * a.getValue() * buff.getValue() / 100;
@@ -76,7 +76,7 @@ public class Damage implements Cloneable {
     }
 
     @Override
-    public Damage clone() {
+    public Damage clone() throws CloneNotSupportedException {
         Damage d = new Damage(dType, baseDmg);
         d.setDamage(value);
         return d;

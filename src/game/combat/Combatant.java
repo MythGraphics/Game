@@ -13,6 +13,7 @@ package game.combat;
 
 import game.InteractiveObject;
 import game.resource.Resource;
+import static game.resource.Resource.ResourceType.HEALTH;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -21,7 +22,7 @@ public class Combatant extends InteractiveObject implements Combatable {
 
     public final static int HP_PER_LEVEL = 100;
     public final static String UNNAMED = "John Smith";
-    public final static String RESOURCE_NAME = "Gesundheit";
+    public final static String MAIN_RESOURCE_NAME = "Gesundheit";
 
     final CombatantType cType;
 
@@ -37,17 +38,13 @@ public class Combatant extends InteractiveObject implements Combatable {
     // Attribute über cType (CombatantType) implementiert
 
     public Combatant(String name, CombatantType cType) {
-        this(name, cType, null);
+        this(name, cType, new Resource( MAIN_RESOURCE_NAME, HEALTH, HP_PER_LEVEL ));
     }
 
     public Combatant(String name, CombatantType cType, Resource health) {
         super(name);
         this.cType  = cType;
-        if (health == null) {
-            this.health = new Resource( RESOURCE_NAME, Resource.ResourceType.HEALTH, HP_PER_LEVEL );
-        } else {
-            this.health = health;
-        }
+        this.health = health;
         armorList   = new ArrayList<>();
         weaponList  = new ArrayList<>(2); // 0-2 Einträge
     }
@@ -68,7 +65,7 @@ public class Combatant extends InteractiveObject implements Combatable {
     }
 
     public void resurrect() {
-        health.setValue(100);
+        health.setValueAsMaxPercentage(100);
     }
 
     /**
@@ -103,7 +100,7 @@ public class Combatant extends InteractiveObject implements Combatable {
 
     private void levelUp() {
         getHealth().setMax( getLevel() * HP_PER_LEVEL );
-        getHealth().setValue(100);
+        getHealth().setValueAsMaxPercentage(100);
         updateDmg();
         refreshName();
     }
@@ -340,6 +337,11 @@ public class Combatant extends InteractiveObject implements Combatable {
             "Waffen: " + weaponList.toString() + ";\n" +
             "Rüstung: " + armorList.toString()
         ;
+    }
+
+    @Override
+    public Combatant clone() throws CloneNotSupportedException {
+        throw new CloneNotSupportedException( getClass() + ": clone() nicht unterstützt." );
     }
 
 }

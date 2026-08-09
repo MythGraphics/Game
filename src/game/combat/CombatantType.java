@@ -15,12 +15,12 @@ import static game.combat.DamageType.*;
 
 public enum CombatantType {
 
-    APOTHEKER       (GIFT),
-    CHEMIKER        (SÄURE),
-    KRIEGER         (PHYSISCH),
-    MAGIER          (FEUER),
-    SCHAMANE        (ELEKTRIZITÄT),
-    SOLDAT          (NUKLEAR);
+    APOTHEKER   (GIFT),
+    CHEMIKER    (SÄURE),
+    KRIEGER     (PHYSISCH),
+    MAGIER      (FEUER),
+    SCHAMANE    (ELEKTRIZITÄT),
+    SOLDAT      (NUKLEAR);
 
     final DamageType dType;
 

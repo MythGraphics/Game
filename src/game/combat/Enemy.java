@@ -15,12 +15,17 @@ public class Enemy extends Combatant {
 
     public Enemy(String name, CombatantType cType, int level) {
         super(name, cType);
-        super.setLevel( (byte) level );
+        super.setLevel(( byte ) level );
     }
 
     @Override
     public void buffDamage(Damage dmg) {
         dmg.buffDamage( super.getLevel() );
+    }
+
+    @Override
+    public Combatant clone() throws CloneNotSupportedException {
+        return super.clone();
     }
 
 }

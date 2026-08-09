@@ -11,10 +11,10 @@ package game.combat;
  *
  */
 
-import game.resource.Resource;
 import static game.combat.AttributeType.*;
 import static game.combat.CombatantType.*;
 import static game.combat.DamageType.*;
+import game.resource.Resource;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,14 +22,14 @@ public class Player extends Combatant {
 
     public final static int XP_PER_LEVEL = 100;
 
-    private final Map<AttributeType, Attribute> attributes;
+    private final Map<AttributeType, DamageAttribute> attributes;
     private int xp = 0;
 
     public Player(String name, CombatantType cType, Resource health, int xp) {
         super(name, cType, health);
         this.attributes = new HashMap<>();
         addXP(xp);
-        buffAttr();
+        buffDmgAttr();
     }
 
     public int getXP() {
@@ -38,34 +38,34 @@ public class Player extends Combatant {
 
     public final void addXP(int xp) {
         this.xp += xp;
-        setLevel((byte) ( this.xp/XP_PER_LEVEL + 1 ));
+        setLevel(( byte ) ( this.xp/XP_PER_LEVEL + 1 ));
     }
 
     public int getAttributeValue(AttributeType aType) {
         return attributes.get(aType).getValue();
     }
 
-    private void buffAttr() {
-        Map<Attribute, Integer> lvlBuff = getType(cType); // Anzahl der Punkte, um die das Attribut pro Level steigt
-        for ( Attribute a : lvlBuff.keySet() ) {
-            a.setValue( getLevel()*lvlBuff.get( a )); // Attribute an Level anpassen
-            attributes.put( a.getAttributeType(), a ); // Attribute in sinnige Map ablegen
+    private void buffDmgAttr() {
+        Map<DamageAttribute, Integer> lvlBuff = getBuffMap(cType); // Anzahl der Punkte, um die das Attribut pro Level steigt
+        for ( DamageAttribute a : lvlBuff.keySet() ) {
+            a.setValue( getLevel()*lvlBuff.get( a )); // DamageAttribute an Level anpassen
+            attributes.put( a.getType(), a ); // DamageAttribute in sinnige Map ablegen
         }
     }
 
     @Override
     public void buffDamage(Damage damage) {
-        buffAttr();
-        for ( HashMap.Entry<AttributeType, Attribute> entry : attributes.entrySet() ) {
+        buffDmgAttr();
+        for ( HashMap.Entry<AttributeType, DamageAttribute> entry : attributes.entrySet() ) {
             damage.buffDamage( entry.getValue() );
         }
     }
 
-    public Map<AttributeType, Attribute> getAttributes() {
+    public Map<AttributeType, DamageAttribute> getAttributes() {
         return attributes;
     }
 
-    private static Map<Attribute, Integer> getType(CombatantType cType) {
+    private static Map<DamageAttribute, Integer> getBuffMap(CombatantType cType) {
         switch (cType) {
             case APOTHEKER:
                 return getApotheker();
@@ -83,52 +83,57 @@ public class Player extends Combatant {
         return null;
     }
 
-    private static Map<Attribute, Integer> getChemiker() {
-        HashMap<Attribute, Integer> map = new HashMap<>();
-        map.put( new Attribute( GESCHICKLICHKEIT, SÄURE, 50 ), 2 );
-        map.put( new Attribute( INTELLIGENZ, SÄURE, 50 ), 2 );
-        map.put( new Attribute( STÄRKE ), 1 );
+    private static Map<DamageAttribute, Integer> getChemiker() {
+        HashMap<DamageAttribute, Integer> map = new HashMap<>();
+        map.put( new DamageAttribute( GESCHICKLICHKEIT, SÄURE, 50 ), 2 );
+        map.put( new DamageAttribute( INTELLIGENZ, SÄURE, 50 ), 2 );
+        map.put( new DamageAttribute( STÄRKE ), 1 );
         return map;
     }
 
-    private static Map<Attribute, Integer> getSchamane() {
-        HashMap<Attribute, Integer> map = new HashMap<>();
-        map.put( new Attribute( GESCHICKLICHKEIT, ELEKTRIZITÄT, 50 ), 2 );
-        map.put( new Attribute( INTELLIGENZ, ELEKTRIZITÄT, 50 ), 2 );
-        map.put( new Attribute( STÄRKE ), 1 );
+    private static Map<DamageAttribute, Integer> getSchamane() {
+        HashMap<DamageAttribute, Integer> map = new HashMap<>();
+        map.put( new DamageAttribute( GESCHICKLICHKEIT, ELEKTRIZITÄT, 50 ), 2 );
+        map.put( new DamageAttribute( INTELLIGENZ, ELEKTRIZITÄT, 50 ), 2 );
+        map.put( new DamageAttribute( STÄRKE ), 1 );
         return map;
     }
 
-    private static Map<Attribute, Integer> getApotheker() {
-        HashMap<Attribute, Integer> map = new HashMap<>();
-        map.put( new Attribute( GESCHICKLICHKEIT, GIFT, 50 ), 2 );
-        map.put( new Attribute( INTELLIGENZ, GIFT, 50 ), 2 );
-        map.put( new Attribute( STÄRKE ), 1 );
+    private static Map<DamageAttribute, Integer> getApotheker() {
+        HashMap<DamageAttribute, Integer> map = new HashMap<>();
+        map.put( new DamageAttribute( GESCHICKLICHKEIT, GIFT, 50 ), 2 );
+        map.put( new DamageAttribute( INTELLIGENZ, GIFT, 50 ), 2 );
+        map.put( new DamageAttribute( STÄRKE ), 1 );
         return map;
     }
 
-    private static Map<Attribute, Integer> getKrieger() {
-        HashMap<Attribute, Integer> map = new HashMap<>();
-        map.put( new Attribute( GESCHICKLICHKEIT, PHYSISCH, 50 ), 2 );
-        map.put( new Attribute( INTELLIGENZ ), 1 );
-        map.put( new Attribute( STÄRKE, PHYSISCH, 50 ), 2 );
+    private static Map<DamageAttribute, Integer> getKrieger() {
+        HashMap<DamageAttribute, Integer> map = new HashMap<>();
+        map.put( new DamageAttribute( GESCHICKLICHKEIT, PHYSISCH, 50 ), 2 );
+        map.put( new DamageAttribute( INTELLIGENZ ), 1 );
+        map.put( new DamageAttribute( STÄRKE, PHYSISCH, 50 ), 2 );
         return map;
     }
 
-    private static Map<Attribute, Integer> getMagier() {
-        HashMap<Attribute, Integer> map = new HashMap<>();
-        map.put( new Attribute( GESCHICKLICHKEIT, FEUER, 100 ), 2 );
-        map.put( new Attribute( INTELLIGENZ, FEUER, 100 ), 2 );
-        map.put( new Attribute( STÄRKE ), 1 );
+    private static Map<DamageAttribute, Integer> getMagier() {
+        HashMap<DamageAttribute, Integer> map = new HashMap<>();
+        map.put( new DamageAttribute( GESCHICKLICHKEIT, FEUER, 100 ), 2 );
+        map.put( new DamageAttribute( INTELLIGENZ, FEUER, 100 ), 2 );
+        map.put( new DamageAttribute( STÄRKE ), 1 );
         return map;
     }
 
-    private static Map<Attribute, Integer> getSoldat() {
-        HashMap<Attribute, Integer> map = new HashMap<>();
-        map.put( new Attribute( GESCHICKLICHKEIT, NUKLEAR, 100 ), 2 );
-        map.put( new Attribute( INTELLIGENZ, NUKLEAR, 100), 2 );
-        map.put( new Attribute( STÄRKE ), 1 );
+    private static Map<DamageAttribute, Integer> getSoldat() {
+        HashMap<DamageAttribute, Integer> map = new HashMap<>();
+        map.put( new DamageAttribute( GESCHICKLICHKEIT, NUKLEAR, 100 ), 2 );
+        map.put( new DamageAttribute( INTELLIGENZ, NUKLEAR, 100), 2 );
+        map.put( new DamageAttribute( STÄRKE ), 1 );
         return map;
+    }
+
+    @Override
+    public Combatant clone() throws CloneNotSupportedException {
+        return super.clone();
     }
 
 }
