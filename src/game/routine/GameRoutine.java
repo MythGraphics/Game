@@ -44,7 +44,16 @@ public abstract class GameRoutine implements CollisionActionListener {
 
     public abstract Player getPlayer();
 
-    public GameObjectLoader getLoader() {
+    /**
+     * Overwrite to implement an event-dependent dialogListener besides the initial one.
+     * @param e CollisionEvent
+     * @return DialogOutputListener
+     */
+    public DialogOutputListener getDialogListener(CollisionEvent e) {
+        return dialogListener;
+    }
+
+    public final GameObjectLoader getLoader() {
         return loader;
     }
 
@@ -65,7 +74,7 @@ public abstract class GameRoutine implements CollisionActionListener {
 //      System.out.println( "(debug) CollisionType: " + e.getType() );              // debug
 //      System.out.println( "(debug) BlockType: "     + e.getTarget().getType() );  // debug
         switch( e.getType() ) {
-            case TEXT, ENV_IMPASS -> dialogListener.show( dialogMap.get( e.getTarget().getType() ));
+            case TEXT, ENV_IMPASS -> getDialogListener(e).show( dialogMap.get( e.getTarget().getType() ));
             case PORTAL -> {
                 Point target = e.getTarget().getPosition();
                 portals.addIfAbsent(target);

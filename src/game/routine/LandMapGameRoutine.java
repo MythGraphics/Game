@@ -34,13 +34,13 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.LinkedList;
 
-public class LandMapGameRoutine extends GameRoutine {
+public class LandMapGameRoutine extends RPGRoutine {
 
     final LinkedList<Item> items = new LinkedList<>(); // Items, die zufällig (10%) in der Landschaft gefunden werden können
 
+    private Player player;
     private Npc npc;
     private Item qObj;
-    private Player player;
 
     public LandMapGameRoutine(GameFrame frame) {
         super(frame.textFrame);
@@ -114,6 +114,11 @@ public class LandMapGameRoutine extends GameRoutine {
     }
 
     @Override
+    public Npc getNpc() {
+        return npc;
+    }
+
+    @Override
     public void collisionPerformed(CollisionEvent e) {
         super.collisionPerformed(e);
         switch( e.getType() ) {
@@ -128,22 +133,6 @@ public class LandMapGameRoutine extends GameRoutine {
                 if ( !items.isEmpty() ) {
                     player.getInventory().add( items.poll() );
                     break;
-                }
-            }
-            case INTERACTIVE -> {
-                switch ( e.getTarget().getType() ) {
-                    case NPC -> {
-                        dialogListener.show(npc);
-                        if ( player.hasActiveQuest() ) {
-                            player.deliverQuest();
-                            dialogListener.show( player.getQuest() );
-                            return;
-                        }
-                        if ( npc.hasQuest() ) {
-                            dialogListener.show( npc.getQuest() );
-                            player.acceptQuest( npc.getQuest() );
-                        }
-                    }
                 }
             }
         }
