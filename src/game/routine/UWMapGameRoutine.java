@@ -23,14 +23,16 @@ import graphic.io.TilesetUtility;
 import graphic.map.CollisionEvent;
 import graphic.map.GameMap;
 import graphic.map.UWMap;
+import graphic.texter.DialogOutputListener;
 
 public class UWMapGameRoutine extends GameRoutine implements ResourceConsumeListener {
 
-    private Player player;
+    private final Player player;
+    private final GameFrame gameFrame;
 
-    public UWMapGameRoutine(UWMap map, GameFrame frame) {
-        super(frame.textFrame);
-        initPlayer(map, frame);
+    public UWMapGameRoutine(UWMap map, GameFrame gameFrame) {
+        this.gameFrame = gameFrame;
+        this.player = initPlayer(map, gameFrame);
     }
 
     @Override
@@ -38,16 +40,22 @@ public class UWMapGameRoutine extends GameRoutine implements ResourceConsumeList
         return player;
     }
 
-    private void initPlayer(UWMap map, GameFrame frame) {
+    @Override
+    public DialogOutputListener getDialogListener(CollisionEvent e) {
+        return gameFrame.textFrame;
+    }
+
+    private Player initPlayer(UWMap map, GameFrame frame) {
         Resource health = new Resource("Gesundheit", HEALTH, 1000, 1000);
         health.addResourceChangeListener(frame);
         Resource air = map.getResource();
         air.addResourceChangeListener(frame);
         air.addResourceConsumeListener(this);
-        player = new Player(GameFrame.playerName, frame.textFrame, health, air);
+        Player player = new Player(GameFrame.playerName, frame.textFrame, health, air);
         player.setImg( TilesetUtility.getSpriteSetHorizontal(
             loadImage( TILESET+"player/girl_red_swimsuit.png" ), 140, 200, 4
         )[0]);
+        return player;
     }
 
     @Override

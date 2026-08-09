@@ -39,18 +39,18 @@ public class SpaceMapGameRoutine extends MartialGameRoutine {
     public final static String PROLOG_BG = RESOURCE+"bg/interior_of_a_spaceship_by_parker_west.jpg";
 
     private final BufferedImage textFrameBG;
+    private final Player player;
 
-    private Player player;
     private Enemy enemy;
     private int enemies = 0;
     private boolean victory = false;
 
-    public SpaceMapGameRoutine(GameFrame frame) {
-        super(frame);
+    public SpaceMapGameRoutine(GameFrame gameFrame) {
+        super(gameFrame);
         setAudioTrackList("SpaceMapAudioTrackList.txt");
-        initPlayer(frame);
+        this.player = initPlayer(gameFrame);
         textFrameBG = BinaryIO.loadImage(PROLOG_BG);
-        enemies = frame.getCurrentMap().getEnemyCount();
+        enemies = gameFrame.getCurrentMap().getEnemyCount();
         try {
             enemy = loader.loadNextEnemy();
         } catch (IOException | NullPointerException e) {
@@ -59,24 +59,25 @@ public class SpaceMapGameRoutine extends MartialGameRoutine {
             System.exit(255);
             return;
         }
-        frame.textFrame.addCloseListener( () -> {
-            if (victory) { frame.dispose(); }
+        gameFrame.textFrame.addCloseListener( () -> {
+            if (victory) { gameFrame.dispose(); }
         });
         showProlog();
     }
 
-    private void initPlayer(GameFrame frame) {
+    private Player initPlayer(GameFrame gameFrame) {
         Resource health  = new Resource( "Gesundheit", HEALTH, 1000, 1000 );
-        health.addResourceChangeListener(frame);
+        health.addResourceChangeListener(gameFrame);
         Resource credit  = new Resource( "Münzen", CREDIT, 1000*1000, 0 );
-        credit.addResourceChangeListener(frame);
+        credit.addResourceChangeListener(gameFrame);
         Resource air     = new Resource( "Sauerstoff", AIR, 1000, 1000 );
-        air.addResourceChangeListener(frame);
+        air.addResourceChangeListener(gameFrame);
         Resource stamina = new Resource( "Ausdauer", STAMINA, 100, 100 );
-        stamina.addResourceChangeListener(frame);
-        player = new Player(GameFrame.playerName, frame.textFrame, health, credit, air, stamina);
+        stamina.addResourceChangeListener(gameFrame);
+        Player player = new Player(GameFrame.playerName, gameFrame.textFrame, health, credit, air, stamina);
         player.setPlayerAsMinion( CombatFactory.getDefaultSoldier( player.getHealth() ));
         player.setImg( loadImage( SPRITE+"player/man1.png" ));
+        return player;
     }
 
     @Override
@@ -127,7 +128,7 @@ public class SpaceMapGameRoutine extends MartialGameRoutine {
     private void loot(Combatant enemy) {
         Ammo loot = LootManager.createAmmo(enemy, AmmoType.PROJECTILE);
         player.getInventory().add(loot);
-        dialogListener.show( new Message(
+        gameFrame.textFrame.show( new Message(
             "Da liegt doch was!\n" + loot.toString(), player
         ));
     }

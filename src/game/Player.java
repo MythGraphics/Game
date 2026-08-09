@@ -56,10 +56,10 @@ public class Player extends InteractiveObject implements HasHealth, Trader {
         for ( Resource r : resources) {
             addResource(r);
         }
-        items = new ArrayList<>();
-        questListeners = new ArrayList<>();
-        inventory = new InventoryManager(this);
-        minions = new MinionManager();
+        items           = new ArrayList<>();
+        questListeners  = new ArrayList<>();
+        inventory       = new InventoryManager(this);
+        minions         = new MinionManager();
     }
 
     @Override

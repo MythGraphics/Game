@@ -15,7 +15,13 @@ import graphic.Direction;
 import graphic.MoveableSprite;
 import graphic.Sprite;
 import static graphic.map.BlockType.*;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.RenderingHints;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -24,6 +30,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
@@ -47,7 +54,7 @@ public abstract class GameMap extends JPanel implements ActionListener {
     protected Block space;
     protected MoveableSprite player;
 
-    private final Collection<CollisionActionListener> collisionListeners = new ArrayList<>();
+    private final List<CollisionActionListener> collisionListeners = new ArrayList<>();
     private final Point lastPlayerPos = new Point();
 
     private boolean active  = false;
@@ -241,19 +248,19 @@ public abstract class GameMap extends JPanel implements ActionListener {
 
     /**
      * Feuert Event bei Kollision Player -> Panel-Grenze
+     * @param collider Kollisionsblock
      */
     void firePanelEvent(Block collider) {
         System.out.println(
             "collision of block type "  + collider.getType() + " with panel boundary" +
             " at "                      + collider.x + "," + collider.y +
-            " (column "                 + ( collider.x / collider.getWidth() + 1 ) +  // +1, um keine Indizes auszugeben
+            " (column "                 + ( collider.x / collider.getWidth()  + 1 ) + // +1, um keine Indizes auszugeben
             ", row "                    + ( collider.y / collider.getHeight() + 1 ) + // +1, um keine Indizes auszugeben
             ")"
         );
         collisionListeners.forEach( actionListener -> actionListener.collisionPerformed(
             new CollisionEvent(
                 this,
-                CollisionType.BOUNDARY,
                 new Block(collider.x, collider.y, 0, BOUNDARY) {
                     @Override
                     public Image getImage() { return null; }
@@ -271,12 +278,12 @@ public abstract class GameMap extends JPanel implements ActionListener {
         System.out.println(
             "collision with block type "    + target.getType() +
             " at "                          + target.x + "," + target.y +
-            " (column "                     + ( target.x / target.getWidth() + 1 ) +  // +1, um keine Indizes auszugeben
+            " (column "                     + ( target.x / target.getWidth()  + 1 ) + // +1, um keine Indizes auszugeben
             ", row "                        + ( target.y / target.getHeight() + 1 ) + // +1, um keine Indizes auszugeben
-            ") as collision type "          + target.getType().getCollisionType()
+            ") as collision type "          + target.getType().getInteractionType()
         );
         collisionListeners.forEach( actionListener -> actionListener.collisionPerformed(
-            new CollisionEvent( this, target.getType().getCollisionType(), target, collider )
+            new CollisionEvent( this, target, collider )
         ));
     }
 

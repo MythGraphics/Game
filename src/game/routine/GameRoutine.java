@@ -29,7 +29,6 @@ import util.CycleList;
 
 public abstract class GameRoutine implements CollisionActionListener {
 
-    final DialogOutputListener dialogListener;
     final CycleList<Point> portals = new CycleList<>();
     final Map<BlockType, TextBox> dialogMap = new HashMap<>();
     final Random rand = new Random();
@@ -37,21 +36,12 @@ public abstract class GameRoutine implements CollisionActionListener {
 
     private List<String> audioTrackList;
 
-    public GameRoutine(DialogOutputListener dialogListener) {
-        this.dialogListener = dialogListener;
-        this.loader         = new GameObjectLoader( getClass() );
+    public GameRoutine() {
+        this.loader = new GameObjectLoader( getClass() );
     }
 
     public abstract Player getPlayer();
-
-    /**
-     * Overwrite to implement an event-dependent dialogListener besides the initial one.
-     * @param e CollisionEvent
-     * @return DialogOutputListener
-     */
-    public DialogOutputListener getDialogListener(CollisionEvent e) {
-        return dialogListener;
-    }
+    public abstract DialogOutputListener getDialogListener(CollisionEvent e);
 
     public final GameObjectLoader getLoader() {
         return loader;
@@ -65,16 +55,16 @@ public abstract class GameRoutine implements CollisionActionListener {
         return audioTrackList;
     }
 
-    public void addDialog(BlockType tType, TextBox dialog) {
-        dialogMap.put(tType, dialog);
+    public void addDialog(BlockType bType, TextBox dialog) {
+        dialogMap.put(bType, dialog);
     }
 
     @Override
     public void collisionPerformed(CollisionEvent e) {
-//      System.out.println( "(debug) CollisionType: " + e.getType() );              // debug
+//      System.out.println( "(debug) InteractionType: " + e.getType() );              // debug
 //      System.out.println( "(debug) BlockType: "     + e.getTarget().getType() );  // debug
+        getDialogListener(e).show( dialogMap.get( e.getTarget().getType() ));
         switch( e.getType() ) {
-            case TEXT, ENV_IMPASS -> getDialogListener(e).show( dialogMap.get( e.getTarget().getType() ));
             case PORTAL -> {
                 Point target = e.getTarget().getPosition();
                 portals.addIfAbsent(target);
@@ -84,7 +74,6 @@ public abstract class GameRoutine implements CollisionActionListener {
                 }
                 (( GameMap ) e.getSource() ).moveThroughPortal( portals.getNext() );
             }
-            case EXIT -> ((GameMap) e.getSource() ).deactivate();
         }
     }
 

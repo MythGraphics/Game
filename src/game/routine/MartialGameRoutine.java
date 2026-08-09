@@ -17,27 +17,23 @@ import game.combat.CombatFrame;
 import game.combat.Combatant;
 import graphic.DeadOrAlive;
 import graphic.map.CollisionEvent;
-import static graphic.map.CollisionType.ENEMY;
+import static graphic.map.InteractionType.ENEMY;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class MartialGameRoutine extends GameRoutine {
+public class MartialGameRoutine extends DefaultGameRoutine {
 
-    final GameFrame frame;
+    final GameFrame gameFrame;
     final List<Enemy> enemyList;
 
-    public MartialGameRoutine(List<Enemy> enemyList, GameFrame frame) {
-        super(frame.textFrame);
-        this.frame = frame;
-        if (enemyList == null) {
-            this.enemyList = new ArrayList<>();
-        } else {
-            this.enemyList = enemyList;
-        }
+    public MartialGameRoutine(GameFrame gameFrame, List<Enemy> enemyList) {
+        super(gameFrame);
+        this.gameFrame = gameFrame;
+        this.enemyList = enemyList;
     }
 
     public MartialGameRoutine(GameFrame frame) {
-        this(null, frame);
+        this( frame, new ArrayList<>() );
     }
 
     /**
@@ -89,7 +85,7 @@ public abstract class MartialGameRoutine extends GameRoutine {
                     enemyMinion.resurrect();
                     enemyMinion.setLevel(( byte ) ( playerMinion.getLevel()+1 ));
                 }
-                CombatFrame cFrame = new CombatFrame(frame, playerMinion, enemyMinion);
+                CombatFrame cFrame = new CombatFrame(gameFrame, playerMinion, enemyMinion);
                 cFrame.setVisible(true);
                 if ( !playerMinion.isAlive() ) {
                     playerDead( playerMinion, (DeadOrAlive) e.collider );

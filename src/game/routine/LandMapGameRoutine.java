@@ -14,7 +14,6 @@ package game.routine;
 import game.GameFrame;
 import game.ID;
 import game.Npc;
-import game.Player;
 import game.item.Item;
 import game.item.ItemEffect;
 import static game.item.ItemEffect.ItemEffectType.PRÄFIX;
@@ -25,33 +24,23 @@ import game.item.ReUsableItem;
 import game.item.UsableItem;
 import game.resource.Resource;
 import static game.resource.Resource.ResourceType.*;
-import static graphic.io.BinaryIO.TILESET;
-import graphic.io.DescriptorLoader;
 import static graphic.map.BlockType.ENVIRONMENT_A;
 import static graphic.map.BlockType.TEXTSIGN;
-import graphic.map.CollisionEvent;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.LinkedList;
 
 public class LandMapGameRoutine extends RPGRoutine {
 
-    final LinkedList<Item> items = new LinkedList<>(); // Items, die zufällig (10%) in der Landschaft gefunden werden können
-
-    private Player player;
-    private Npc npc;
-    private Item qObj;
-
-    public LandMapGameRoutine(GameFrame frame) {
-        super(frame.textFrame);
-        initPlayer(frame);
+    public LandMapGameRoutine(GameFrame gameFrame) {
+        super(gameFrame);
+        updatePlayer(gameFrame);
         try {
-            addDialog( TEXTSIGN, getLoader().loadNextDialog( player ));
-            addDialog( ENVIRONMENT_A, getLoader().loadNextDialog( player ));
-            npc = getLoader().loadNextNpc(player);
+            addDialog( TEXTSIGN, getLoader().loadNextDialog( getPlayer() ));
+            addDialog( ENVIRONMENT_A, getLoader().loadNextDialog( getPlayer() ));
+            Npc npc = getLoader().loadNextNpc( getPlayer() );
+            addNpc(npc);
 
-            initQuests(frame);
-            initEnvItems(frame);
+            initQuest(gameFrame, npc);
+            initEnvLoot();
         } catch (IOException | NullPointerException e) {
             System.err.println( "Initialisieren der Spiel-Routine fehlgeschlagen - Abbruch!" );
             System.err.println( "Ursache: " + e.getMessage() );
@@ -59,20 +48,13 @@ public class LandMapGameRoutine extends RPGRoutine {
         }
     }
 
-    private void initPlayer(GameFrame frame) {
-        Resource health = new Resource("Gesundheit", HEALTH, 1000, 1000);
+    private void updatePlayer(GameFrame frame) {
         Resource air    = new Resource("Luft", AIR, 100, 100);
         Resource money  = new Resource("Credits", CREDIT, 1000, 0);
-        health.addResourceChangeListener(frame);
         air.addResourceChangeListener(frame);
         money.addResourceChangeListener(frame);
-        player = new Player(GameFrame.playerName, frame.textFrame, health, air, money);
-        DescriptorLoader dLoader = new DescriptorLoader( getClass() );
-        try {
-            player.setImg( dLoader.loadSpriteSets( TILESET+"player/" )[0][0] );
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        getPlayer().addResource(air);
+        getPlayer().addResource(money);
 
 /*      player.setImg( TilesetUtility.getSpriteSetHorizontal(
             loadImage( TILESET+"player/girl_red_swimsuit.png" ), 140, 200, 4
@@ -80,7 +62,7 @@ public class LandMapGameRoutine extends RPGRoutine {
  */
     }
 
-    private void initQuests(GameFrame frame) throws IOException {
+    private void initQuest(GameFrame frame, Npc npc) throws IOException {
         ReUsableItem qItem = new ReUsableItem(-1, "Halskette");
         qItem.addItemActionListener(frame);
         qItem.addItemMessageListener(frame);
@@ -88,54 +70,19 @@ public class LandMapGameRoutine extends RPGRoutine {
             new ItemEffect("Neptunes", PRÄFIX, HEALTH, 100, PERCENT, false),
             new ItemEffect("des Delfins", SUFFIX, AIR, 100, PERCENT, false)
         );
-        int questID = ID.getNextQuestId();
-        qObj = getLoader().loadQuest(questID, npc, qItem, player);
-        getLoader().loadQuestObjectiveDialog(qObj, player);
+        int id = ID.getNextQuestId();
+        Item qObj = getLoader().loadQuest( id, npc, qItem, getPlayer() );
+        getLoader().loadQuestObjectiveDialog( qObj, getPlayer() );
+        addQuestLoot(id, qObj);
     }
 
-    private void initEnvItems(GameFrame frame) throws IOException {
-        UsableItem item = (UsableItem) getLoader().loadNextItem(player);
+    private void initEnvLoot() throws IOException {
+        UsableItem item = (UsableItem) getLoader().loadNextItem( getPlayer() );
         item.addItemEffect( new ItemEffect( "Blutsaugender", PRÄFIX, HEALTH, 20, PERCENT, false ));
-        items.add(item);
-        item = (UsableItem) getLoader().loadNextItem(player);
+        addEnvironmentLoot(item);
+        item = (UsableItem) getLoader().loadNextItem( getPlayer() );
         item.addItemEffect( new ItemEffect( "einfacher", PRÄFIX, CREDIT, item.getPrice(), ABSOLUTE ));
-        items.add(item);
-        items.forEach( i -> {
-            // Listener registrieren
-            i.addItemActionListener(frame);
-            i.addItemMessageListener(frame);
-        });
-        Collections.shuffle(items); // Item-Liste durchmischen
-    }
-
-    @Override
-    public Player getPlayer() {
-        return player;
-    }
-
-    @Override
-    public Npc getNpc() {
-        return npc;
-    }
-
-    @Override
-    public void collisionPerformed(CollisionEvent e) {
-        super.collisionPerformed(e);
-        switch( e.getType() ) {
-            case ENV_PASS -> {
-                if ( rand.nextInt(100) < 90 ) {
-                    break;
-                }
-                if ( player.hasActiveQuest() && player.getQuest().check( qObj )) {
-                    player.getInventory().add(qObj);
-                    break;
-                }
-                if ( !items.isEmpty() ) {
-                    player.getInventory().add( items.poll() );
-                    break;
-                }
-            }
-        }
+        addEnvironmentLoot(item);
     }
 
 }

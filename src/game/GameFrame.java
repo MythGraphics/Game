@@ -59,8 +59,8 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
     private final Map<JLabel, ReUsableItem> iconMap             = new HashMap<>();
     private final Map<ResourceType, JProgressBar> resourceMap   = new HashMap<>();
     private final MouseAdapter iconMouseAdapter;
-    private final Player player;
 
+    private Player player; // wird aus GameRoutine geholt
     private GameMap map;
     private GameRoutine routine;
     private BufferedImage playerImg;
@@ -473,7 +473,7 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
         // GameRoutine laden
         if (loadCmdInput) {
             // Fernsteuerung aktiv
-            routine = new RemoteGameRoutine(this);
+            routine = new DefaultGameRoutine(this);
             return;
         }
         switch ( tileMap.type() ) {

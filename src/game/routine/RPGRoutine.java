@@ -11,19 +11,66 @@ package game.routine;
  *
  */
 
+import game.GameFrame;
 import game.Npc;
+import game.item.Item;
+import graphic.map.Block;
 import static graphic.map.BlockType.NPC;
 import graphic.map.CollisionEvent;
-import static graphic.map.CollisionType.INTERACTIVE;
-import graphic.texter.DialogOutputListener;
+import static graphic.map.InteractionType.ENV_PASS;
+import static graphic.map.InteractionType.INTERACTIVE;
+import java.util.*;
 
-public abstract class RPGRoutine extends GameRoutine {
+public abstract class RPGRoutine extends MartialGameRoutine {
 
-    public RPGRoutine(DialogOutputListener dialogListener) {
-        super(dialogListener);
+    final LinkedList<Item> envLootPool = new LinkedList<>(); // Items, die zufällig in der Landschaft gefunden werden können
+    final Map<Integer, Item> qLootPool = new HashMap<>(); // QuestItems, die zufällig in der Landschaft gefunden werden können, wenn die dazu gehörige Quest aktiv ist.
+
+    private final Map<Block, Npc> npcMap = new HashMap<>();
+    private final List<Npc> npcList;
+
+    public RPGRoutine(GameFrame gameFrame, List<Npc> npcList) {
+        super(gameFrame);
+        this.npcList = npcList;
     }
 
-    public abstract Npc getNpc();
+    public RPGRoutine(GameFrame gameFrame) {
+        this( gameFrame, new LinkedList<>() );
+    }
+
+    private void mapNpc(Block block, Npc npc) {
+        npcMap.put(block, npc);
+    }
+
+    public void addNpc(Npc npc) {
+        addDialog(NPC, npc);
+        npcList.add(npc);
+    }
+
+    public Npc getNpc(Block block) {
+        Npc npc = npcMap.get(block);
+        if (npc == null) {
+            npc = npcList.getFirst();
+            mapNpc(block, npc);
+        }
+        return npc;
+    }
+
+    public void addEnvironmentLoot(Item item) {
+        addListener(item); // Listener registrieren
+        envLootPool.add(item);
+        Collections.shuffle(envLootPool); // Pool durchmischen
+    }
+
+    public void addQuestLoot(int id, Item questItem) {
+        addListener(questItem); // Listener registrieren
+        qLootPool.put(id, questItem);
+    }
+
+    private void addListener(Item item) {
+        item.addItemActionListener(gameFrame);
+        item.addItemMessageListener(gameFrame);
+    }
 
     @Override
     public void collisionPerformed(CollisionEvent e) {
@@ -32,15 +79,34 @@ public abstract class RPGRoutine extends GameRoutine {
             case INTERACTIVE -> {
                 switch ( e.getTarget().getType() ) {
                     case NPC -> {
-                        dialogListener.show( getNpc() );
+                        Block block = e.getTarget();
                         if ( getPlayer().hasActiveQuest() ) {
                             getPlayer().deliverQuest();
-                            dialogListener.show( getPlayer().getQuest() );
-                        } else if ( getNpc().hasQuest() ) {
-                            dialogListener.show( getNpc().getQuest() );
-                            getPlayer().acceptQuest( getNpc().getQuest() );
+                            getDialogListener(e).show( getPlayer().getQuest() );
+                        } else if ( getNpc(block).hasQuest() ) {
+                            getDialogListener(e).show( getNpc(block).getQuest() );
+                            getPlayer().acceptQuest( getNpc(block).getQuest() );
+
                         }
                     }
+                }
+            }
+            case ENV_PASS -> {
+                if ( rand.nextInt(100) < 90 ) {
+                    break;
+                }
+                if ( getPlayer().hasActiveQuest() ) {
+                    int id = getPlayer().getQuest().getId();
+                    if ( qLootPool.containsKey( id )) {
+                        getPlayer().getInventory().add( qLootPool.get( id ));
+                        break;
+                    } else {
+                        System.err.println("QuestItem zu Quest-ID #" + id + " nicht im Pool.");
+                    }
+                }
+                if ( !envLootPool.isEmpty() ) {
+                    getPlayer().getInventory().add( envLootPool.poll() );
+                    break;
                 }
             }
         }

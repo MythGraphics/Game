@@ -20,6 +20,7 @@ import graphic.texter.Message;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Arrays;
 
 public abstract class AbstractQuest implements HasDialog, HasID {
 
@@ -98,17 +99,25 @@ public abstract class AbstractQuest implements HasDialog, HasID {
         return null;
     }
 
-    public boolean check(Item questObjective) {
+    public boolean check(Item... questObjectives) {
+        return check( Arrays.asList( questObjectives ));
+    }
+
+    public boolean check(List<Item> questObjectives) {
         if (status == READY) {
             return true;
         }
-        if ( questObjective == null ||
-             questObjective.getId() != getId()
-        ) {
+        if ( questObjectives == null || questObjectives.isEmpty() ) {
             return false;
         }
-        status = READY;
-        return true;
+        for (Item i : questObjectives) {
+            if ( i.getId() == getId() ) {
+                // questId stimmt mit itemId überein
+                status = READY;
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

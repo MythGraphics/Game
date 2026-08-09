@@ -14,6 +14,6 @@ package graphic.map;
 public interface HasMapChar {
 
     char getMapChar();
-    CollisionType getCollisionType();
+    InteractionType getInteractionType();
 
 }

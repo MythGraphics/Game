@@ -13,72 +13,72 @@ package graphic.map;
 
 public enum BlockType implements HasMapChar {
 
-    BOUNDARY        (Character.MIN_VALUE, CollisionType.BOUNDARY, false), // map boundary
+    BOUNDARY        (Character.MIN_VALUE, InteractionType.BOUNDARY, false), // map boundary
 
     // basic types; passable
-    SPACE           (' ', CollisionType.NONE,           true),  // default space
-    SPACEHOLDER     ('.', CollisionType.NONE,           true),  // spaceholder for big sprites
-    PORTAL          ('O', CollisionType.PORTAL,         true),  // portal
-    EXIT            ('#', CollisionType.EXIT,           true),  // map exit
+    SPACE           (' ', InteractionType.NONE,         true),  // default space
+    SPACEHOLDER     ('.', InteractionType.NONE,         true),  // spaceholder for big sprites
+    PORTAL          ('O', InteractionType.PORTAL,       true),  // portal
+    EXIT            ('#', InteractionType.EXIT,         true),  // map exit
 
     // interactive corpses: passable
-    CORPSE          ('c', CollisionType.INTERACTIVE,    true),  // interactive corpse
-    CORPSE_ENEMY    ('e', CollisionType.INTERACTIVE,    true),  // interactive enemy corpse
-    CORPSE_NPC      ('n', CollisionType.INTERACTIVE,    true),  // interactive npc corpse
-    CORPSE_PLAYER   ('p', CollisionType.INTERACTIVE,    true),  // interactive player corpse
-    UNDEAD_CORPES   ('u', CollisionType.INTERACTIVE,    true),  // interactive undead corpse
+    CORPSE          ('c', InteractionType.INTERACTIVE,  true),  // interactive corpse
+    CORPSE_ENEMY    ('e', InteractionType.INTERACTIVE,  true),  // interactive enemy corpse
+    CORPSE_NPC      ('n', InteractionType.INTERACTIVE,  true),  // interactive npc corpse
+    CORPSE_PLAYER   ('p', InteractionType.INTERACTIVE,  true),  // interactive player corpse
+    UNDEAD_CORPES   ('u', InteractionType.INTERACTIVE,  true),  // interactive undead corpse
 
     // special/map-dependent types; passable
-    BUBBLE          ('B', CollisionType.INTERACTIVE,    true),  // (air) bubble
-    WATERLINE       ('-', CollisionType.SURFACE,        true),  // water line (space); 1 per map; no sprite
+    BUBBLE          ('B', InteractionType.INTERACTIVE,  true),  // (air) bubble
+    WATERLINE       ('-', InteractionType.SURFACE,      true),  // water line (space); 1 per map; no sprite
 
     // interactive environment; impassable terrain
-    ENVIRONMENT_A   ('I', CollisionType.ENV_IMPASS,     false),
-    ENVIRONMENT_B   ('J', CollisionType.ENV_IMPASS,     false),
-    ENVIRONMENT_C   ('K', CollisionType.ENV_IMPASS,     false),
-    ENVIRONMENT_D   ('L', CollisionType.ENV_IMPASS,     false),
-    ENVIRONMENT_E   ('M', CollisionType.ENV_IMPASS,     false),
+    ENVIRONMENT_A   ('I', InteractionType.ENV_IMPASS,   false),
+    ENVIRONMENT_B   ('J', InteractionType.ENV_IMPASS,   false),
+    ENVIRONMENT_C   ('K', InteractionType.ENV_IMPASS,   false),
+    ENVIRONMENT_D   ('L', InteractionType.ENV_IMPASS,   false),
+    ENVIRONMENT_E   ('M', InteractionType.ENV_IMPASS,   false),
 
     // interactive types; impassable
-    ENEMY           ('E', CollisionType.ENEMY,          false), // interactive enemy
-    NPC             ('N', CollisionType.INTERACTIVE,    false), // interactive NPC
+    ENEMY           ('E', InteractionType.ENEMY,        false), // interactive enemy
+    NPC             ('N', InteractionType.INTERACTIVE,  false), // interactive NPC
     PLAYER          ('P', null,                         false), // player
-    TEXTSIGN        ('T', CollisionType.TEXT,           false), // text output
-    UNDEAD          ('U', CollisionType.INTERACTIVE,    false), // interactive undead
+    TEXTSIGN        ('T', InteractionType.TEXT,         false), // text output
+    UNDEAD          ('U', InteractionType.INTERACTIVE,  false), // interactive undead
 
     // WALL0-9; impassable terrain
-    WALL0           ('v', CollisionType.WALL,           false),
-    WALL1           ('V', CollisionType.WALL,           false),
-    WALL2           ('w', CollisionType.WALL,           false),
-    WALL3           ('W', CollisionType.WALL,           false),
-    WALL4           ('x', CollisionType.WALL,           false),
-    WALL5           ('X', CollisionType.WALL,           false),
-    WALL6           ('y', CollisionType.WALL,           false),
-    WALL7           ('Y', CollisionType.WALL,           false),
-    WALL8           ('z', CollisionType.WALL,           false),
-    WALL9           ('Z', CollisionType.WALL,           false),
+    WALL0           ('v', InteractionType.WALL,         false),
+    WALL1           ('V', InteractionType.WALL,         false),
+    WALL2           ('w', InteractionType.WALL,         false),
+    WALL3           ('W', InteractionType.WALL,         false),
+    WALL4           ('x', InteractionType.WALL,         false),
+    WALL5           ('X', InteractionType.WALL,         false),
+    WALL6           ('y', InteractionType.WALL,         false),
+    WALL7           ('Y', InteractionType.WALL,         false),
+    WALL8           ('z', InteractionType.WALL,         false),
+    WALL9           ('Z', InteractionType.WALL,         false),
 
     // ENVIRONMENT0-9; passable terrain
-    ENVIRONMENT0    ('0', CollisionType.ENV_PASS,       true),
-    ENVIRONMENT1    ('1', CollisionType.ENV_PASS,       true),
-    ENVIRONMENT2    ('2', CollisionType.ENV_PASS,       true),
-    ENVIRONMENT3    ('3', CollisionType.ENV_PASS,       true),
-    ENVIRONMENT4    ('4', CollisionType.ENV_PASS,       true),
-    ENVIRONMENT5    ('5', CollisionType.ENV_PASS,       true),
-    ENVIRONMENT6    ('6', CollisionType.ENV_PASS,       true),
-    ENVIRONMENT7    ('7', CollisionType.ENV_PASS,       true),
-    ENVIRONMENT8    ('8', CollisionType.ENV_PASS,       true),
-    ENVIRONMENT9    ('9', CollisionType.ENV_PASS,       true);
+    ENVIRONMENT0    ('0', InteractionType.ENV_PASS,     true),
+    ENVIRONMENT1    ('1', InteractionType.ENV_PASS,     true),
+    ENVIRONMENT2    ('2', InteractionType.ENV_PASS,     true),
+    ENVIRONMENT3    ('3', InteractionType.ENV_PASS,     true),
+    ENVIRONMENT4    ('4', InteractionType.ENV_PASS,     true),
+    ENVIRONMENT5    ('5', InteractionType.ENV_PASS,     true),
+    ENVIRONMENT6    ('6', InteractionType.ENV_PASS,     true),
+    ENVIRONMENT7    ('7', InteractionType.ENV_PASS,     true),
+    ENVIRONMENT8    ('8', InteractionType.ENV_PASS,     true),
+    ENVIRONMENT9    ('9', InteractionType.ENV_PASS,     true);
 
     public final char mapChar;
-    public final CollisionType cType;
+    public final InteractionType iType;
 
     public boolean passable = false;
 
-    BlockType(char mapChar, CollisionType cType, boolean passable) {
-        this.mapChar = mapChar;
-        this.cType = cType;
-        this.passable = passable;
+    BlockType(char mapChar, InteractionType iType, boolean passable) {
+        this.mapChar    = mapChar;
+        this.iType      = iType;
+        this.passable   = passable;
     }
 
     public boolean isPassable() {
@@ -95,8 +95,8 @@ public enum BlockType implements HasMapChar {
     }
 
     @Override
-    public CollisionType getCollisionType() {
-        return cType;
+    public InteractionType getInteractionType() {
+        return iType;
     }
 
     public static BlockType getTileType(char c) {
