@@ -35,6 +35,7 @@ public class ResourceAttribute extends Attribute {
     public void buff(Resource resource, int lvl) {
         int buff = buffs.get(resource);
         resource.setMaxAsPercentage( getValue()*buff*lvl );
+        resource.setValueAsMaxPercentage(100);
     }
 
     public void buff(Combatant c) {

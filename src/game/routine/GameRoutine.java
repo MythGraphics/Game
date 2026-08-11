@@ -61,8 +61,8 @@ public abstract class GameRoutine implements CollisionActionListener {
 
     @Override
     public void collisionPerformed(CollisionEvent e) {
-//      System.out.println( "(debug) InteractionType: " + e.getType() );              // debug
-//      System.out.println( "(debug) BlockType: "     + e.getTarget().getType() );  // debug
+//      System.out.println( "(debug) InteractionType: " + e.getType() );           // debug
+//      System.out.println( "(debug) BlockType: "     + e.getTarget().getType() ); // debug
         getDialogListener(e).show( dialogMap.get( e.getTarget().getType() ));
         switch( e.getType() ) {
             case PORTAL -> {

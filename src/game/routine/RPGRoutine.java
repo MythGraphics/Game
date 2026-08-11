@@ -14,6 +14,7 @@ package game.routine;
 import game.GameFrame;
 import game.Npc;
 import game.item.Item;
+import static game.quest.QuestStatus.INACTIVE;
 import graphic.map.Block;
 import static graphic.map.BlockType.NPC;
 import graphic.map.CollisionEvent;
@@ -49,25 +50,25 @@ public abstract class RPGRoutine extends MartialGameRoutine {
 
     public Npc getNpc(Block block) {
         Npc npc = npcMap.get(block);
-        if (npc == null) {
-            npc = npcList.getFirst();
+        if ( npc == null && !npcList.isEmpty() ) {
+            npc = npcList.removeFirst();
             mapNpc(block, npc);
         }
         return npc;
     }
 
     public void addEnvironmentLoot(Item item) {
-        addListener(item); // Listener registrieren
+        addItemListener(item); // Listener registrieren
         envLootPool.add(item);
         Collections.shuffle(envLootPool); // Pool durchmischen
     }
 
     public void addQuestLoot(int id, Item questItem) {
-        addListener(questItem); // Listener registrieren
+        addItemListener(questItem); // Listener registrieren
         qLootPool.put(id, questItem);
     }
 
-    private void addListener(Item item) {
+    private void addItemListener(Item item) {
         item.addItemActionListener(gameFrame);
         item.addItemMessageListener(gameFrame);
     }
@@ -79,14 +80,21 @@ public abstract class RPGRoutine extends MartialGameRoutine {
             case INTERACTIVE -> {
                 switch ( e.getTarget().getType() ) {
                     case NPC -> {
-                        Block block = e.getTarget();
                         if ( getPlayer().hasActiveQuest() ) {
                             getPlayer().deliverQuest();
                             getDialogListener(e).show( getPlayer().getQuest() );
-                        } else if ( getNpc(block).hasQuest() ) {
-                            getDialogListener(e).show( getNpc(block).getQuest() );
-                            getPlayer().acceptQuest( getNpc(block).getQuest() );
-
+                        } else {
+                            Block block = e.getTarget();
+                            Npc npc = getNpc(block);
+                            if (npc == null) {
+                                break;
+                            }
+                            if ( npc.hasQuest() ) {
+                                getDialogListener(e).show( npc.getQuest() );
+                                if ( npc.getQuest().getStatus() == INACTIVE ) {
+                                    getPlayer().acceptQuest( npc.getQuest() );
+                                }
+                            }
                         }
                     }
                 }
@@ -98,7 +106,7 @@ public abstract class RPGRoutine extends MartialGameRoutine {
                 if ( getPlayer().hasActiveQuest() ) {
                     int id = getPlayer().getQuest().getId();
                     if ( qLootPool.containsKey( id )) {
-                        getPlayer().getInventory().add( qLootPool.get( id ));
+                        getPlayer().getInventory().add( qLootPool.remove( id ));
                         break;
                     } else {
                         System.err.println("QuestItem zu Quest-ID #" + id + " nicht im Pool.");

@@ -17,8 +17,7 @@ import game.item.ReUsableItem;
 import game.item.UsableItem;
 import game.quest.Quest;
 import game.quest.QuestListener;
-import static game.quest.QuestStatus.ACTIVE;
-import static game.quest.QuestStatus.READY;
+import static game.quest.QuestStatus.*;
 import game.resource.Resource;
 import game.resource.Resource.ResourceType;
 import static game.resource.Resource.ResourceType.CREDIT;
@@ -146,10 +145,13 @@ public class Player extends InteractiveObject implements HasHealth, Trader {
         }
     }
 
-    public void acceptQuest(Quest quest) {
-        quest.accept();
-        this.quest = quest;
-        fireQuestEvent(quest);
+    public boolean acceptQuest(Quest quest) {
+        boolean b;
+        if ( b = quest.accept() ) {
+            this.quest = quest;
+            fireQuestEvent(quest);
+        }
+        return b;
     }
 
     public Quest getQuest() {
@@ -160,26 +162,32 @@ public class Player extends InteractiveObject implements HasHealth, Trader {
      * Gibt die Quest ab.
      * Dabei wird geprüft, ob das Inventar das QuestObjective enthält.
      * Ist dies der Fall, wird die Questbelohnung dem Inventar hinzugefügt und das QuestObjective aus diesem entfernt.
+     * @return TRUE or FALSE
      */
-    public void deliverQuest() {
+    public boolean deliverQuest() {
         if ( !hasActiveQuest() ) {
-            return;
+            return false;
         }
         Item qObj = quest.getQuestObjective();
         if ( !inventory.hasItem( qObj )) {
-            return;
+            return false;
         }
         if ( !quest.check( qObj )) {
-            return;
+            return false;
         }
+
         inventory.remove(qObj);
         inventory.add( quest.deliver() );
         fireQuestEvent(quest);
-        quest = null;
+        return true;
     }
 
     public boolean hasActiveQuest() {
-        if ( quest == null ) {
+        if (quest == null) {
+            return false;
+        }
+        if ( quest.getStatus() == COMPLETE ) {
+            quest = null;
             return false;
         }
         return ( quest.getStatus() == READY ) || ( quest.getStatus() == ACTIVE );

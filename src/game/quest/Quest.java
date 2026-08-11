@@ -27,12 +27,6 @@ public class Quest extends AbstractQuest {
     }
 
     @Override
-    public void accept() {
-        super.accept();
-        System.out.println( "Quest #" + getId() + " angenommen." ); // debug
-    }
-
-    @Override
     List<Message> getMessageList() {
         return msgList;
     }

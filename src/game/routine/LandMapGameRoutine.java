@@ -38,8 +38,7 @@ public class LandMapGameRoutine extends RPGRoutine {
             addDialog( ENVIRONMENT_A, getLoader().loadNextDialog( getPlayer() ));
             Npc npc = getLoader().loadNextNpc( getPlayer() );
             addNpc(npc);
-
-            initQuest(gameFrame, npc);
+            initQuest(npc);
             initEnvLoot();
         } catch (IOException | NullPointerException e) {
             System.err.println( "Initialisieren der Spiel-Routine fehlgeschlagen - Abbruch!" );
@@ -49,11 +48,11 @@ public class LandMapGameRoutine extends RPGRoutine {
     }
 
     private void updatePlayer(GameFrame frame) {
-        Resource air    = new Resource("Luft", AIR, 100, 100);
-        Resource money  = new Resource("Credits", CREDIT, 1000, 0);
+        Resource air = new Resource("Luft", AIR, 100, 100);
         air.addResourceChangeListener(frame);
-        money.addResourceChangeListener(frame);
         getPlayer().addResource(air);
+        Resource money = new Resource("Credits", CREDIT, 1000, 0);
+        money.addResourceChangeListener(frame);
         getPlayer().addResource(money);
 
 /*      player.setImg( TilesetUtility.getSpriteSetHorizontal(
@@ -62,10 +61,8 @@ public class LandMapGameRoutine extends RPGRoutine {
  */
     }
 
-    private void initQuest(GameFrame frame, Npc npc) throws IOException {
+    private void initQuest(Npc npc) throws IOException {
         ReUsableItem qItem = new ReUsableItem(-1, "Halskette");
-        qItem.addItemActionListener(frame);
-        qItem.addItemMessageListener(frame);
         qItem.addItemEffect(
             new ItemEffect("Neptunes", PRÄFIX, HEALTH, 100, PERCENT, false),
             new ItemEffect("des Delfins", SUFFIX, AIR, 100, PERCENT, false)

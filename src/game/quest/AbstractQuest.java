@@ -18,9 +18,9 @@ import static game.quest.QuestStatus.*;
 import graphic.texter.HasDialog;
 import graphic.texter.Message;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Arrays;
 
 public abstract class AbstractQuest implements HasDialog, HasID {
 
@@ -69,12 +69,19 @@ public abstract class AbstractQuest implements HasDialog, HasID {
         return status;
     }
 
-    public void accept() {
-        status = ACTIVE;
+    public boolean accept() {
+        if (status == INACTIVE) {
+            status = ACTIVE;
+            System.out.println( "Quest #" + getId() + " angenommen." ); // debug
+            return true;
+        }
+        return false;
     }
 
     public void cancel() {
-        status = INACTIVE;
+        if (status == ACTIVE) {
+            status = INACTIVE;
+        }
     }
 
     public String getQuestText() {
@@ -84,19 +91,20 @@ public abstract class AbstractQuest implements HasDialog, HasID {
     @Override
     public LinkedList<Message> getDialog() {
         LinkedList<Message> list = new LinkedList<>();
-        switch (status) {
-            case INACTIVE:
+        return switch (status) {
+            case INACTIVE -> {
                 list.addAll( getMessageList().subList( 0, 3 ));
-                return list;
-            case ACTIVE:
+                yield list;
+            }
+            case ACTIVE -> {
                 list.addAll( getMessageList().subList( 1, 3 ));
-                return list;
-            case READY:
-            case COMPLETE:
+                yield list;
+            }
+            case READY, COMPLETE -> {
                 list.add( getMessageList().get( 3 ));
-                return list;
-        }
-        return null;
+                yield list;
+            }
+        };
     }
 
     public boolean check(Item... questObjectives) {
@@ -125,7 +133,7 @@ public abstract class AbstractQuest implements HasDialog, HasID {
      * @return Belohnung
      */
     public Item deliver() {
-        if ( status == READY ) {
+        if (status == READY) {
             status = COMPLETE;
             return getReward();
         }
