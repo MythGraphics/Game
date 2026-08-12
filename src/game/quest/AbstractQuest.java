@@ -18,7 +18,6 @@ import static game.quest.QuestStatus.*;
 import graphic.texter.HasDialog;
 import graphic.texter.Message;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -56,7 +55,7 @@ public abstract class AbstractQuest implements HasDialog, HasID {
         return msgList;
     }
 
-    public Item getQuestObjective() {
+    public Item getObjective() {
         return objective;
     }
 
@@ -100,41 +99,32 @@ public abstract class AbstractQuest implements HasDialog, HasID {
                 list.addAll( getMessageList().subList( 1, 3 ));
                 yield list;
             }
-            case READY, COMPLETE -> {
+            case COMPLETE -> {
                 list.add( getMessageList().get( 3 ));
                 yield list;
             }
+            case DELIVERED -> null;
         };
     }
 
-    public boolean check(Item... questObjectives) {
-        return check( Arrays.asList( questObjectives ));
+    public boolean isQuestObjective(Item item) {
+        // QuestObjective und item zeigen auf das selbe Objekt oder itemId stimmt mit questId überein
+        return item == objective || item.getId() == getId();
     }
 
-    public boolean check(List<Item> questObjectives) {
-        if (status == READY) {
-            return true;
+    public void update(Item item) {
+        if ( isQuestObjective( item )) {
+            status = COMPLETE;
         }
-        if ( questObjectives == null || questObjectives.isEmpty() ) {
-            return false;
-        }
-        for (Item i : questObjectives) {
-            if ( i.getId() == getId() ) {
-                // questId stimmt mit itemId überein
-                status = READY;
-                return true;
-            }
-        }
-        return false;
     }
 
     /**
-     * Spieler erhält das Belohnungsitem.
+     * Spieler erhält die Belohnung.
      * @return Belohnung
      */
     public Item deliver() {
-        if (status == READY) {
-            status = COMPLETE;
+        if (status == COMPLETE) {
+            status = DELIVERED;
             return getReward();
         }
         return null;
@@ -142,11 +132,12 @@ public abstract class AbstractQuest implements HasDialog, HasID {
 
     /**
      * Spieler erhält das Belohnungsitem sofort mit auffinden des Quest Objektes.
-     * @param questObject QuestObjective
+     * @param item QuestObjective
      * @return Belohnung
      */
-    public Item deliver(Item questObject) {
-        if ( check( questObject )) {
+    public Item deliver(Item item) {
+        update(item);
+        if (status == COMPLETE) {
             return deliver();
         }
         return null;
@@ -157,7 +148,7 @@ public abstract class AbstractQuest implements HasDialog, HasID {
         return "Quest #" +
                getId() +
                ", QuestObjective: " +
-               getQuestObjective() +
+               getObjective() +
                ", " +
                getReward()
         ;

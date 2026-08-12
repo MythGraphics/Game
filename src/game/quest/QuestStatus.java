@@ -15,7 +15,7 @@ public enum QuestStatus {
 
     INACTIVE,
     ACTIVE,
-    READY,      // bereit zum einlösen
-    COMPLETE    // abgeschlossen und Belohnung abgeholt
+    COMPLETE,   // bereit zum einlösen
+    DELIVERED   // abgeschlossen und Belohnung abgeholt
 
 }

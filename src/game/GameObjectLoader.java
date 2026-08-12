@@ -316,7 +316,7 @@ public class GameObjectLoader {
             Quest.newMessageList( list, questProvider ),
             questItem
         ));
-        Item qObj = questProvider.getQuest().getQuestObjective();
+        Item qObj = questProvider.getQuest().getObjective();
         qObj.addMessage( new Message( list.get(4), player ));
         return qObj;
     }

@@ -168,29 +168,30 @@ public class Player extends InteractiveObject implements HasHealth, Trader {
         if ( !hasActiveQuest() ) {
             return false;
         }
-        Item qObj = quest.getQuestObjective();
-        if ( !inventory.hasItem( qObj )) {
-            return false;
-        }
-        if ( !quest.check( qObj )) {
+        if ( quest.getStatus() != COMPLETE ) {
             return false;
         }
 
-        inventory.remove(qObj);
+        inventory.remove( quest.getObjective() );
         inventory.add( quest.deliver() );
         fireQuestEvent(quest);
+        quest = null;
         return true;
+    }
+
+    private void updateQuestStatus() {
+        Item qObj = quest.getObjective();
+        if ( inventory.hasItem( qObj )) {
+            quest.update(qObj);
+        }
     }
 
     public boolean hasActiveQuest() {
         if (quest == null) {
             return false;
         }
-        if ( quest.getStatus() == COMPLETE ) {
-            quest = null;
-            return false;
-        }
-        return ( quest.getStatus() == READY ) || ( quest.getStatus() == ACTIVE );
+        updateQuestStatus();
+        return quest.getStatus() == COMPLETE || quest.getStatus() == ACTIVE;
     }
 
     @Override

@@ -58,13 +58,13 @@ public abstract class RPGRoutine extends MartialGameRoutine {
     }
 
     public void addEnvironmentLoot(Item item) {
-        addItemListener(item); // Listener registrieren
+        addItemListener(item);
         envLootPool.add(item);
         Collections.shuffle(envLootPool); // Pool durchmischen
     }
 
     public void addQuestLoot(int id, Item questItem) {
-        addItemListener(questItem); // Listener registrieren
+        addItemListener(questItem);
         qLootPool.put(id, questItem);
     }
 
@@ -80,15 +80,15 @@ public abstract class RPGRoutine extends MartialGameRoutine {
             case INTERACTIVE -> {
                 switch ( e.getTarget().getType() ) {
                     case NPC -> {
+                        Block block = e.getTarget();
+                        Npc npc = getNpc(block);
+                        if (npc == null) {
+                            break;
+                        }
                         if ( getPlayer().hasActiveQuest() ) {
-                            getPlayer().deliverQuest();
                             getDialogListener(e).show( getPlayer().getQuest() );
+                            getPlayer().deliverQuest();
                         } else {
-                            Block block = e.getTarget();
-                            Npc npc = getNpc(block);
-                            if (npc == null) {
-                                break;
-                            }
                             if ( npc.hasQuest() ) {
                                 getDialogListener(e).show( npc.getQuest() );
                                 if ( npc.getQuest().getStatus() == INACTIVE ) {
@@ -100,7 +100,7 @@ public abstract class RPGRoutine extends MartialGameRoutine {
                 }
             }
             case ENV_PASS -> {
-                if ( rand.nextInt(100) < 90 ) {
+                if ( rand.nextInt( 100 ) < 90 ) {
                     break;
                 }
                 if ( getPlayer().hasActiveQuest() ) {
@@ -114,7 +114,6 @@ public abstract class RPGRoutine extends MartialGameRoutine {
                 }
                 if ( !envLootPool.isEmpty() ) {
                     getPlayer().getInventory().add( envLootPool.poll() );
-                    break;
                 }
             }
         }
