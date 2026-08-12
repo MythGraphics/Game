@@ -15,6 +15,7 @@ import game.GameFrame;
 import game.Player;
 import game.resource.Resource;
 import static game.resource.Resource.ResourceType.HEALTH;
+import game.resource.ResourceChangeListener;
 import static graphic.io.BinaryIO.TILESET;
 import graphic.io.DescriptorLoader;
 import graphic.map.CollisionEvent;
@@ -24,12 +25,12 @@ import java.io.IOException;
 
 public class DefaultGameRoutine extends GameRoutine {
 
-    private final DialogOutputListener outputListener;
     private final Player player;
+    private final GameFrame gameFrame;
 
     public DefaultGameRoutine(GameFrame gameFrame) {
-        this.player     = initPlayer(gameFrame);
-        outputListener  = gameFrame.textFrame;
+        this.gameFrame  = gameFrame;
+        this.player     = initPlayer();
     }
 
     @Override
@@ -44,20 +45,30 @@ public class DefaultGameRoutine extends GameRoutine {
      */
     @Override
     public DialogOutputListener getDialogListener(CollisionEvent e) {
-        return outputListener;
+        return gameFrame.textFrame;
     }
 
-    private Player initPlayer(GameFrame gameFrame) {
+    private Player initPlayer() {
         Resource health = new Resource("Gesundheit", HEALTH, 1000, 1000);
         health.addResourceChangeListener(gameFrame);
-        Player player = new Player(GameFrame.playerName, gameFrame.textFrame, health);
+        Player player = new Player( GameFrame.playerName, getDialogListener( null ), health );
         DescriptorLoader dLoader = new DescriptorLoader( getClass() );
         try {
             player.setImg( dLoader.loadSpriteSets( TILESET+"player/" )[0][0] );
+
+/*          player.setImg( TilesetUtility.getSpriteSetHorizontal(
+ *              loadImage( TILESET+"player/girl_red_swimsuit.png" ), 140, 200, 4
+ *          )[0]);
+ */
         } catch (IOException e) {
             e.printStackTrace();
         }
         return player;
+    }
+
+    void addPlayerResource(Resource resource) {
+        resource.addResourceChangeListener(gameFrame);
+        getPlayer().addResource(resource);
     }
 
     @Override

@@ -32,7 +32,11 @@ public class LandMapGameRoutine extends RPGRoutine {
 
     public LandMapGameRoutine(GameFrame gameFrame) {
         super(gameFrame);
-        updatePlayer(gameFrame);
+        updatePlayer();
+        init();
+    }
+
+    private void init() {
         try {
             addDialog( TEXTSIGN, getLoader().loadNextDialog( getPlayer() ));
             addDialog( ENVIRONMENT_A, getLoader().loadNextDialog( getPlayer() ));
@@ -47,18 +51,9 @@ public class LandMapGameRoutine extends RPGRoutine {
         }
     }
 
-    private void updatePlayer(GameFrame frame) {
-        Resource air = new Resource("Luft", AIR, 100, 100);
-        air.addResourceChangeListener(frame);
-        getPlayer().addResource(air);
-        Resource money = new Resource("Credits", CREDIT, 1000, 0);
-        money.addResourceChangeListener(frame);
-        getPlayer().addResource(money);
-
-/*      player.setImg( TilesetUtility.getSpriteSetHorizontal(
-            loadImage( TILESET+"player/girl_red_swimsuit.png" ), 140, 200, 4
-        )[0]);
- */
+    private void updatePlayer() {
+        addPlayerResource( new Resource( "Luft", AIR, 100, 100 ));
+        addPlayerResource( new Resource( "Credits", CREDIT, 1000, 0 ));
     }
 
     private void initQuest(Npc npc) throws IOException {
