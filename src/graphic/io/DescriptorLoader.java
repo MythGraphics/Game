@@ -205,7 +205,7 @@ public class DescriptorLoader {
             List<String> list = in.lines()
                                   .filter( line -> !line.isEmpty() )
                                   .toList();
-            TileMap map = new TileMap( list.toArray( String[]::new ), type );
+            TileMap map = new TileMap(list, type);
             return map;
         } catch (IOException e) {
             System.err.println("Fehler beim Lesen der Map-Datei: " + e.getMessage() );
@@ -229,7 +229,6 @@ public class DescriptorLoader {
                                         .filter( line -> !line.isEmpty() )
                                         .toList();
         MapType type = EnumHelper.getEnumFromString( MapType.class, mapList.get( 0 ));
-        String[] mapData = mapList.subList( 1, mapList.size() ).toArray(String[]::new);
-        return new TileMap(mapData, type);
+        return new TileMap( mapList.subList( 1, mapList.size() ), type );
     }
 }

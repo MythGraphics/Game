@@ -11,13 +11,13 @@ package graphic.map;
  *
  */
 
-import graphic.AnimatedBlock;
+import graphic.AnimatedSprite;
 import graphic.Animation;
 import graphic.MoveableSprite;
 import graphic.Sprite;
 import static graphic.io.BinaryIO.*;
 import graphic.io.TilesetUtility;
-import static graphic.map.BlockType.*;
+import static graphic.map.DefaultMapTile.*;
 import java.awt.Color;
 import java.awt.Image;
 import java.awt.Point;
@@ -30,7 +30,7 @@ public class DefaultUWMap extends UWMap {
     private Image wallImg, bubbleImg;
     private Animation npcAni;
 
-    public DefaultUWMap(String[] tileMap) {
+    public DefaultUWMap(char[][] tileMap) {
         super(tileMap);
         init();
     }
@@ -54,20 +54,21 @@ public class DefaultUWMap extends UWMap {
     }
 
     @Override
-    Block getBlock(BlockType bType, int x, int y, int tileSize) {
+    Block getBlock(IsMapTile bType, int x, int y, int tileSize) {
         switch (bType) {
             case PLAYER:
                 return new MoveableSprite(
-                    Animation.buildDirectionalImageSet(playerImg), x, y, tileSize, PLAYER, getMaxPoint()
+                    Animation.buildDirectionalImageSet(playerImg), null, x, y, tileSize, PLAYER, getMaxPoint()
                 );
             case WALL5:
                 return new Sprite(wallImg, x, y, tileSize, WALL5);
             case BUBBLE:
                 return new Sprite(bubbleImg, x, y, tileSize, BUBBLE);
             case NPC:
-                return new AnimatedBlock(npcAni, x, y, tileSize, NPC);
+                return new AnimatedSprite(npcAni, null, x, y, tileSize, NPC);
+            default:
+                return super.getBlock(bType, x, y, tileSize);
         }
-        return super.getBlock(bType, x, y, tileSize);
     }
 
 }

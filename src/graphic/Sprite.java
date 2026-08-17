@@ -11,37 +11,36 @@ package graphic;
  *
  */
 
-import graphic.map.BlockType;
-import graphic.map.DeadOrAliveBlock;
+import graphic.map.Block;
+import graphic.map.IsMapTile;
+import java.awt.Dimension;
 import java.awt.Image;
+import java.awt.Point;
 
-public class Sprite extends DeadOrAliveBlock {
+public class Sprite extends Block {
 
-    public Image aliveImage;
-    public Image deadImage;
+    private Image image;
 
-    public Sprite(Image aliveImage, int x, int y, int blockSize, BlockType type) {
-        super(x, y, blockSize, type);
-        this.aliveImage = aliveImage;
+    public Sprite(Image image, Point pos, Dimension dim, IsMapTile tile) {
+        this(image, pos.x, pos.y, dim.width, dim.height, tile);
+    }
+
+    public Sprite(Image image, int x, int y, int blockSize, IsMapTile tile) {
+        this(image, x, y, blockSize, blockSize, tile);
+    }
+
+    public Sprite(Image image, int x, int y, int width, int height, IsMapTile tile) {
+        super(x, y, width, height, tile);
+        this.image = image;
+    }
+
+    public void setImage(Image image) {
+        this.image = image;
     }
 
     @Override
-    public Image getAliveImage() {
-        return aliveImage;
-    }
-
-    @Override
-    public Image getDeadImage() {
-        return deadImage;
-    }
-
-    public void setAliveImage(Image aliveImage) {
-        this.aliveImage = aliveImage;
-    }
-
-    @Override
-    public void setDeadImage(Image deadImage) {
-        this.deadImage = deadImage;
+    public Image getImage() {
+        return image;
     }
 
 }

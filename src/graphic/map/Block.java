@@ -20,24 +20,24 @@ public abstract class Block implements HasImage {
     public final int width;
     public final int height;
 
-    protected BlockType type;
+    protected IsMapTile tile;
     protected int x;
     protected int y;
 
-    public Block(Point pos, Dimension dim, BlockType type) {
-        this(pos.x, pos.y, dim.width, dim.height, type);
+    public Block(Point pos, Dimension dim, IsMapTile tile) {
+        this(pos.x, pos.y, dim.width, dim.height, tile);
     }
 
-    public Block(int x, int y, int blockSize, BlockType type) {
-        this(x, y, blockSize, blockSize, type);
+    public Block(int x, int y, int blockSize, IsMapTile tile) {
+        this(x, y, blockSize, blockSize, tile);
     }
 
-    public Block(int x, int y, int width, int height, BlockType type) {
-        this.x = x;
-        this.y = y;
+    public Block(int x, int y, int width, int height, IsMapTile tile) {
+        this.x      = x;
+        this.y      = y;
         this.width  = width;
         this.height = height;
-        this.type = type;
+        this.tile  = tile;
     }
 
     public Point getPosition() {
@@ -64,12 +64,12 @@ public abstract class Block implements HasImage {
         return height;
     }
 
-    public BlockType getType() {
-        return type;
+    public IsMapTile getType() {
+        return tile;
     }
 
-    public void setType(BlockType bType) {
-        this.type = bType;
+    public void setType(IsMapTile tile) {
+        this.tile = tile;
     }
 
 }

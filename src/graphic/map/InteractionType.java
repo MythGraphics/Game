@@ -14,15 +14,15 @@ package graphic.map;
 public enum InteractionType {
 
     BOUNDARY,       // map boundary
-    ENV_IMPASS,     // interactive non-passable environment
-    ENV_PASS,       // interactive passable environment
+    ENVIRONMENT,    // interactive environment, impassable (i.e. buildings)
     ENEMY,
-    EXIT,
-    INTERACTIVE,    // interactive game object
+    EXIT,           // map exit
+    TERRAIN,        // interactive terrain, passable (i.e. bush, gras, mushrooms, ...)
     NONE,           // something that is not null
+    NPC,
     PORTAL,
-    SURFACE,        // interactive map object/part
+    SURFACE,        // interactive map divider
     TEXT,           // text output
-    WALL,           // non-interactive impassable environment
+    WALL;           // non-interactive impassable environment
 
 }

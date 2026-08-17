@@ -11,13 +11,13 @@ package graphic.map;
  *
  */
 
-import graphic.AnimatedBlock;
+import graphic.AnimatedSprite;
 import graphic.Animation;
 import graphic.MoveableSprite;
 import graphic.Sprite;
 import static graphic.io.BinaryIO.*;
 import graphic.io.TilesetUtility;
-import static graphic.map.BlockType.*;
+import static graphic.map.DefaultMapTile.*;
 import static graphic.map.GameMap.DEFAULT_TILE_SIZE;
 import java.awt.Color;
 import java.awt.Image;
@@ -29,12 +29,12 @@ public class DefaultLandMap extends GameMap {
 
     public final static Color AMBIENT_COLOR = new Color(124, 188, 62);
 
-    private final Map<BlockType, BufferedImage> imgMap = new HashMap<>();
+    private final Map<DefaultMapTile, BufferedImage> imgMap = new HashMap<>();
 
     private Image[] playerImg;
     private Animation npcAni, portalAni;
 
-    public DefaultLandMap(String[] tileMap) {
+    public DefaultLandMap(char[][] tileMap) {
         super(tileMap);
         init();
     }
@@ -76,16 +76,16 @@ public class DefaultLandMap extends GameMap {
     }
 
     @Override
-    Block getBlock(BlockType bType, int x, int y, int tileSize) {
+    Block getBlock(IsMapTile bType, int x, int y, int tileSize) {
         switch (bType) {
             case PLAYER:
                 return new MoveableSprite(
-                    Animation.buildDirectionalImageSet(playerImg), x, y, tileSize, PLAYER, getMaxPoint()
+                    Animation.buildDirectionalImageSet(playerImg), null, x, y, tileSize, PLAYER, getMaxPoint()
                 );
             case NPC:
-                return new AnimatedBlock(npcAni, x, y, tileSize, NPC );
+                return new AnimatedSprite(npcAni, null, x, y, tileSize, NPC );
             case PORTAL:
-                return new AnimatedBlock(portalAni, x, y, tileSize, PORTAL );
+                return new AnimatedSprite(portalAni, null, x, y, tileSize, PORTAL );
             case SPACE:
             case TEXTSIGN:
             case ENVIRONMENT1:
@@ -105,8 +105,9 @@ public class DefaultLandMap extends GameMap {
                 return new Sprite( imgMap.get( ENVIRONMENT_B ), x, y, 128, ENVIRONMENT_B );
             case ENVIRONMENT_C:
                 return new Sprite( imgMap.get( ENVIRONMENT_C ), x, y, 128, ENVIRONMENT_C );
+            default:
+                return super.getBlock(bType, x, y, tileSize);
         }
-        return super.getBlock(bType, x, y, tileSize);
     }
 
 }

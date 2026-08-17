@@ -11,13 +11,13 @@ package graphic.map;
  *
  */
 
-import graphic.AnimatedBlock;
+import graphic.AnimatedSprite;
 import graphic.Animation;
 import graphic.MoveableSprite;
 import graphic.Sprite;
 import static graphic.io.BinaryIO.*;
 import graphic.io.TilesetUtility;
-import static graphic.map.BlockType.*;
+import static graphic.map.DefaultMapTile.*;
 import java.awt.Color;
 import java.awt.Image;
 import java.awt.Point;
@@ -31,9 +31,9 @@ public class DefaultSpaceMap extends GameMap {
     private Animation[] playerAni;
     private Animation enemyAni;
 
-    private final Map<BlockType, Image> imgMap = new HashMap<>();
+    private final Map<DefaultMapTile, Image> imgMap = new HashMap<>();
 
-    public DefaultSpaceMap(String[] tileMap) {
+    public DefaultSpaceMap(char[][] tileMap) {
         super(tileMap);
         init();
     }
@@ -73,11 +73,12 @@ public class DefaultSpaceMap extends GameMap {
     }
 
     @Override
-    Block getBlock(BlockType bType, int x, int y, int tileSize) {
+    Block getBlock(IsMapTile bType, int x, int y, int tileSize) {
         switch (bType) {
             case PLAYER:
-                MoveableSprite player = new MoveableSprite( playerAni, x, y, tileSize, PLAYER, getMaxPoint() );
-                player.setDeadImage( imgMap.get( CORPSE_PLAYER ));
+                MoveableSprite player = new MoveableSprite(
+                    playerAni, imgMap.get( CORPSE_PLAYER ), x, y, tileSize, PLAYER, getMaxPoint()
+                );
                 return player;
             case ENVIRONMENT_A:
             case WALL0:
@@ -92,14 +93,16 @@ public class DefaultSpaceMap extends GameMap {
             case EXIT:
             case SPACE:
             case SPACEHOLDER:
-                return new Sprite( imgMap.get(bType), x, y, tileSize, bType );
+                return new Sprite( imgMap.get( bType ), x, y, tileSize, bType );
             case ENEMY:
                 // da sich mehrere Gegner die selbe Animation teilen, diese kopieren
-                AnimatedBlock enemy = new AnimatedBlock( enemyAni.copy(), x, y, tileSize, ENEMY );
-                enemy.setDeadImage( imgMap.get( CORPSE_ENEMY ));
+                AnimatedSprite enemy = new AnimatedSprite(
+                    enemyAni.copy(), imgMap.get( CORPSE_ENEMY ), x, y, tileSize, ENEMY
+                );
                 return enemy;
+            default:
+                return super.getBlock(bType, x, y, tileSize);
         }
-        return super.getBlock(bType, x, y, tileSize);
     }
 
 }

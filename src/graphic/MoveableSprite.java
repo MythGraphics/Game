@@ -11,27 +11,30 @@ package graphic;
  *
  */
 
-import graphic.map.BlockType;
+import graphic.map.DefaultMapTile;
 import java.awt.Dimension;
+import java.awt.Image;
 import java.awt.Point;
 
-public class MoveableSprite extends AnimatedBlock implements Moveable {
+public class MoveableSprite extends AnimatedSprite implements Moveable {
 
     final Animation[] aniset;
     final Point maxPoint;
-    final int blockSize;
+    final int blockSize; // um diesen Wert bewegt sich der Sprite
 
-    public MoveableSprite(Animation[] aniset, int x, int y, int blockSize, BlockType type, Point maxPoint) {
-        super( aniset[0], new Point(x, y), new Dimension(blockSize, blockSize), type );
-        this.aniset = aniset;
-        this.maxPoint = maxPoint;
+    public MoveableSprite(Animation[] aniset, Image deadImage,
+                          int x, int y, int blockSize, DefaultMapTile type, Point maxPoint) {
+        super(aniset[0], deadImage, x, y, blockSize, blockSize, type);
+        this.aniset    = aniset;
+        this.maxPoint  = maxPoint;
         this.blockSize = blockSize;
     }
 
-    public MoveableSprite(Animation[] aniset, Point pos, Dimension dim, int blockSize, BlockType type, Point maxPoint) {
-        super(aniset[0], pos, dim, type);
-        this.aniset = aniset;
-        this.maxPoint = maxPoint;
+    public MoveableSprite(Animation[] aniset, Image deadImage,
+                          Point pos, Dimension dim, int blockSize, DefaultMapTile tile, Point maxPoint) {
+        super(aniset[0], deadImage, pos, dim, tile);
+        this.aniset    = aniset;
+        this.maxPoint  = maxPoint;
         this.blockSize = blockSize;
     }
 

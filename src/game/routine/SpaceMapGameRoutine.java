@@ -26,6 +26,8 @@ import graphic.DeadOrAlive;
 import graphic.io.BinaryIO;
 import static graphic.io.BinaryIO.*;
 import graphic.io.TextIO;
+import static graphic.map.DefaultMapTile.ENVIRONMENT_A;
+import static graphic.map.DefaultMapTile.EXIT;
 import graphic.map.CollisionEvent;
 import graphic.texter.Message;
 import graphic.texter.TextFrame;
@@ -135,7 +137,6 @@ public class SpaceMapGameRoutine extends MartialGameRoutine {
 
     @Override
     public void collisionPerformed(CollisionEvent e) {
-        super.collisionPerformed(e);
         switch( e.getTarget().getType() ) {
             case ENVIRONMENT_A -> {
                 player.getDialogOutputListener().show( new Message(
@@ -144,6 +145,9 @@ public class SpaceMapGameRoutine extends MartialGameRoutine {
             }
             case EXIT -> {
                 showEpilog();
+            }
+            default -> {
+                super.collisionPerformed(e);
             }
         }
     }

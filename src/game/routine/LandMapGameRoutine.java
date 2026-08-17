@@ -24,8 +24,8 @@ import game.item.ReUsableItem;
 import game.item.UsableItem;
 import game.resource.Resource;
 import static game.resource.Resource.ResourceType.*;
-import static graphic.map.BlockType.ENVIRONMENT_A;
-import static graphic.map.BlockType.TEXTSIGN;
+import static graphic.map.DefaultMapTile.ENVIRONMENT_A;
+import static graphic.map.DefaultMapTile.TEXTSIGN;
 import java.io.IOException;
 
 public class LandMapGameRoutine extends RPGRoutine {

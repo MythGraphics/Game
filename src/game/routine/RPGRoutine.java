@@ -16,10 +16,9 @@ import game.Npc;
 import game.item.Item;
 import static game.quest.QuestStatus.INACTIVE;
 import graphic.map.Block;
-import static graphic.map.BlockType.NPC;
 import graphic.map.CollisionEvent;
-import static graphic.map.InteractionType.ENV_PASS;
-import static graphic.map.InteractionType.INTERACTIVE;
+import static graphic.map.DefaultMapTile.NPC;
+import graphic.map.InteractionType;
 import java.util.*;
 
 public abstract class RPGRoutine extends MartialGameRoutine {
@@ -77,29 +76,25 @@ public abstract class RPGRoutine extends MartialGameRoutine {
     public void collisionPerformed(CollisionEvent e) {
         super.collisionPerformed(e);
         switch( e.getType() ) {
-            case INTERACTIVE -> {
-                switch ( e.getTarget().getType() ) {
-                    case NPC -> {
-                        Block block = e.getTarget();
-                        Npc npc = getNpc(block);
-                        if (npc == null) {
-                            break;
-                        }
-                        if ( getPlayer().hasActiveQuest() ) {
-                            getDialogListener(e).show( getPlayer().getQuest() );
-                            getPlayer().deliverQuest();
-                        } else {
-                            if ( npc.hasQuest() ) {
-                                getDialogListener(e).show( npc.getQuest() );
-                                if ( npc.getQuest().getStatus() == INACTIVE ) {
-                                    getPlayer().acceptQuest( npc.getQuest() );
-                                }
-                            }
+            case InteractionType.NPC -> {
+                Block block = e.getTarget();
+                Npc npc = getNpc(block);
+                if (npc == null) {
+                    break;
+                }
+                if ( getPlayer().hasActiveQuest() ) {
+                    getDialogListener(e).show( getPlayer().getQuest() );
+                    getPlayer().deliverQuest();
+                } else {
+                    if ( npc.hasQuest() ) {
+                        getDialogListener(e).show( npc.getQuest() );
+                        if ( npc.getQuest().getStatus() == INACTIVE ) {
+                            getPlayer().acceptQuest( npc.getQuest() );
                         }
                     }
                 }
             }
-            case ENV_PASS -> {
+            case InteractionType.TERRAIN -> {
                 if ( rand.nextInt( 100 ) < 90 ) {
                     break;
                 }

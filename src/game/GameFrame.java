@@ -68,21 +68,13 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
     private AudioPlayer audioPlayer;
 
     public GameFrame(TileMap tileMap) {
-        this( tileMap.tiles(), tileMap.type() );
-    }
-
-    public GameFrame(String[] tileMap, String mapType) {
-        this( tileMap, EnumHelper.getEnumFromString( MapType.class, mapType ));
-    }
-
-    public GameFrame(String[] tileMap, MapType mapType) {
         this.iconMouseAdapter = new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent evt) {
                 iconLabelMouseClicked(evt);
             }
         };
-        initGameCore( new TileMap( tileMap, mapType ));
+        initGameCore(tileMap);
         player = routine.getPlayer();
 
         if (loadCmdInput) {
@@ -94,6 +86,14 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
         initGameUI();
 
         super.requestFocus();
+    }
+
+    public GameFrame(String[] tileMapLines, String mapType) {
+        this( tileMapLines, EnumHelper.getEnumFromString( MapType.class, mapType ));
+    }
+
+    public GameFrame(String[] tileMapLines, MapType mapType) {
+        this( new TileMap( tileMapLines, mapType ));
     }
 
     /**
@@ -454,10 +454,10 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
 
     private void initGameCore(TileMap tileMap) {
         // Map laden
-        switch ( tileMap.type() ) {
-            case SPACE  -> this.map = new DefaultSpaceMap( tileMap.tiles() );
-            case LAND   -> this.map = new DefaultLandMap(  tileMap.tiles() );
-            case UW     -> this.map = new DefaultUWMap(    tileMap.tiles() );
+        switch ( tileMap.getType() ) {
+            case SPACE  -> this.map = new DefaultSpaceMap( tileMap.getTileMap() );
+            case LAND   -> this.map = new DefaultLandMap(  tileMap.getTileMap() );
+            case UW     -> this.map = new DefaultUWMap(    tileMap.getTileMap() );
             default     -> {
                 System.err.println("Initialisieren der Map fehlgeschlagen - Typ unbekannt - Abbruch!");
                 System.exit(255);
@@ -476,7 +476,7 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
             routine = new DefaultGameRoutine(this);
             return;
         }
-        switch ( tileMap.type() ) {
+        switch ( tileMap.getType() ) {
             case SPACE  -> this.routine = new SpaceMapGameRoutine(this);
             case LAND   -> this.routine = new LandMapGameRoutine(this);
             case UW     -> this.routine = new UWMapGameRoutine((UWMap) this.map, this);

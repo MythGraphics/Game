@@ -15,7 +15,7 @@ import game.GameObjectLoader;
 import game.Player;
 import game.TextBox;
 import graphic.io.TextIO;
-import graphic.map.BlockType;
+import graphic.map.DefaultMapTile;
 import graphic.map.CollisionActionListener;
 import graphic.map.CollisionEvent;
 import graphic.map.GameMap;
@@ -30,7 +30,7 @@ import util.CycleList;
 public abstract class GameRoutine implements CollisionActionListener {
 
     final CycleList<Point> portals = new CycleList<>();
-    final Map<BlockType, TextBox> dialogMap = new HashMap<>();
+    final Map<DefaultMapTile, TextBox> dialogMap = new HashMap<>();
     final Random rand = new Random();
     final GameObjectLoader loader;
 
@@ -55,14 +55,14 @@ public abstract class GameRoutine implements CollisionActionListener {
         return audioTrackList;
     }
 
-    public void addDialog(BlockType bType, TextBox dialog) {
+    public void addDialog(DefaultMapTile bType, TextBox dialog) {
         dialogMap.put(bType, dialog);
     }
 
     @Override
     public void collisionPerformed(CollisionEvent e) {
-//      System.out.println( "(debug) InteractionType: " + e.getType() );           // debug
-//      System.out.println( "(debug) BlockType: "     + e.getTarget().getType() ); // debug
+//      System.out.println( "(debug) InteractionType: " + e.getType() );             // debug
+//      System.out.println( "(debug) DefaultMapTile: "       + e.getTarget().getType() ); // debug
         getDialogListener(e).show( dialogMap.get( e.getTarget().getType() ));
         switch( e.getType() ) {
             case PORTAL -> {

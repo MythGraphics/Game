@@ -11,7 +11,9 @@ package graphic.map;
  *
  */
 
-public interface CollisionActionListener {
+import java.util.EventListener;
+
+public interface CollisionActionListener extends EventListener {
 
     void collisionPerformed(CollisionEvent e);
 
