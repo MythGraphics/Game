@@ -260,10 +260,7 @@ public abstract class GameMap extends JPanel implements ActionListener {
         collisionListeners.forEach( actionListener -> actionListener.collisionPerformed(
             new CollisionEvent(
                 this,
-                new Block(collider.x, collider.y, 0, BOUNDARY) {
-                    @Override
-                    public Image getImage() { return null; }
-                },
+                new Sprite(null, collider.x, collider.y, 0, BOUNDARY),
                 collider
             )
         ));

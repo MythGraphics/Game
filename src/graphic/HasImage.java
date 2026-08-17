@@ -11,10 +11,10 @@ package graphic;
  *
  */
 
-import java.awt.Image;
+import java.awt.image.BufferedImage;
 
 public interface HasImage {
 
-    Image getImage();
+    BufferedImage getImage();
 
 }

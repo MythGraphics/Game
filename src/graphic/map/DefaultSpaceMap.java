@@ -19,8 +19,8 @@ import static graphic.io.BinaryIO.*;
 import graphic.io.TilesetUtility;
 import static graphic.map.DefaultMapTile.*;
 import java.awt.Color;
-import java.awt.Image;
 import java.awt.Point;
+import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,7 +31,7 @@ public class DefaultSpaceMap extends GameMap {
     private Animation[] playerAni;
     private Animation enemyAni;
 
-    private final Map<DefaultMapTile, Image> imgMap = new HashMap<>();
+    private final Map<DefaultMapTile, BufferedImage> imgMap = new HashMap<>();
 
     public DefaultSpaceMap(char[][] tileMap) {
         super(tileMap);
@@ -45,10 +45,10 @@ public class DefaultSpaceMap extends GameMap {
 
     @Override
     protected void loadSprites() {
-        Image[][] tileset = TilesetUtility.getAnimationSet(
+        BufferedImage[][] tileset = TilesetUtility.getAnimationSet(
             loadImage( TILESET+"spaceship/creatures2.png" ), 0, 0, 32, 32, 3
         );
-        Image[] corpseset = TilesetUtility.getSpriteSet(
+        BufferedImage[] corpseset = TilesetUtility.getSpriteSet(
             loadImage( TILESET+"spaceship/creatures2.png" ), new Point( 3*32, 0 ), 0, 0, 32, -1
         );
         imgMap.put( ENVIRONMENT_A, loadImage( SPRITE+"land/Straw1.png" ));
@@ -73,8 +73,8 @@ public class DefaultSpaceMap extends GameMap {
     }
 
     @Override
-    Block getBlock(IsMapTile bType, int x, int y, int tileSize) {
-        switch (bType) {
+    Block getBlock(IsMapTile tile, int x, int y, int tileSize) {
+        switch (tile) {
             case PLAYER:
                 MoveableSprite player = new MoveableSprite(
                     playerAni, imgMap.get( CORPSE_PLAYER ), x, y, tileSize, PLAYER, getMaxPoint()
@@ -93,7 +93,7 @@ public class DefaultSpaceMap extends GameMap {
             case EXIT:
             case SPACE:
             case SPACEHOLDER:
-                return new Sprite( imgMap.get( bType ), x, y, tileSize, bType );
+                return new Sprite( imgMap.get( tile ), x, y, tileSize, tile );
             case ENEMY:
                 // da sich mehrere Gegner die selbe Animation teilen, diese kopieren
                 AnimatedSprite enemy = new AnimatedSprite(
@@ -101,7 +101,7 @@ public class DefaultSpaceMap extends GameMap {
                 );
                 return enemy;
             default:
-                return super.getBlock(bType, x, y, tileSize);
+                return super.getBlock(tile, x, y, tileSize);
         }
     }
 

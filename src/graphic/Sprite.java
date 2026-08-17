@@ -14,32 +14,33 @@ package graphic;
 import graphic.map.Block;
 import graphic.map.IsMapTile;
 import java.awt.Dimension;
-import java.awt.Image;
 import java.awt.Point;
+import java.awt.image.BufferedImage;
 
 public class Sprite extends Block {
 
-    private Image image;
+    private BufferedImage image;
 
-    public Sprite(Image image, Point pos, Dimension dim, IsMapTile tile) {
+    public Sprite(BufferedImage image, Point pos, Dimension dim, IsMapTile tile) {
         this(image, pos.x, pos.y, dim.width, dim.height, tile);
     }
 
-    public Sprite(Image image, int x, int y, int blockSize, IsMapTile tile) {
+    public Sprite(BufferedImage image, int x, int y, int blockSize, IsMapTile tile) {
         this(image, x, y, blockSize, blockSize, tile);
     }
 
-    public Sprite(Image image, int x, int y, int width, int height, IsMapTile tile) {
+    public Sprite(BufferedImage image, int x, int y, int width, int height, IsMapTile tile) {
         super(x, y, width, height, tile);
         this.image = image;
     }
 
-    public void setImage(Image image) {
+    @Override
+    public void setImage(BufferedImage image) {
         this.image = image;
     }
 
     @Override
-    public Image getImage() {
+    public BufferedImage getImage() {
         return image;
     }
 

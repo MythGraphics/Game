@@ -11,7 +11,7 @@ package graphic;
  *
  */
 
-import java.awt.Image;
+import java.awt.image.BufferedImage;
 
 public enum Direction {
 
@@ -44,7 +44,7 @@ public enum Direction {
         return null; // sollte niemals erreicht werden
     }
 
-    public static Animation[] buildDirectionalImageSet(Image[] imageset) {
+    public static Animation[] buildDirectionalImageSet(BufferedImage[] imageset) {
         return Animation.buildDirectionalImageSet(imageset);
     }
 

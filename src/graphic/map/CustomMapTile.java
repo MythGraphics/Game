@@ -12,7 +12,6 @@ package graphic.map;
  */
 
 import graphic.HasImage;
-import java.awt.Image;
 import java.awt.image.BufferedImage;
 
 public class CustomMapTile implements IsMapTile, HasImage {
@@ -45,7 +44,7 @@ public class CustomMapTile implements IsMapTile, HasImage {
     }
 
     @Override
-    public Image getImage() {
+    public BufferedImage getImage() {
         return img;
     }
 

@@ -144,7 +144,7 @@ public enum DefaultMapTile implements IsChangeableMapTile, HasImage {
     }
 
     @Override
-    public Image getImage() {
+    public BufferedImage getImage() {
         return image;
     }
 

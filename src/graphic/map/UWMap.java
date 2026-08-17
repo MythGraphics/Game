@@ -70,8 +70,8 @@ public abstract class UWMap extends GameMap implements HasResource {
     @Override
     void loadTileMapChar(char tileMapChar, int x, int y, int tileSize) {
         super.loadTileMapChar(tileMapChar, x, y, tileSize); // SUPER muss zwingend zuerst aufgerufen werden
-        DefaultMapTile tType = DefaultMapTile.getMapTile(tileMapChar);
-        switch (tType) {
+        DefaultMapTile tile = DefaultMapTile.getMapTile(tileMapChar);
+        switch (tile) {
             case WATERLINE -> uwlevel = y;
         }
     }

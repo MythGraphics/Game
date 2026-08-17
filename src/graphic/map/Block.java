@@ -13,6 +13,7 @@ package graphic.map;
 
 import graphic.HasImage;
 import java.awt.Dimension;
+import java.awt.image.BufferedImage;
 import java.awt.Point;
 
 public abstract class Block implements HasImage {
@@ -39,6 +40,8 @@ public abstract class Block implements HasImage {
         this.height = height;
         this.tile  = tile;
     }
+
+    abstract public void setImage(BufferedImage image);
 
     public Point getPosition() {
         return new Point(x, y);

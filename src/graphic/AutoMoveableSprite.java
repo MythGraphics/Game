@@ -14,10 +14,10 @@ package graphic;
 import static graphic.Direction.*;
 import graphic.map.DefaultMapTile;
 import java.awt.Dimension;
-import java.awt.Image;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
 import java.util.Random;
 
 public class AutoMoveableSprite extends MoveableSprite implements ActionListener, AutoMoveable {
@@ -30,13 +30,13 @@ public class AutoMoveableSprite extends MoveableSprite implements ActionListener
     private int ticksPerStep = 1;
     private int tickCounter = 0;
 
-    public AutoMoveableSprite(Animation[] aniset, Image deadImage,
+    public AutoMoveableSprite(Animation[] aniset, BufferedImage deadImage,
                               int x, int y, int blockSize, DefaultMapTile type, Point maxPoint) {
         super(aniset, deadImage, x, y, blockSize, type, maxPoint);
         start = new Point(x, y);
     }
 
-    public AutoMoveableSprite(Animation[] aniset, Image deadImage,
+    public AutoMoveableSprite(Animation[] aniset, BufferedImage deadImage,
                               Point pos, Dimension dim, int blockSize, DefaultMapTile type, Point maxPoint) {
         super(aniset, deadImage, pos, dim, blockSize, type, maxPoint);
         start = new Point(pos.x, pos.y);

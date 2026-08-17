@@ -13,8 +13,8 @@ package graphic;
 
 import graphic.map.DefaultMapTile;
 import java.awt.Dimension;
-import java.awt.Image;
 import java.awt.Point;
+import java.awt.image.BufferedImage;
 
 public class MoveableSprite extends AnimatedSprite implements Moveable {
 
@@ -22,7 +22,7 @@ public class MoveableSprite extends AnimatedSprite implements Moveable {
     final Point maxPoint;
     final int blockSize; // um diesen Wert bewegt sich der Sprite
 
-    public MoveableSprite(Animation[] aniset, Image deadImage,
+    public MoveableSprite(Animation[] aniset, BufferedImage deadImage,
                           int x, int y, int blockSize, DefaultMapTile type, Point maxPoint) {
         super(aniset[0], deadImage, x, y, blockSize, blockSize, type);
         this.aniset    = aniset;
@@ -30,7 +30,7 @@ public class MoveableSprite extends AnimatedSprite implements Moveable {
         this.blockSize = blockSize;
     }
 
-    public MoveableSprite(Animation[] aniset, Image deadImage,
+    public MoveableSprite(Animation[] aniset, BufferedImage deadImage,
                           Point pos, Dimension dim, int blockSize, DefaultMapTile tile, Point maxPoint) {
         super(aniset[0], deadImage, pos, dim, tile);
         this.aniset    = aniset;

@@ -13,22 +13,22 @@ package graphic;
 
 import graphic.map.IsMapTile;
 import java.awt.Dimension;
-import java.awt.Image;
 import java.awt.Point;
+import java.awt.image.BufferedImage;
 
 public class AnimatedSprite extends DeadOrAliveSprite {
 
     private Animation ani;
 
-    public AnimatedSprite(Animation ani, Image deadImage, int x, int y, int blockSize, IsMapTile tile) {
+    public AnimatedSprite(Animation ani, BufferedImage deadImage, int x, int y, int blockSize, IsMapTile tile) {
         this(ani, deadImage, x, y, blockSize, blockSize, tile);
     }
 
-    public AnimatedSprite(Animation ani, Image deadImage, Point pos, Dimension dim, IsMapTile tile) {
+    public AnimatedSprite(Animation ani, BufferedImage deadImage, Point pos, Dimension dim, IsMapTile tile) {
         this(ani, deadImage, pos.x, pos.y, dim.width, dim.height, tile);
     }
 
-    public AnimatedSprite(Animation ani, Image deadImage, int x, int y, int width, int height, IsMapTile tile) {
+    public AnimatedSprite(Animation ani, BufferedImage deadImage, int x, int y, int width, int height, IsMapTile tile) {
         super( ani.getImage(), deadImage, x, y, width, height, tile );
         this.ani = ani;
     }
@@ -38,7 +38,7 @@ public class AnimatedSprite extends DeadOrAliveSprite {
     }
 
     @Override
-    public Image getAliveImage() {
+    public BufferedImage getAliveImage() {
         if (ani == null) {
             return null;
         }

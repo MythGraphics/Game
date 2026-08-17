@@ -19,15 +19,15 @@ import static graphic.io.BinaryIO.*;
 import graphic.io.TilesetUtility;
 import static graphic.map.DefaultMapTile.*;
 import java.awt.Color;
-import java.awt.Image;
 import java.awt.Point;
+import java.awt.image.BufferedImage;
 
 public class DefaultUWMap extends UWMap {
 
     public final static Color AMBIENT_COLOR = new Color(12, 80, 200);
 
-    private Image[] playerImg;
-    private Image wallImg, bubbleImg;
+    private BufferedImage[] playerImg;
+    private BufferedImage wallImg, bubbleImg;
     private Animation npcAni;
 
     public DefaultUWMap(char[][] tileMap) {
@@ -54,8 +54,8 @@ public class DefaultUWMap extends UWMap {
     }
 
     @Override
-    Block getBlock(IsMapTile bType, int x, int y, int tileSize) {
-        switch (bType) {
+    Block getBlock(IsMapTile tile, int x, int y, int tileSize) {
+        switch (tile) {
             case PLAYER:
                 return new MoveableSprite(
                     Animation.buildDirectionalImageSet(playerImg), null, x, y, tileSize, PLAYER, getMaxPoint()
@@ -67,7 +67,7 @@ public class DefaultUWMap extends UWMap {
             case NPC:
                 return new AnimatedSprite(npcAni, null, x, y, tileSize, NPC);
             default:
-                return super.getBlock(bType, x, y, tileSize);
+                return super.getBlock(tile, x, y, tileSize);
         }
     }
 

@@ -11,7 +11,7 @@ package graphic;
  *
  */
 
-import java.awt.Image;
+import java.awt.image.BufferedImage;
 
 public class Animation {
 
@@ -22,18 +22,18 @@ public class Animation {
      * reverseLoop: 1 -> 2 -> 3 -> 2 -> 1 -> 2 -> 3 -> 2 -> ...
      */
 
-    private final Image[] spriteSet;
+    private final BufferedImage[] spriteSet;
     private final boolean reverseLoop;
     private int currentIndex    = 0;
     private int step            = 1; // 1 vorwärts, -1 rückwärts
     private int tickCounter     = 0;
     private int ticksPerFrame   = 1;
 
-    public Animation(Image[] spriteSet) {
+    public Animation(BufferedImage[] spriteSet) {
         this(spriteSet, false);
     }
 
-    public Animation(Image[] spriteSet, boolean reverseLoop) {
+    public Animation(BufferedImage[] spriteSet, boolean reverseLoop) {
         this.spriteSet = spriteSet;
         this.reverseLoop = reverseLoop;
     }
@@ -80,13 +80,13 @@ public class Animation {
         this.ticksPerFrame *= 2;
     }
 
-    public Image getImage() {
+    public BufferedImage getImage() {
         if (spriteSet.length == 0) {
             return null;
         }
 
         // aktuelles Sprite holen
-        Image img = spriteSet[currentIndex];
+        BufferedImage img = spriteSet[currentIndex];
 
         // Verzögerungs-Logik
         tickCounter++;
@@ -122,15 +122,15 @@ public class Animation {
         this.step           = 1;
     }
 
-    public static Animation[] buildDirectionalImageSet(Image[] imageset) {
+    public static Animation[] buildDirectionalImageSet(BufferedImage[] imageset) {
         Animation[] set = new Animation[imageset.length];
         for (int i = 0; i < imageset.length; ++i) {
-            set[i] = new Animation( new Image[] { imageset[i] });
+            set[i] = new Animation( new BufferedImage[] { imageset[i] });
         }
         return set;
     }
 
-    public static Animation[] buildDirectionalAnimationSet(Image[][] imageset) {
+    public static Animation[] buildDirectionalAnimationSet(BufferedImage[][] imageset) {
         Animation[] set = new Animation[imageset.length];
         for (int i = 0; i < imageset.length; ++i) {
             set[i] = new Animation(imageset[i]);

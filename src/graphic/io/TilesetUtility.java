@@ -172,7 +172,7 @@ public class TilesetUtility {
      * @param number Anzahl der zu ladenden Sprites pro Animation (Zeile) oder -1 für alle
      * @return AnimationSet
      */
-    public static Image[][] getAnimationSet(
+    public static BufferedImage[][] getAnimationSet(
         BufferedImage image, int space_x, int space_y, int width, int height, int number
     ) {
         if ( image.getWidth() < number*(width+space_x)) {

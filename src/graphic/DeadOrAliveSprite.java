@@ -14,45 +14,48 @@ package graphic;
 import graphic.map.IsChangeableMapTile;
 import graphic.map.IsMapTile;
 import java.awt.Dimension;
-import java.awt.Image;
 import java.awt.Point;
+import java.awt.image.BufferedImage;
 
 public abstract class DeadOrAliveSprite extends Sprite implements DeadOrAlive {
 
     private boolean dead = false;
-    private Image deadImage;
+    private BufferedImage deadImage;
 
-    public DeadOrAliveSprite(Image aliveImage, Image deadImage, Point pos, Dimension dim, IsMapTile tile) {
+    public DeadOrAliveSprite(BufferedImage aliveImage, BufferedImage deadImage,
+                             Point pos, Dimension dim, IsMapTile tile) {
         this(aliveImage, deadImage, pos.x, pos.y, dim.width, dim.height, tile);
     }
 
-    public DeadOrAliveSprite(Image aliveImage, Image deadImage, int x, int y, int blockSize, IsMapTile tile) {
+    public DeadOrAliveSprite(BufferedImage aliveImage, BufferedImage deadImage,
+                             int x, int y, int blockSize, IsMapTile tile) {
         this(aliveImage, deadImage, x, y, blockSize, blockSize, tile);
     }
 
-    public DeadOrAliveSprite(Image aliveImage, Image deadImage, int x, int y, int width, int height, IsMapTile tile) {
+    public DeadOrAliveSprite(BufferedImage aliveImage, BufferedImage deadImage,
+                             int x, int y, int width, int height, IsMapTile tile) {
         super(aliveImage, x, y, width, height, tile);
         this.deadImage = deadImage;
     }
 
-    public void setAliveImage(Image aliveImage) {
+    public void setAliveImage(BufferedImage aliveImage) {
         super.setImage(aliveImage);
     }
 
-    public void setDeadImage(Image deadImage) {
+    public void setDeadImage(BufferedImage deadImage) {
         this.deadImage = deadImage;
     }
 
-    public Image getAliveImage() {
+    public BufferedImage getAliveImage() {
         return super.getImage();
     }
 
-    public Image getDeadImage() {
+    public BufferedImage getDeadImage() {
         return deadImage;
     }
 
     @Override
-    public Image getImage() {
+    public BufferedImage getImage() {
         if (dead) {
             return getDeadImage();
         } else {

@@ -20,7 +20,6 @@ import graphic.io.TilesetUtility;
 import static graphic.map.DefaultMapTile.*;
 import static graphic.map.GameMap.DEFAULT_TILE_SIZE;
 import java.awt.Color;
-import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.Map;
@@ -31,7 +30,7 @@ public class DefaultLandMap extends GameMap {
 
     private final Map<DefaultMapTile, BufferedImage> imgMap = new HashMap<>();
 
-    private Image[] playerImg;
+    private BufferedImage[] playerImg;
     private Animation npcAni, portalAni;
 
     public DefaultLandMap(char[][] tileMap) {
@@ -76,8 +75,8 @@ public class DefaultLandMap extends GameMap {
     }
 
     @Override
-    Block getBlock(IsMapTile bType, int x, int y, int tileSize) {
-        switch (bType) {
+    Block getBlock(IsMapTile tile, int x, int y, int tileSize) {
+        switch (tile) {
             case PLAYER:
                 return new MoveableSprite(
                     Animation.buildDirectionalImageSet(playerImg), null, x, y, tileSize, PLAYER, getMaxPoint()
@@ -100,13 +99,13 @@ public class DefaultLandMap extends GameMap {
             case WALL3:
             case WALL5:
             case ENVIRONMENT_A:
-                return new Sprite( imgMap.get( bType ), x, y, tileSize, bType );
+                return new Sprite( imgMap.get( tile ), x, y, tileSize, tile );
             case ENVIRONMENT_B:
                 return new Sprite( imgMap.get( ENVIRONMENT_B ), x, y, 128, ENVIRONMENT_B );
             case ENVIRONMENT_C:
                 return new Sprite( imgMap.get( ENVIRONMENT_C ), x, y, 128, ENVIRONMENT_C );
             default:
-                return super.getBlock(bType, x, y, tileSize);
+                return super.getBlock(tile, x, y, tileSize);
         }
     }
 
