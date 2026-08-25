@@ -11,14 +11,12 @@ package graphic.map;
  *
  */
 
-import graphic.AnimatedSprite;
-import graphic.Animation;
+import graphic.AnimationData;
+import graphic.AnimationPlayer;
 import graphic.MoveableSprite;
-import graphic.Sprite;
 import static graphic.io.BinaryIO.*;
-import graphic.io.TilesetUtility;
-import static graphic.map.DefaultMapTile.*;
-import static graphic.map.GameMap.DEFAULT_TILE_SIZE;
+import static graphic.io.TilesetUtility.*;
+import static graphic.map.DefaultBlockType.*;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
@@ -28,10 +26,11 @@ public class DefaultLandMap extends GameMap {
 
     public final static Color AMBIENT_COLOR = new Color(124, 188, 62);
 
-    private final Map<DefaultMapTile, BufferedImage> imgMap = new HashMap<>();
+    private final Map<IsBlockType, BufferedImage> imgMap = new HashMap<>();
 
-    private BufferedImage[] playerImg;
-    private Animation npcAni, portalAni;
+    private AnimationData[] playerAniData;
+    private AnimationData npcAniData, portalAniData;
+    private AnimationPlayer npcAni;
 
     public DefaultLandMap(char[][] tileMap) {
         super(tileMap);
@@ -45,67 +44,83 @@ public class DefaultLandMap extends GameMap {
 
     @Override
     protected void loadSprites() {
-        playerImg = TilesetUtility.getSpriteSetVertical(
-            loadImage( TILESET+"player/lpc_female_blond/idle2.png" ), 0, DEFAULT_TILE_SIZE, 4
+        playerAniData = AnimationData.buildDirectionalImageSet(
+            scaleImageSet(
+                getSpriteSetVertical(
+                    loadImage( TILESET+"player/lpc_female_blond/idle2.png" ), 0, DEFAULT_TILE_SIZE, 4
+                ), DEFAULT_TILE_SIZE
+            )
         );
-        npcAni = new Animation( TilesetUtility.getSpriteSetHorizontal(
-            loadImage( TILESET+"npc/lpc_male_blackbeard/idle2.png" ), 0, DEFAULT_TILE_SIZE, 2
-        ));
+        npcAniData = new AnimationData(
+            scaleImageSet(
+                getSpriteSetHorizontal(
+                    loadImage( TILESET+"npc/lpc_male_blackbeard/idle2.png" ), 0, DEFAULT_TILE_SIZE, 2
+                ), DEFAULT_TILE_SIZE
+            )
+        );
+        portalAniData = new AnimationData(
+            scaleImageSet(
+                getSpriteSetHorizontal(
+                    loadImage( TILESET+"portal.png" ), 0, DEFAULT_TILE_SIZE, 4
+                ), DEFAULT_TILE_SIZE
+            )
+        );
+        npcAni = new AnimationPlayer(npcAniData);
         npcAni.slowDown();
-        portalAni = new Animation( TilesetUtility.getSpriteSetHorizontal(
-            loadImage( TILESET+"portal.png" ), 0, DEFAULT_TILE_SIZE, 4
-        ));
-        portalAni.slowDown();
-        imgMap.put( SPACE,          loadImage( SPRITE+"land/Gras1.png" ));
-        imgMap.put( WALL5,          loadImage( SPRITE+"land/Stone1.png" ));
-        imgMap.put( TEXTSIGN,       loadImage( SPRITE+"land/Sign1.png" ));
-        imgMap.put( ENVIRONMENT_A,  loadImage( SPRITE+"land/Straw1.png" ));
-        imgMap.put( ENVIRONMENT1,   loadImage( SPRITE+"land/Bush1.png" ));
-        imgMap.put( ENVIRONMENT2,   loadImage( SPRITE+"land/Bush2.png" ));
-        imgMap.put( ENVIRONMENT3,   loadImage( SPRITE+"land/Bush3.png" ));
-        imgMap.put( ENVIRONMENT4,   loadImage( SPRITE+"land/Bush4.png" ));
-        imgMap.put( ENVIRONMENT5,   loadImage( SPRITE+"land/Bush5.png" ));
-        imgMap.put( ENVIRONMENT6,   loadImage( SPRITE+"land/Bush5_berries.png" ));
-        imgMap.put( ENVIRONMENT7,   loadImage( SPRITE+"land/Mushroom1.png" ));
-        imgMap.put( ENVIRONMENT8,   loadImage( SPRITE+"land/Mushroom2.png" ));
-        imgMap.put( WALL1,          loadImage( SPRITE+"land/Water.png" ));
-        imgMap.put( WALL3,          loadImage( SPRITE+"land/Water2Land.png" ));
-        imgMap.put( ENVIRONMENT_B,  loadImage( SPRITE+"land/House.png" ));
-        imgMap.put( ENVIRONMENT_C,  loadImage( SPRITE+"land/Tree1.png" ));
+        imgMap.put( SPACE,          loadScaledImage(       SPRITE+"land/Gras1.png" ));
+        imgMap.put( WALL5,          loadStretchedImage(    SPRITE+"land/Stone1.png" ));
+        imgMap.put( TEXTSIGN,       loadScaledImage(       SPRITE+"land/Sign1.png" ));
+        imgMap.put( ENVIRONMENT0,   loadStretchedImage(    SPRITE+"land/Straw1.png" ));
+        imgMap.put( TERRAIN0,       loadScaledImage(       SPRITE+"land/Bush1.png" ));
+        imgMap.put( TERRAIN1,       loadScaledImage(       SPRITE+"land/Bush2.png" ));
+        imgMap.put( TERRAIN2,       loadScaledImage(       SPRITE+"land/Bush3.png" ));
+        imgMap.put( TERRAIN3,       loadScaledImage(       SPRITE+"land/Bush4.png" ));
+        imgMap.put( TERRAIN4,       loadScaledImage(       SPRITE+"land/Bush5.png" ));
+        imgMap.put( TERRAIN5,       loadScaledImage(       SPRITE+"land/Bush5_berries.png" ));
+        imgMap.put( TERRAIN6,       loadScaledImage(       SPRITE+"land/Mushroom1.png" ));
+        imgMap.put( TERRAIN7,       loadScaledImage(       SPRITE+"land/Mushroom2.png" ));
+        imgMap.put( WALL1,          loadScaledImage(       SPRITE+"land/Water.png" ));
+        imgMap.put( WALL3,          loadScaledImage(       SPRITE+"land/Water2Land.png" ));
+        imgMap.put( ENVIRONMENT1,   loadImage(             SPRITE+"land/House.png" ));
+        imgMap.put( ENVIRONMENT2,   scaleImage( loadImage( SPRITE+"land/Tree1.png" ), 5 * DEFAULT_TILE_SIZE ));
     }
 
     @Override
-    Block getBlock(IsMapTile tile, int x, int y, int tileSize) {
-        switch (tile) {
+    protected BlockTile getBlockTile(int x, int y, int width, int height, IsBlockType bType) {
+        switch (bType) {
             case PLAYER:
+                AnimationPlayer[] playerAni = AnimationPlayer.createSet(playerAniData);
                 return new MoveableSprite(
-                    Animation.buildDirectionalImageSet(playerImg), null, x, y, tileSize, PLAYER, getMaxPoint()
+                    playerAni, PLAYER, x, y, tileSize, getMaxPoint()
                 );
             case NPC:
-                return new AnimatedSprite(npcAni, null, x, y, tileSize, NPC );
+                return new BlockTile(x, y, tileSize, NPC, npcAni);
             case PORTAL:
-                return new AnimatedSprite(portalAni, null, x, y, tileSize, PORTAL );
+                // für jedes Portal einen eigenen AnimationPlayer erstellen
+                AnimationPlayer portalAni = new AnimationPlayer(portalAniData);
+                portalAni.slowDown();
+                return new BlockTile(x, y, tileSize, PORTAL, portalAni);
             case SPACE:
             case TEXTSIGN:
-            case ENVIRONMENT1:
-            case ENVIRONMENT2:
-            case ENVIRONMENT3:
-            case ENVIRONMENT4:
-            case ENVIRONMENT5:
-            case ENVIRONMENT6:
-            case ENVIRONMENT7:
-            case ENVIRONMENT8:
+            case TERRAIN1:
+            case TERRAIN2:
+            case TERRAIN3:
+            case TERRAIN4:
+            case TERRAIN5:
+            case TERRAIN6:
+            case TERRAIN7:
+            case TERRAIN8:
             case WALL1:
             case WALL3:
             case WALL5:
-            case ENVIRONMENT_A:
-                return new Sprite( imgMap.get( tile ), x, y, tileSize, tile );
-            case ENVIRONMENT_B:
-                return new Sprite( imgMap.get( ENVIRONMENT_B ), x, y, 128, ENVIRONMENT_B );
-            case ENVIRONMENT_C:
-                return new Sprite( imgMap.get( ENVIRONMENT_C ), x, y, 128, ENVIRONMENT_C );
+            case ENVIRONMENT0:
+                return new BlockTile(x, y, tileSize, bType, () -> imgMap.get( bType ));
+            case ENVIRONMENT1:
+                return new BlockTile( x, y, ENVIRONMENT1, () -> imgMap.get( ENVIRONMENT1 ));
+            case ENVIRONMENT2:
+                return new BlockTile( x, y, ENVIRONMENT2, () -> imgMap.get( ENVIRONMENT2 ));
             default:
-                return super.getBlock(tile, x, y, tileSize);
+                return new BlockTile(x, y, tileSize, bType, null);
         }
     }
 

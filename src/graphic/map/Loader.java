@@ -25,9 +25,9 @@ public class Loader {
 
     private Loader() {}
 
-    public static Map<Character, BufferedImage> loadMapProperties(String filePath, Class<?> clazz) throws IOException {
-        Map<Character, CustomMapTile> blockTypeMap = new HashMap<>();
-        blockTypeMap.put( ' ', new CustomMapTile( ' ', null, InteractionType.NONE, true ));
+    public static Map<IsBlockType, BufferedImage> loadBlockTypeMap(String filePath, Class<?> clazz) throws IOException {
+        Map<IsBlockType, BufferedImage> blockTypeMap = new HashMap<>();
+        blockTypeMap.put(DefaultBlockType.SPACE, null);
         try (BufferedReader reader = TextIO.getTextReader( filePath, clazz )) {
             while ( reader.ready() ) {
                 String[] array = reader.readLine().split(",");
@@ -35,14 +35,16 @@ public class Loader {
                     continue;
                 }
                 char c = array[0].charAt(0);
-                BufferedImage image = loadImage(array[1]);
-                InteractionType type = EnumHelper.getEnumFromString(InteractionType.class, array[2]);
-                boolean passable = Boolean.parseBoolean(array[3]);
-                blockTypeMap.put( c, new CustomMapTile( c, image, type, passable ));
+                InteractionType type = EnumHelper.getEnumFromString(InteractionType.class, array[1]);
+                boolean passable = Boolean.parseBoolean(array[2]);
+                BufferedImage image = loadImage(array[3]);
+                blockTypeMap.put( new BlockType( c, type, passable ), image );
             }
         }
-        // ToDo hier weiter
+        return blockTypeMap;
+    }
 
+    public static Map<Character, BufferedImage> loadMapProperties(String filePath, Class<?> clazz) throws IOException {
         Map<Character, BufferedImage> spriteMap = new HashMap<>();
         spriteMap.put(' ', null);
         Properties p = TextIO.loadProperties(filePath, clazz);

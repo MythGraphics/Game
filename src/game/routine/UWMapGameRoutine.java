@@ -20,10 +20,11 @@ import game.resource.ResourceConsumeListener;
 import static graphic.io.BinaryIO.TILESET;
 import static graphic.io.BinaryIO.loadImage;
 import graphic.io.TilesetUtility;
-import static graphic.map.DefaultMapTile.BUBBLE;
+import graphic.map.BlockTile;
+import graphic.map.CollisionEvent;
+import static graphic.map.DefaultBlockType.BUBBLE;
+import graphic.map.UWMap;
 import graphic.texter.DialogOutputListener;
-import graphic.map.*;
-import graphic.Sprite;
 
 public class UWMapGameRoutine extends GameRoutine implements ResourceConsumeListener {
 
@@ -67,12 +68,11 @@ public class UWMapGameRoutine extends GameRoutine implements ResourceConsumeList
 
     @Override
     public void collisionPerformed(CollisionEvent e) {
-        switch( e.getTarget().getType() ) {
+        switch( e.getTarget().getBlockType() ) {
             case BUBBLE -> {
                 getPlayer().getResource(AIR).recharge(100);
-                Block block = e.getTarget();
-                if (block instanceof Sprite sprite) {
-                    sprite.setImage(null);
+                if ( e.getTarget() instanceof BlockTile tile ) {
+                    tile.destroy();
                 }
             }
             default -> {

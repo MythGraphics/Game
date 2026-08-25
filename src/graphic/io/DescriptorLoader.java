@@ -104,11 +104,11 @@ public class DescriptorLoader {
             throw new IOException("Format not parsable. Neccessary 5 tokens not found.");
         }
         BufferedImage image = BinaryIO.loadImage( path + tokenizer.nextToken() );
-        int offset_x        = Integer.parseInt( tokenizer.nextToken() );
-        int offset_y        = Integer.parseInt( tokenizer.nextToken() );
-        int size_x          = Integer.parseInt( tokenizer.nextToken() );
-        int size_y          = Integer.parseInt( tokenizer.nextToken() );
-        return image.getSubimage( offset_x, offset_y, size_x, size_y );
+        int offsetX         = Integer.parseInt( tokenizer.nextToken() );
+        int offsetY         = Integer.parseInt( tokenizer.nextToken() );
+        int sizeX           = Integer.parseInt( tokenizer.nextToken() );
+        int sizeY           = Integer.parseInt( tokenizer.nextToken() );
+        return image.getSubimage( offsetX, offsetY, sizeX, sizeY );
     }
 
     // SpriteSet, AnimatedSprites & MoveableSprites
@@ -130,17 +130,17 @@ public class DescriptorLoader {
         }
         BufferedImage image = BinaryIO.loadImage( path + tokenizer.nextToken() );
         char alignment      = tokenizer.nextToken().charAt(0);
-        int offset_x        = Integer.parseInt( tokenizer.nextToken() );
-        int offset_y        = Integer.parseInt( tokenizer.nextToken() );
-        int size_x          = Integer.parseInt( tokenizer.nextToken() );
-        int size_y          = Integer.parseInt( tokenizer.nextToken() );
+        int offsetX         = Integer.parseInt( tokenizer.nextToken() );
+        int offsetY         = Integer.parseInt( tokenizer.nextToken() );
+        int sizeX           = Integer.parseInt( tokenizer.nextToken() );
+        int sizeY           = Integer.parseInt( tokenizer.nextToken() );
         int number          = Integer.parseInt( tokenizer.nextToken() );
-        image = image.getSubimage( offset_x, offset_y, image.getWidth(), image.getHeight() );
+        image = image.getSubimage( offsetX, offsetY, image.getWidth(), image.getHeight() );
         switch (alignment) {
             case 'x': case 'X':
-                return TilesetUtility.getSpriteSetHorizontal(image, size_x, 0, number);
+                return TilesetUtility.getSpriteSetHorizontal(image, sizeX, 0, number);
             case 'y': case 'Y':
-                return TilesetUtility.getSpriteSetVertical(image, size_y, 0, number);
+                return TilesetUtility.getSpriteSetVertical(image, sizeY, 0, number);
         }
         throw new IOException("Format not parsable. Sprite_alignment not x nor y.");
     }
@@ -155,26 +155,26 @@ public class DescriptorLoader {
         BufferedImage image = BinaryIO.loadImage( path + tokenizer.nextToken() );
         char alignment      = tokenizer.nextToken().charAt(0);
         String dir_alignm   = tokenizer.nextToken();
-        int offset_x        = Integer.parseInt( tokenizer.nextToken() );
-        int offset_y        = Integer.parseInt( tokenizer.nextToken() );
-        int size_x          = Integer.parseInt( tokenizer.nextToken() );
-        int size_y          = Integer.parseInt( tokenizer.nextToken() );
+        int offsetX         = Integer.parseInt( tokenizer.nextToken() );
+        int offsetY         = Integer.parseInt( tokenizer.nextToken() );
+        int sizeX           = Integer.parseInt( tokenizer.nextToken() );
+        int sizeY           = Integer.parseInt( tokenizer.nextToken() );
         int number          = Integer.parseInt( tokenizer.nextToken() );
-        image = image.getSubimage( offset_x, offset_y, image.getWidth(), image.getHeight() );
+        image = image.getSubimage( offsetX, offsetY, image.getWidth(), image.getHeight() );
         BufferedImage currentImg;
         switch (alignment) {
             case 'x': case 'X':
                 for (int i = 0; i < dirImgs.length; ++i) {
-                    currentImg = image.getSubimage( 0, i*size_y, image.getWidth(), image.getHeight() );
+                    currentImg = image.getSubimage( 0, i*sizeY, image.getWidth(), image.getHeight() );
                     int index = Direction.parseDirection( dir_alignm.charAt( i )).ordinal();
-                    dirImgs[index] = TilesetUtility.getSpriteSetHorizontal(currentImg, size_x, 0, number);
+                    dirImgs[index] = TilesetUtility.getSpriteSetHorizontal(currentImg, sizeX, 0, number);
                     return dirImgs;
                 }
             case 'y': case 'Y':
                 for (int i = 0; i < dirImgs.length; ++i) {
-                    currentImg = image.getSubimage( i*size_x, 0, image.getWidth(), image.getHeight() );
+                    currentImg = image.getSubimage( i*sizeX, 0, image.getWidth(), image.getHeight() );
                     int index = Direction.parseDirection( dir_alignm.charAt( i )).ordinal();
-                    dirImgs[index] = TilesetUtility.getSpriteSetVertical(currentImg, size_y, 0, number);
+                    dirImgs[index] = TilesetUtility.getSpriteSetVertical(currentImg, sizeY, 0, number);
                     return dirImgs;
                 }
         }

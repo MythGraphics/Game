@@ -7,12 +7,13 @@ package graphic.io;
 /**
  *
  * @author  Martin Pröhl alias MythGraphics
- * @version 1.0.2
+ * @version 1.0.3
  *
  */
 
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
@@ -37,6 +38,9 @@ public class ImageUtility {
     }
 
     public static byte[] convertImageToPngBytes(BufferedImage img) throws IOException {
+        if (img == null) {
+            return new byte[0];
+        }
         try ( ByteArrayOutputStream out = new ByteArrayOutputStream() ) {
             // BufferedImage in komprimierte PNG-Bytes wandeln
             ImageIO.write(img, "png", out);
@@ -54,68 +58,147 @@ public class ImageUtility {
     }
 
     public static Image scaleImage(Image image, int targetWidth, int targetHeight) {
-        return image.getScaledInstance(targetWidth, targetHeight, Image.SCALE_REPLICATE);
+        if (image == null) {
+            return null;
+        }
+        BufferedImage bimg = toBufferedImage(image);
+        return scale(bimg, targetWidth, targetHeight, false);
     }
 
-    public static BufferedImage scaleImage(BufferedImage image, int targetWidth, int targetHeight) {
+    /**
+     * Skaliert das Bild, behält das Seitenverhältnis bei.
+     * @param image Bild
+     * @param size  Zielgröße in Pixel
+     * @return      skaliertes Bild
+     */
+    public static BufferedImage scale(BufferedImage image, int size) {
+        return scale(image, size, size, false);
+    }
+
+    /**
+     * Skaliert das Bild, behält das Seitenverhältnis bei.
+     * @param image        Bild
+     * @param targetWidth  Zielbreite in Pixel
+     * @param targetHeight Zielhöhe in Pixel
+     * @param highQuality  skaliert weich in hoher Qualität (bikubische Interpolation, Antialiasing)
+     * @return             neues, skaliertes Bild
+     */
+    public static BufferedImage scale(BufferedImage image, int targetWidth, int targetHeight, boolean highQuality) {
         if (image == null) {
             return null;
         }
 
-        int originalWidth  = image.getWidth();
-        int originalHeight = image.getHeight();
-
-        double widthRatio  = (double) targetWidth  / originalWidth;
-        double heightRatio = (double) targetHeight / originalHeight;
-
         // Das kleinere Verhältnis verwenden, um das Seitenverhältnis beizubehalten
-        double ratio = Math.min(widthRatio, heightRatio);
+        double ratio  = Math.min( (double) targetWidth / image.getWidth(), (double) targetHeight / image.getHeight() );
 
         // Neue Breite und Höhe berechnen
-        int newWidth  = (int) (originalWidth  * ratio);
-        int newHeight = (int) (originalHeight * ratio);
+        int newWidth  = (int) ( image.getWidth()  * ratio );
+        int newHeight = (int) ( image.getHeight() * ratio );
 
-        // Bild skalieren
-        Image scaledImage = image.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
-
-        // Das skalierte Bild in ein BufferedImage konvertieren
-        BufferedImage scaledBufferedImage = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_ARGB);
-
-        Graphics2D g2d = scaledBufferedImage.createGraphics();
-        g2d.drawImage(scaledImage, 0, 0, null);
+        BufferedImage scaled = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2d = scaled.createGraphics();
+        if (highQuality) {
+            // qualitativ hochwertige, weiche Interpolation
+            g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+            g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        }
+/*      else {
+            g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
+        }
+ */
+        g2d.drawImage(image, 0, 0, newWidth, newHeight, null);
         g2d.dispose();
 
-        return scaledBufferedImage;
+        return scaled;
+    }
+
+    /**
+     * Erzeugt eine Bild von mindestens tileSize x tileSize und platziert das Original oben links.
+     * Es wird nicht skaliert.
+     * @param image    Bild
+     * @param tileSize Größe des Sprites (tileSize x tileSize Pixel)
+     * @return         neues Bild
+     */
+    public static BufferedImage adjust(BufferedImage image, int tileSize) {
+        if (image == null) {
+            return null;
+        }
+
+        int width  = Math.max( image.getWidth(),  tileSize );
+        int height = Math.max( image.getHeight(), tileSize );
+
+        int type = ( image.getType() == BufferedImage.TYPE_CUSTOM ) ? BufferedImage.TYPE_INT_ARGB : image.getType();
+
+        BufferedImage newImage = new BufferedImage(width, height, type);
+        Graphics2D g2d = newImage.createGraphics();      // Graphics2D-Objekt holen, um das alte Bild in das Neue zu zeichnen
+        g2d.drawImage(image, 0, 0, width, height, null); // Bild an Position (0,0) zeichnen
+        g2d.dispose();
+
+        return newImage;
     }
 
     /**
      * Skaliert das Bild auf ein Quadrat der angegebenen Seitelänge.
-     * @param image Bild
-     * @param size  Seitenlänge des Quadrates
-     * @return      skaliertes Bild
+     * Bricht das Seitenverhältnis.
+     * @param image       Bild
+     * @param size        Seitenlänge des Quadrates
+     * @param highQuality modifiziert weich in hoher Qualität (bikubische Interpolation, Antialiasing)
+     * @return            neues, angepasstes Bild
      */
-    public static BufferedImage scale(BufferedImage image, int size) {
+    public static BufferedImage stretch2Square(BufferedImage image, int size, boolean highQuality) {
+        return stretch(image, size, size, highQuality);
+    }
+
+    /**
+     * Skaliert das Bild auf die angegebene Breite und Höhe.
+     * Bricht das Seitenverhältnis.
+     * @param image       Bild
+     * @param width       ZielBreite
+     * @param height      ZielHöhe
+     * @param highQuality modifiziert weich in hoher Qualität (bikubische Interpolation, Antialiasing)
+     * @return            neues, angepasstes Bild
+     */
+    public static BufferedImage stretch(BufferedImage image, int width, int height, boolean highQuality) {
         if (image == null) {
             return null;
         }
-        if ( image.getHeight() > size || image.getWidth() > size ) {
-            return ImageUtility.scaleImage(image, size, size);
+
+        BufferedImage scaled = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2d = scaled.createGraphics();
+        if (highQuality) {
+            // qualitativ hochwertige, weiche Interpolation
+            g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+            g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         }
-        return image;
+/*      else {
+            g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
+        }
+ */
+        g2d.drawImage(image, 0, 0, width, height, null);
+        g2d.dispose();
+
+        return scaled;
     }
 
     /**
      * Spiegelt ein BufferedImage horizontal oder vertikal.
      * @param inputImage Das Originalbild
-     * @param horizontal true für horizontal spiegeln, false für vertikal
-     * @return Ein neues, gespiegeltes BufferedImage
+     * @param horizontal TRUE für horizontal spiegeln, FALSE für vertikal
+     * @return           neues, gespiegeltes BufferedImage
      */
     public static BufferedImage flipImage(BufferedImage inputImage, boolean horizontal) {
+        if (inputImage == null) {
+            return null;
+        }
+
         int width  = inputImage.getWidth();
         int height = inputImage.getHeight();
+        int type   = inputImage.getType() == BufferedImage.TYPE_CUSTOM ? BufferedImage.TYPE_INT_ARGB : inputImage.getType();
 
         // Erstelle ein neues Bild mit denselben Dimensionen und Typ
-        BufferedImage flippedImage = new BufferedImage( width, height, inputImage.getType() );
+        BufferedImage flippedImage = new BufferedImage(width, height, type);
         Graphics2D g2d = flippedImage.createGraphics();
         AffineTransform transformer = new AffineTransform();
 
@@ -136,24 +219,29 @@ public class ImageUtility {
         return flippedImage;
     }
 
-    public static BufferedImage toBufferedImage(Image img) {
-        if (img instanceof BufferedImage) {
-            return (BufferedImage) img;
+    public static BufferedImage toBufferedImage(Image image) {
+        if (image == null) {
+            return null;
+        }
+        if (image instanceof BufferedImage) {
+            return (BufferedImage) image;
         }
 
         // sicherstellen, dass das Bild vollständig geladen ist. ImageIcon nutzt intern einen MediaTracker und regelt das.
-        img = new ImageIcon(img).getImage();
+        image = new ImageIcon(image).getImage();
+
+        int width  = image.getWidth(null);
+        int height = image.getHeight(null);
+        if (width <= 0 || height <= 0) {
+            return null;
+        }
 
         // neues BufferedImage erstellen
-        BufferedImage bimg = new BufferedImage(
-            img.getWidth(null),
-            img.getHeight(null),
-            BufferedImage.TYPE_INT_ARGB
-        );
+        BufferedImage bimg = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 
         // Inhalt von Image in das BufferedImage zeichnen
         Graphics2D g2d = bimg.createGraphics();
-        g2d.drawImage(img, 0, 0, null);
+        g2d.drawImage(image, 0, 0, width, height, null);
         g2d.dispose();
 
         return bimg;

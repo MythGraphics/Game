@@ -14,7 +14,7 @@ package graphic.map;
 import game.resource.HasResource;
 import game.resource.Resource;
 import static game.resource.Resource.ResourceType.AIR;
-import static graphic.map.DefaultMapTile.WATERLINE;
+import static graphic.map.DefaultBlockType.WATERLINE;
 import java.awt.event.ActionEvent;
 
 public abstract class UWMap extends GameMap implements HasResource {
@@ -70,7 +70,7 @@ public abstract class UWMap extends GameMap implements HasResource {
     @Override
     void loadTileMapChar(char tileMapChar, int x, int y, int tileSize) {
         super.loadTileMapChar(tileMapChar, x, y, tileSize); // SUPER muss zwingend zuerst aufgerufen werden
-        DefaultMapTile tile = DefaultMapTile.getMapTile(tileMapChar);
+        DefaultBlockType tile = DefaultBlockType.getByChar(tileMapChar);
         switch (tile) {
             case WATERLINE -> uwlevel = y;
         }

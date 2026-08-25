@@ -22,13 +22,14 @@ import game.combat.Combatant;
 import game.item.LootManager;
 import game.resource.Resource;
 import static game.resource.Resource.ResourceType.*;
-import graphic.DeadOrAlive;
 import graphic.io.BinaryIO;
 import static graphic.io.BinaryIO.*;
 import graphic.io.TextIO;
-import static graphic.map.DefaultMapTile.ENVIRONMENT_A;
-import static graphic.map.DefaultMapTile.EXIT;
+import graphic.map.BlockTile;
 import graphic.map.CollisionEvent;
+import graphic.map.DeadOrAliveTile;
+import static graphic.map.DefaultBlockType.ENVIRONMENT0;
+import static graphic.map.DefaultBlockType.EXIT;
 import graphic.texter.Message;
 import graphic.texter.TextFrame;
 import java.awt.Color;
@@ -88,13 +89,19 @@ public class SpaceMapGameRoutine extends MartialGameRoutine {
     }
 
     @Override
-    public void enemyDead(Combatant enemyMinion, DeadOrAlive target) {
-        super.enemyDead(enemyMinion, target);
+    public void enemyDead(Combatant enemyMinion, DeadOrAliveTile tile) {
+        super.enemyDead(enemyMinion, tile);
         loot(enemyMinion);
         --enemies;
         if (enemies == 0) {
             showEpilog();
         }
+    }
+
+    @Override
+    public void playerDead(Combatant player, BlockTile tile) {
+        System.err.println("Tot des Spielers aktuell noch nicht implementiert.");
+        // ToDo implementieren
     }
 
     @Override
@@ -137,8 +144,8 @@ public class SpaceMapGameRoutine extends MartialGameRoutine {
 
     @Override
     public void collisionPerformed(CollisionEvent e) {
-        switch( e.getTarget().getType() ) {
-            case ENVIRONMENT_A -> {
+        switch( e.getTarget().getBlockType() ) {
+            case ENVIRONMENT0 -> {
                 player.getDialogOutputListener().show( new Message(
                     "Warum liegt hier überhaupt Stroh rum?", player
                 ));

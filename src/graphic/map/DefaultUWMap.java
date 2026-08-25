@@ -11,13 +11,12 @@ package graphic.map;
  *
  */
 
-import graphic.AnimatedSprite;
-import graphic.Animation;
+import graphic.AnimationData;
+import graphic.AnimationPlayer;
 import graphic.MoveableSprite;
-import graphic.Sprite;
 import static graphic.io.BinaryIO.*;
 import graphic.io.TilesetUtility;
-import static graphic.map.DefaultMapTile.*;
+import static graphic.map.DefaultBlockType.*;
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
@@ -28,7 +27,7 @@ public class DefaultUWMap extends UWMap {
 
     private BufferedImage[] playerImg;
     private BufferedImage wallImg, bubbleImg;
-    private Animation npcAni;
+    private AnimationData npcAniData;
 
     public DefaultUWMap(char[][] tileMap) {
         super(tileMap);
@@ -54,20 +53,21 @@ public class DefaultUWMap extends UWMap {
     }
 
     @Override
-    Block getBlock(IsMapTile tile, int x, int y, int tileSize) {
-        switch (tile) {
+    protected BlockTile getBlockTile(int x, int y, int width, int height, IsBlockType bType) {
+        switch (bType) {
             case PLAYER:
                 return new MoveableSprite(
-                    Animation.buildDirectionalImageSet(playerImg), null, x, y, tileSize, PLAYER, getMaxPoint()
+                    AnimationData.buildDirectionalImageSet(playerImg), PLAYER, x, y, tileSize, getMaxPoint()
                 );
             case WALL5:
-                return new Sprite(wallImg, x, y, tileSize, WALL5);
+                return new BlockTile(x, y, tileSize, WALL5, () -> wallImg);
             case BUBBLE:
-                return new Sprite(bubbleImg, x, y, tileSize, BUBBLE);
+                return new BlockTile(x, y, tileSize, BUBBLE, () -> bubbleImg);
             case NPC:
-                return new AnimatedSprite(npcAni, null, x, y, tileSize, NPC);
+                AnimationPlayer npcAni = new AnimationPlayer(npcAniData);
+                return new BlockTile(x, y, tileSize, NPC, npcAni);
             default:
-                return super.getBlock(tile, x, y, tileSize);
+                return new BlockTile(x, y, tileSize, bType, null);
         }
     }
 

@@ -11,68 +11,103 @@ package graphic.map;
  *
  */
 
-import graphic.HasImage;
 import java.awt.Dimension;
-import java.awt.image.BufferedImage;
 import java.awt.Point;
+import java.awt.Rectangle;
 
-public abstract class Block implements HasImage {
+public class Block implements Interactable {
 
-    public final int width;
-    public final int height;
+    protected int width, height;
+    protected IsBlockType bType;
+    protected int x, y;
 
-    protected IsMapTile tile;
-    protected int x;
-    protected int y;
-
-    public Block(Point pos, Dimension dim, IsMapTile tile) {
-        this(pos.x, pos.y, dim.width, dim.height, tile);
-    }
-
-    public Block(int x, int y, int blockSize, IsMapTile tile) {
-        this(x, y, blockSize, blockSize, tile);
-    }
-
-    public Block(int x, int y, int width, int height, IsMapTile tile) {
-        this.x      = x;
-        this.y      = y;
+    public Block(int x, int y, int width, int height, IsBlockType bType) {
+        this.x = x;
+        this.y = y;
         this.width  = width;
         this.height = height;
-        this.tile  = tile;
+        this.bType  = bType;
     }
 
-    abstract public void setImage(BufferedImage image);
+    public Block(Point pos, Dimension dim, IsBlockType bType) {
+        this(pos.x, pos.y, dim.width, dim.height, bType);
+    }
+
+    public Block(int x, int y, int blockSize, IsBlockType bType) {
+        this(x, y, blockSize, blockSize, bType);
+    }
+
+    public Rectangle getBounds() {
+        return new Rectangle(x, y, width, height);
+    }
 
     public Point getPosition() {
         return new Point(x, y);
+    }
+
+    public void setPosition(Point pos) {
+        x = pos.x;
+        y = pos.y;
     }
 
     public Dimension getDimension() {
         return new Dimension(width, height);
     }
 
+    public void setDimension(Dimension dim) {
+        this.height = dim.height;
+        this.width  = dim.width;
+    }
+
     public int getX() {
         return x;
+    }
+
+    public void setX(int x) {
+        this.x = x;
     }
 
     public int getY() {
         return y;
     }
 
+    public void setY(int y) {
+        this.y = y;
+    }
+
     public int getWidth() {
         return width;
+    }
+
+    public void setWidth(int width) {
+        this.width = width;
     }
 
     public int getHeight() {
         return height;
     }
 
-    public IsMapTile getType() {
-        return tile;
+    public void setHeight(int height) {
+        this.height = height;
     }
 
-    public void setType(IsMapTile tile) {
-        this.tile = tile;
+    public IsBlockType getBlockType() {
+        return bType;
+    }
+
+    public void setBlockType(IsBlockType bType) {
+        this.bType = bType;
+    }
+
+    @Override
+    public boolean onCollision(Block initiator, IsCollisionHandler handler) {
+//      handler.fireEvent(initiator, this); // erledigt die GameMap
+        return getBlockType().isPassable();
+    }
+
+    @Override
+    public String toString() {
+        return "block " + getBlockType() + " at pixel " + x + ", " + y + " with width/height " + width + "/" + height + ".";
     }
 
 }

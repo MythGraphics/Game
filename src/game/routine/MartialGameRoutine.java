@@ -15,13 +15,14 @@ import game.Enemy;
 import game.GameFrame;
 import game.combat.CombatFrame;
 import game.combat.Combatant;
-import graphic.DeadOrAlive;
+import graphic.map.BlockTile;
 import graphic.map.CollisionEvent;
+import graphic.map.DeadOrAliveTile;
 import static graphic.map.InteractionType.ENEMY;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MartialGameRoutine extends DefaultGameRoutine {
+public abstract class MartialGameRoutine extends DefaultGameRoutine {
 
     final GameFrame gameFrame;
     final List<Enemy> enemyList;
@@ -39,20 +40,18 @@ public class MartialGameRoutine extends DefaultGameRoutine {
     /**
      * Overwrite to implement any action, if the player doesn't survided.
      * @param player Player
-     * @param collider Sprite (player) rendered on the map
+     * @param tile tile rendered on the map
      */
-    public void playerDead(Combatant player, DeadOrAlive collider) {
-        collider.dead();
-    }
+    public abstract void playerDead(Combatant player, BlockTile tile);
 
     /**
      * Overwrite to implement any action, if and only if the player survided and the enemy doesn't.
      * It will not be called, if both died!
      * @param enemy Enemy
-     * @param target Sprite (enemy) rendered on the map
+     * @param tile tile rendered on the map
      */
-    public void enemyDead(Combatant enemy, DeadOrAlive target) {
-        target.dead();
+    public void enemyDead(Combatant enemy, DeadOrAliveTile tile) {
+        tile.dead();
     }
 
     public void addEnemy(Enemy enemy) {
@@ -88,10 +87,10 @@ public class MartialGameRoutine extends DefaultGameRoutine {
                 CombatFrame cFrame = new CombatFrame(gameFrame, playerMinion, enemyMinion);
                 cFrame.setVisible(true);
                 if ( !playerMinion.isAlive() ) {
-                    playerDead( playerMinion, (DeadOrAlive) e.collider );
+                    playerDead( playerMinion, (BlockTile) e.initiator );
                 } else if ( !enemyMinion.isAlive() ) {
-                    enemyDead( enemyMinion, (DeadOrAlive) e.target );
-                    ((DeadOrAlive) e.target).dead();
+                    enemyDead( enemyMinion, (DeadOrAliveTile) e.target );
+                    ((DeadOrAliveTile) e.target).dead();
                 }
             }
         }

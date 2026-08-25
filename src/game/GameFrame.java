@@ -50,11 +50,13 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
 
     public final static String CMD_ERROR_ARGS                   = "Befehl nicht ausführbar. Argumente unzureichend.";
 
+    public final TextFrame textFrame                            = new TextFrame(false);
+
     public static String playerName                             = "Teufelsmaus";
     public static boolean loadCmdInput                          = false;
     public static Color menuColor                               = new Color(255, 255, 255);
 
-    public final TextFrame textFrame                            = new TextFrame(false);
+    private final static String CURRENT_MAP                     = "space";
 
     private final Map<JLabel, ReUsableItem> iconMap             = new HashMap<>();
     private final Map<ResourceType, JProgressBar> resourceMap   = new HashMap<>();
@@ -100,7 +102,7 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        Main.tileMap = DescriptorLoader.loadMap( MAP.getFilePath( "land" ), Main.class );
+        Main.tileMap = DescriptorLoader.loadMap( MAP.getFilePath( CURRENT_MAP ), GameFrame.class );
         Main.main(null);
     }
 
@@ -520,8 +522,8 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
     }
 
     private void initGameUI() {
-        playerImg = ImageUtility.scaleImage(
-            player.getImg(), jPlayerIconPanel.getWidth(), jPlayerIconPanel.getHeight()
+        playerImg = ImageUtility.scale(
+            player.getImg(), jPlayerIconPanel.getWidth(), jPlayerIconPanel.getHeight(), false
         );
         jPlayerIconPanel.repaint(); // PlayerImg anzeigen
 

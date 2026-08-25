@@ -11,18 +11,13 @@ package graphic.map;
  *
  */
 
-import graphic.DeadOrAliveSprite;
 import graphic.Direction;
 import graphic.MoveableSprite;
-import graphic.Sprite;
-import static graphic.map.DefaultMapTile.*;
-import java.awt.Color;
-import java.awt.RenderingHints;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.Point;
+import static graphic.io.BinaryIO.loadImage;
+import static graphic.io.ImageUtility.scale;
+import static graphic.io.ImageUtility.stretch;
+import static graphic.map.DefaultBlockType.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -38,7 +33,7 @@ import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
-public abstract class GameMap extends JPanel implements ActionListener {
+public abstract class GameMap extends JPanel implements ActionListener, IsCollisionHandler {
 
     public final static int DEFAULT_TILE_SIZE = 32;
     public final static int FPS = 15;
@@ -50,29 +45,30 @@ public abstract class GameMap extends JPanel implements ActionListener {
 
     protected final int tileSize, rowCount, columnCount;
     protected final char[][] tileMap;
-    protected final Collection<Block> blocks = new ArrayList<>();
+    protected final Collection<Block> collidables = new ArrayList<>();
+    protected final Collection<Renderable> renderables = new ArrayList<>();
 
-    protected Block space;
     protected MoveableSprite player;
+    protected BlockTile spaceTile;
 
     private final List<CollisionActionListener> collisionListeners = new ArrayList<>();
     private final Point lastPlayerPos = new Point();
 
-    private boolean active  = false;
-    private boolean ready   = false;
+    private boolean active = false;
+    private boolean ready  = false;
     private Timer renderLoop;
 
     public GameMap(char[][] tileMap, int tileSize, Dimension visibleSize) {
-        this.tileMap        = tileMap;
-        this.tileSize       = tileSize;
-        visibleBoard        = visibleSize;
-        visibleHeight       = visibleSize.height;
-        visibleWidth        = visibleSize.width;
-        rowCount            = tileMap.length;
-        columnCount         = tileMap[0].length;
-        boardWidth          = columnCount * tileSize;
-        boardHeight         = rowCount * tileSize;
-        board               = new Dimension(boardWidth, boardHeight);
+        this.tileMap    = tileMap;
+        this.tileSize   = tileSize;
+        visibleBoard    = visibleSize;
+        visibleHeight   = visibleSize.height;
+        visibleWidth    = visibleSize.width;
+        rowCount        = tileMap.length;
+        columnCount     = tileMap[0].length;
+        boardWidth      = columnCount*tileSize;
+        boardHeight     = rowCount*tileSize;
+        board           = new Dimension(boardWidth, boardHeight);
     }
 
     public GameMap(char[][] tileMap, Dimension visibleSize) {
@@ -85,21 +81,15 @@ public abstract class GameMap extends JPanel implements ActionListener {
             tileMap,
             DEFAULT_TILE_SIZE,
             new Dimension(
-                Math.min( tileMap[0].length*DEFAULT_TILE_SIZE,  800 ),
-                Math.min( tileMap.length*DEFAULT_TILE_SIZE,     600 )
+                Math.min( tileMap[0].length*DEFAULT_TILE_SIZE, 800 ),
+                Math.min( tileMap.length*DEFAULT_TILE_SIZE,    600 )
             )
         );
     }
 
     protected abstract void loadSprites();
+    protected abstract BlockTile getBlockTile(int x, int y, int width, int height, IsBlockType bType);
     public abstract Color getAmbientColor();
-
-    Block getBlock(IsMapTile bType, int x, int y, int tileSize) {
-        return switch (bType) {
-            case EXIT   -> new Sprite( null, x, y, tileSize, EXIT );
-            default     -> new Sprite( null, x, y, tileSize, bType );
-        };
-    }
 
     public void init() {
         loadSprites();
@@ -111,10 +101,10 @@ public abstract class GameMap extends JPanel implements ActionListener {
         ready = true;
     }
 
-    public void renderMapImage(DefaultMapTile... bType) {
+    public void renderMapImage(DefaultBlockType... bTypes) {
         BufferedImage prerenderedMap = new BufferedImage(boardWidth, boardHeight, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2d = prerenderedMap.createGraphics();
-        drawMap(g2d, 0, 0, PLAYER, NPC, ENEMY);
+        drawMapImage(g2d, 0, 0, bTypes);
         g2d.dispose();
         try {
             File file = new File("currentMap.png");
@@ -132,6 +122,14 @@ public abstract class GameMap extends JPanel implements ActionListener {
 
     public Point getMaxPoint() {
         return new Point(boardWidth, boardHeight);
+    }
+
+    public BufferedImage loadStretchedImage(String imgPath) {
+        return stretch( loadImage( imgPath ), DEFAULT_TILE_SIZE, DEFAULT_TILE_SIZE, false );
+    }
+
+    public BufferedImage loadScaledImage(String imgPath) {
+        return scale( loadImage( imgPath ), DEFAULT_TILE_SIZE, DEFAULT_TILE_SIZE, false );
     }
 
     /**
@@ -169,27 +167,42 @@ public abstract class GameMap extends JPanel implements ActionListener {
     }
 
     void loadTileMapChar(char tileMapChar, int x, int y, int tileSize) {
-        DefaultMapTile tile = DefaultMapTile.getMapTile(tileMapChar);
-        if ( tile == null ) {
-            System.err.println(
-                "TileMapChar '" + tileMapChar + "' auf " + x + ", " + y + " ungültig (TileType ist null) -> " +
-                "wird ignoriert"
-            );
-            return;
-        }
-        switch (tile) {
-            case SPACE, SPACEHOLDER -> {} // space wird in loadSpaceTile() initialisiert, spaceholder ignorieren
+        IsBlockType bType = DefaultBlockType.getByChar(tileMapChar);
+        BlockTile entity  = getBlockTile(x, y, tileSize, tileSize, bType);
+
+        switch (bType) {
+            case null -> {
+                System.err.println(
+                    "TileMapChar '" + tileMapChar + "' auf " + x + ", " + y +
+                    " ungültig (BlockType ist null) -> wird ignoriert."
+                );
+            }
             case PLAYER -> {
-                player = (MoveableSprite) getBlock( PLAYER, x, y, tileSize );
+                if (entity instanceof MoveableSprite moveable) {
+                    this.player = moveable;
+                } else {
+                    System.err.println(
+                        "Player vom Klassen-Typ " +
+                        ( entity == null ? "null" : entity.getClass() ) +
+                        " inkompatibel: muss MoveableSprite sein."
+                    );
+                }
                 lastPlayerPos.x = x;
                 lastPlayerPos.y = y;
             }
-            default -> blocks.add( getBlock( tile, x, y, tileSize ));
+            case SPACE -> {
+                if (spaceTile == null) {
+                    spaceTile = entity;
+                }
+            }
+            case SPACEHOLDER -> {}
+            default -> {
+                collidables.add(entity);
+                if ( entity.getImage() != null ) {
+                    renderables.add(entity);
+                }
+            }
         }
-    }
-
-    void loadSpaceTile() {
-        space = getBlock( SPACE, 0, 0, tileSize );
     }
 
     private void initMap() {
@@ -207,7 +220,9 @@ public abstract class GameMap extends JPanel implements ActionListener {
                 loadTileMapChar(tileMapChar, x, y, tileSize);
             }
         }
-        loadSpaceTile();
+        if (spaceTile == null) {
+            spaceTile = getBlockTile(0, 0, tileSize, tileSize, DefaultBlockType.SPACE);
+        }
     }
 
     public void activate() {
@@ -245,41 +260,18 @@ public abstract class GameMap extends JPanel implements ActionListener {
         collisionListeners.add(actionListener);
     }
 
-    /**
-     * Feuert Event bei Kollision Player -> Panel-Grenze
-     * @param collider Kollisionsblock
-     */
-    void firePanelEvent(Block collider) {
+    @Override
+    public void fireEvent(Block initiator, Block target) {
         System.out.println(
-            "collision of block type "  + collider.getType() + " with panel boundary" +
-            " at "                      + collider.x + "," + collider.y +
-            " (column "                 + ( collider.x / collider.getWidth()  + 1 ) + // +1, um keine Indizes auszugeben
-            ", row "                    + ( collider.y / collider.getHeight() + 1 ) + // +1, um keine Indizes auszugeben
-            ")"
+            "Collision of block "   + initiator.getBlockType() +
+            " with block "          + target.getBlockType() +
+            " at pixel "            + target.x + ", " + target.y +
+            " (column "             + ( target.x / target.width  + 1 ) + // +1, um keine Indizes auszugeben
+            ", row "                + ( target.y / target.height + 1 ) + // +1, um keine Indizes auszugeben
+            ")."
         );
         collisionListeners.forEach( actionListener -> actionListener.collisionPerformed(
-            new CollisionEvent(
-                this,
-                new Sprite(null, collider.x, collider.y, 0, BOUNDARY),
-                collider
-            )
-        ));
-    }
-
-    /**
-     * Feuert Event bei Kollision Player -> Block
-     * @param block Kollisionsblock
-     */
-    void fireBlockEvent(Block target, Block collider) {
-        System.out.println(
-            "collision with block type "    + target.getType() +
-            " at "                          + target.x + "," + target.y +
-            " (column "                     + ( target.x / target.getWidth()  + 1 ) + // +1, um keine Indizes auszugeben
-            ", row "                        + ( target.y / target.getHeight() + 1 ) + // +1, um keine Indizes auszugeben
-            ") as collision type "          + target.getType().getInteractionType()
-        );
-        collisionListeners.forEach( actionListener -> actionListener.collisionPerformed(
-            new CollisionEvent( this, target, collider )
+            new CollisionEvent(this, initiator, target)
         ));
     }
 
@@ -317,15 +309,14 @@ public abstract class GameMap extends JPanel implements ActionListener {
             targetRow = (row-1 + rowCount) % rowCount;
         }
 
-        // Zuweisung der Pixel-Position
-        setPlayerPosition( new Point( targetColumn*tileSize, targetRow*tileSize ));
+        setPlayerPosition( new Point( targetColumn*tileSize, targetRow*tileSize )); // Zuweisung der Position
     }
 
     public void setPlayerPosition(Point target) {
         setLastPlayerPosition();
         player.x = target.x;
         player.y = target.y;
-        detectBlockCollision(blocks);
+        detectCollision();
     }
 
     private void setLastPlayerPosition() {
@@ -345,55 +336,58 @@ public abstract class GameMap extends JPanel implements ActionListener {
         if ( !active ) { return; }
         setLastPlayerPosition();
         switch ( evt.getKeyCode() ) {
-            case KeyEvent.VK_UP,    KeyEvent.VK_W, KeyEvent.VK_8    -> player.move(Direction.UP);
-            case KeyEvent.VK_DOWN,  KeyEvent.VK_S, KeyEvent.VK_2    -> player.move(Direction.DOWN);
-            case KeyEvent.VK_RIGHT, KeyEvent.VK_D, KeyEvent.VK_6    -> player.move(Direction.RIGHT);
-            case KeyEvent.VK_LEFT,  KeyEvent.VK_A, KeyEvent.VK_4    -> player.move(Direction.LEFT);
+            case KeyEvent.VK_UP,    KeyEvent.VK_W, KeyEvent.VK_8 -> player.move(Direction.UP);
+            case KeyEvent.VK_DOWN,  KeyEvent.VK_S, KeyEvent.VK_2 -> player.move(Direction.DOWN);
+            case KeyEvent.VK_RIGHT, KeyEvent.VK_D, KeyEvent.VK_6 -> player.move(Direction.RIGHT);
+            case KeyEvent.VK_LEFT,  KeyEvent.VK_A, KeyEvent.VK_4 -> player.move(Direction.LEFT);
         }
-        detectPanelCollision(); // Kollision mit Panelgrenze
-        detectBlockCollision(blocks); // Kollision mit Block
+        detectCollision();
     }
 
-    final void detectPanelCollision() {
+    private boolean detectPanelCollision() {
         if (player.x < 0) {
-            firePanelEvent(player);
             player.x = 0;
-        }
-        else if (player.x >= boardWidth) {
-            firePanelEvent(player);
+            return true;
+        } else if (player.x >= boardWidth) {
             player.x = boardWidth-tileSize;
-        }
-        else if (player.y < 0) {
-            firePanelEvent(player);
+            return true;
+        } else if (player.y < 0) {
             player.y = 0;
-        }
-        else if (player.y >= boardHeight) {
-            firePanelEvent(player);
+            return true;
+        } else if (player.y >= boardHeight) {
             player.y = boardHeight-tileSize;
+            return true;
         }
+        return false;
     }
 
-    final void detectBlockCollision(Collection<Block> blocks) {
-        blocks.forEach( block -> {
-            if ( collision( block, player )) {
-                fireBlockEvent(block, player);
-                if ( !block.tile.isPassable() ) {
+    final void detectCollision() {
+        if ( detectPanelCollision() ) {
+            fireEvent( player, new Block( player.x, player.y, player.width, player.height, BOUNDARY ));
+            resetPlayerPosition();
+            return;
+        }
+
+        for (Block block : collidables) {
+            if ( collision( player, block )) {
+                fireEvent(player, block);
+                boolean passable = block.onCollision(player, this);
+                if (!passable) {
                     resetPlayerPosition();
+                    break;
                 }
             }
-        });
+        }
     }
 
-    boolean collision(Block a, Block b) {
-        try {
-            return  a.x < b.x + b.width  &&
-                    a.x + a.width > b.x  &&
-                    a.y < b.y + b.height &&
-                    a.y + a.height > b.y
-            ;
-        } catch (NullPointerException e) {
+    private boolean collision(Block a, Block b) {
+        if (a == null || b == null) {
             return false;
         }
+        return  a.x < b.x + b.width  &&
+                a.x + a.width > b.x  &&
+                a.y < b.y + b.height &&
+                a.y + a.height > b.y ;
     }
 
     private void setRenderingHints(Graphics2D g2d) {
@@ -409,50 +403,58 @@ public abstract class GameMap extends JPanel implements ActionListener {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
-        // Die folgenden zwei Zeilen sind wichtig, da die Größe des JPanels
-        // nun dem sichtbaren Bereich entsprechen soll und nicht der vollen Kartengröße.
-        // visibleWidth und visibleHeight müssen im Konstruktor oder als Konstanten gesetzt sein.
-        g2d.setClip(0, 0, visibleWidth, visibleHeight);
+        g2d.setClip(0, 0, visibleWidth, visibleHeight); // nur der sichtbare Bereich, nicht die volle Kartengröße
         if (active) {
             setRenderingHints(g2d);
             draw(g2d);
         }
     }
 
-    final void drawMap(Graphics2D g2d, int offsetX, int offsetY, DefaultMapTile... bTypeExclude) {
-        Set<DefaultMapTile> excludedTypes = Set.of(bTypeExclude);
-        Collection<Block> currentBlocks = blocks.stream()
-                                                .filter( block -> !excludedTypes.contains( block.getType() ))
-                                                .collect( Collectors.toList() );
-        if ( space != null && !excludedTypes.contains( SPACE )) {
-            drawSpace(g2d, offsetX, offsetY, space);
-        }
-        if ( !currentBlocks.isEmpty() ) {
-            drawBlocks(g2d, offsetX, offsetY, currentBlocks);
-        }
-        if ( !excludedTypes.contains( PLAYER )) {
-            drawPlayer(g2d, offsetX, offsetY, player);
+    final void drawMapImage(Graphics2D g2d, int offsetX, int offsetY, DefaultBlockType... tileExclude) {
+        Set<IsBlockType> excludedTypes  = Set.of(tileExclude);
+        Collection<Renderable> currentBlocks =
+            renderables.stream()
+                       .filter(r -> {
+                           if (r instanceof Block block) {
+                               return !excludedTypes.contains( block.getBlockType() );
+                           }
+                           return false; // Renderables, die keine Blöcke sind, ausschließen: nackte Map
+                       })
+                       .collect( Collectors.toList() );
+        drawMapImage(g2d, offsetX, offsetY, currentBlocks);
+    }
+
+    private void drawMapImage(Graphics2D g2d, int offsetX, int offsetY, Collection<Renderable> renderables) {
+        drawSpace(g2d, offsetX, offsetY);
+        for (Renderable r : renderables) {
+            r.draw(g2d, offsetX, offsetY);
         }
     }
 
     void draw(Graphics2D g2d) {
         int offsetX = getOffsetX();
         int offsetY = getOffsetY();
-        drawSpace(g2d, offsetX, offsetY, space);
-        drawBlocks(g2d, offsetX, offsetY, blocks);
-        drawPlayer(g2d, offsetX, offsetY, player);
+
+        drawSpace(g2d, offsetX, offsetY);
+        for (Renderable r : renderables) {
+            r.draw(g2d, offsetX, offsetY);
+        }
+        if (player != null) {
+            player.draw(g2d, offsetX, offsetY);
+        }
     }
 
-    private void drawSpace(Graphics2D g2d, int offsetX, int offsetY, Block space) {
-        if ( space != null ) {
+    private void drawSpace(Graphics2D g2d, int offsetX, int offsetY) {
+        if (spaceTile != null && spaceTile.getImage() != null) {
+            BufferedImage spaceImg = spaceTile.getImage();
             for (int r = 0; r < rowCount; r++) {
                 for (int c = 0; c < columnCount; c++) {
                     g2d.drawImage(
-                        space.getImage(),
+                        spaceImg,
                         tileSize*c - offsetX,
                         tileSize*r - offsetY,
-                        space.width,
-                        space.height,
+                        spaceTile.width,
+                        spaceTile.height,
                         null
                     );
                 }
@@ -460,23 +462,11 @@ public abstract class GameMap extends JPanel implements ActionListener {
         }
     }
 
-    private void drawBlocks(Graphics2D g2d, int offsetX, int offsetY, Collection<Block> blocks) {
-        blocks.forEach( block -> {
-            g2d.drawImage( block.getImage(), block.x-offsetX, block.y-offsetY, block.width, block.height, null );
-        });
-    }
-
-    private void drawPlayer(Graphics2D g2d, int offsetX, int offsetY, Block player) {
-        g2d.drawImage( player.getImage(), player.x-offsetX, player.y-offsetY, player.width, player.height, null );
-    }
-
     public int getEnemyCount() {
         int value = 0;
-        for (Block block : blocks) {
-            if (block instanceof DeadOrAliveSprite doaBlock) {
-                if ( doaBlock.getType() == ENEMY && !doaBlock.isDead() ) {
-                    ++value;
-                }
+        for (Renderable r : renderables) {
+            if (r instanceof Block block && block.getBlockType() == ENEMY) {
+                ++value;
             }
         }
         return value;

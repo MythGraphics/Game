@@ -12,34 +12,36 @@ package graphic;
  */
 
 import static graphic.Direction.*;
-import graphic.map.DefaultMapTile;
+import graphic.map.IsBlockType;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
 import java.util.Random;
 
 public class AutoMoveableSprite extends MoveableSprite implements ActionListener, AutoMoveable {
 
     final Point start;
 
-    Direction direction;
+    private final Random rand = new Random();
 
+    private Direction direction;
     private boolean auto = false;
     private int ticksPerStep = 1;
-    private int tickCounter = 0;
+    private int tickCounter  = 0;
 
-    public AutoMoveableSprite(Animation[] aniset, BufferedImage deadImage,
-                              int x, int y, int blockSize, DefaultMapTile type, Point maxPoint) {
-        super(aniset, deadImage, x, y, blockSize, type, maxPoint);
-        start = new Point(x, y);
+    public AutoMoveableSprite(Direction initialDirection, AnimationPlayer[] aniset, IsBlockType bType,
+                              int x, int y, int blockSize, Point maxPoint) {
+        super(aniset, bType, x, y, blockSize, maxPoint);
+        this.direction = initialDirection;
+        this.start = new Point(x, y);
     }
 
-    public AutoMoveableSprite(Animation[] aniset, BufferedImage deadImage,
-                              Point pos, Dimension dim, int blockSize, DefaultMapTile type, Point maxPoint) {
-        super(aniset, deadImage, pos, dim, blockSize, type, maxPoint);
-        start = new Point(pos.x, pos.y);
+    public AutoMoveableSprite(Direction initialDirection, AnimationPlayer[] aniset, IsBlockType bType,
+                              Point pos, Dimension dim, int blockSize, Point maxPoint) {
+        super(aniset, bType, pos, dim, blockSize, maxPoint);
+        this.direction = initialDirection;
+        this.start = new Point(pos.x, pos.y);
     }
 
     @Override
@@ -51,7 +53,7 @@ public class AutoMoveableSprite extends MoveableSprite implements ActionListener
 
     @Override
     public void moveRandom() {
-        int randi = new Random().nextInt(4);
+        int randi = rand.nextInt(4);
         move( Direction.values()[randi] );
     }
 
@@ -64,19 +66,32 @@ public class AutoMoveableSprite extends MoveableSprite implements ActionListener
     }
 
     public void setTicksPerStep(int ticks) {
-        this.ticksPerStep = ticks;
+        this.ticksPerStep = Math.max(1, ticks);
+    }
+
+    public Direction getDirection() {
+        return direction;
+    }
+
+    public void setDirection(Direction direction) {
+        this.direction = direction;
     }
 
     @Override
     public void move(Direction direction) {
-        // Update der aktuellen Animation in der Superklasse
-        setAnimation( aniset[direction.ordinal()] );
-        // Bewegungslogik; Umkehren, wenn Grenzen erreicht
+        if (direction == null) {
+            return;
+        }
+
+        this.direction = direction;
+        super.move(direction);
+
+        // Bewegungslogik: Umkehren, wenn Grenzen erreicht
         switch (direction) {
-            case UP    -> { if (y > start.y)    { y -= blockSize; } else { this.direction = Direction.invert(UP);    }}
-            case DOWN  -> { if (y < maxPoint.y) { y += blockSize; } else { this.direction = Direction.invert(DOWN);  }}
-            case LEFT  -> { if (x > start.x)    { x -= blockSize; } else { this.direction = Direction.invert(LEFT);  }}
-            case RIGHT -> { if (x < maxPoint.x) { x += blockSize; } else { this.direction = Direction.invert(RIGHT); }}
+            case UP    -> { if (y <= start.y)    { this.direction = Direction.invert(Direction.UP); }}
+            case DOWN  -> { if (y >= maxPoint.y) { this.direction = Direction.invert(Direction.DOWN); }}
+            case LEFT  -> { if (x <= start.x)    { this.direction = Direction.invert(Direction.LEFT); }}
+            case RIGHT -> { if (x >= maxPoint.x) { this.direction = Direction.invert(Direction.RIGHT); }}
         }
     }
 
@@ -87,7 +102,7 @@ public class AutoMoveableSprite extends MoveableSprite implements ActionListener
             tickCounter++;
             if (tickCounter >= ticksPerStep) {
                 move(direction);
-                tickCounter = 0; // Zähler zurücksetzen
+                tickCounter = 0;
             }
         }
     }

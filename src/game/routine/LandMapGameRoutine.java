@@ -14,6 +14,7 @@ package game.routine;
 import game.GameFrame;
 import game.ID;
 import game.Npc;
+import game.combat.Combatant;
 import game.item.Item;
 import game.item.ItemEffect;
 import static game.item.ItemEffect.ItemEffectType.PRÄFIX;
@@ -24,8 +25,9 @@ import game.item.ReUsableItem;
 import game.item.UsableItem;
 import game.resource.Resource;
 import static game.resource.Resource.ResourceType.*;
-import static graphic.map.DefaultMapTile.ENVIRONMENT_A;
-import static graphic.map.DefaultMapTile.TEXTSIGN;
+import graphic.map.BlockTile;
+import static graphic.map.DefaultBlockType.ENVIRONMENT0;
+import static graphic.map.DefaultBlockType.TEXTSIGN;
 import java.io.IOException;
 
 public class LandMapGameRoutine extends RPGRoutine {
@@ -39,7 +41,7 @@ public class LandMapGameRoutine extends RPGRoutine {
     private void init() {
         try {
             addDialog( TEXTSIGN, getLoader().loadNextDialog( getPlayer() ));
-            addDialog( ENVIRONMENT_A, getLoader().loadNextDialog( getPlayer() ));
+            addDialog( ENVIRONMENT0, getLoader().loadNextDialog( getPlayer() ));
             Npc npc = getLoader().loadNextNpc( getPlayer() );
             addNpc(npc);
             initQuest(npc);
@@ -76,5 +78,8 @@ public class LandMapGameRoutine extends RPGRoutine {
         item.addItemEffect( new ItemEffect( "einfacher", PRÄFIX, CREDIT, item.getPrice(), ABSOLUTE ));
         addEnvironmentLoot(item);
     }
+
+    @Override
+    public void playerDead(Combatant player, BlockTile tile) {}
 
 }

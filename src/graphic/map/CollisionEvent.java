@@ -15,24 +15,35 @@ import java.util.EventObject;
 
 public class CollisionEvent extends EventObject {
 
-    public final Block target, collider;
+    public final Block initiator, target;
 
-    public CollisionEvent(GameMap source, Block target, Block collider) {
+    public CollisionEvent(GameMap source, Block initiator, Block target) {
         super(source);
+        this.initiator  = initiator;
         this.target     = target;
-        this.collider   = collider;
     }
 
     public InteractionType getType() {
-        return target.getType().getInteractionType();
+        return target.getBlockType().getInteractionType();
     }
 
-    public Block getCollider() {
-        return collider;
+    public Block getInitiator() {
+        return initiator;
     }
 
     public Block getTarget() {
         return target;
+    }
+
+    @Override
+    public String toString() {
+        return  getClass().getName() +
+                " from source "  + source +
+                " by initiator " + initiator +
+                " with target "  + target +
+                ", type "        + getType() +
+                "."
+        ;
     }
 
 }

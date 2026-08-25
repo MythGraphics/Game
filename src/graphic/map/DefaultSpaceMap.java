@@ -11,13 +11,12 @@ package graphic.map;
  *
  */
 
-import graphic.AnimatedSprite;
-import graphic.Animation;
+import graphic.AnimationData;
+import graphic.AnimationPlayer;
 import graphic.MoveableSprite;
-import graphic.Sprite;
 import static graphic.io.BinaryIO.*;
-import graphic.io.TilesetUtility;
-import static graphic.map.DefaultMapTile.*;
+import static graphic.io.TilesetUtility.*;
+import static graphic.map.DefaultBlockType.*;
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
@@ -28,10 +27,11 @@ public class DefaultSpaceMap extends GameMap {
 
     public final static Color AMBIENT_COLOR = new Color(50, 50, 50);
 
-    private Animation[] playerAni;
-    private Animation enemyAni;
+    private AnimationData[] playerAniData;
+    private AnimationPlayer[] playerAni;
+    private AnimationData enemyAniData;
 
-    private final Map<DefaultMapTile, BufferedImage> imgMap = new HashMap<>();
+    private final Map<IsBlockType, BufferedImage> imgMap = new HashMap<>();
 
     public DefaultSpaceMap(char[][] tileMap) {
         super(tileMap);
@@ -45,63 +45,57 @@ public class DefaultSpaceMap extends GameMap {
 
     @Override
     protected void loadSprites() {
-        BufferedImage[][] tileset = TilesetUtility.getAnimationSet(
-            loadImage( TILESET+"spaceship/creatures2.png" ), 0, 0, 32, 32, 3
+        BufferedImage[][] tileset = scaleDirectionalAnimationSet(
+            getAnimationSet(
+                loadImage( TILESET+"spaceship/creatures2.png" ), 32, 3
+            ), DEFAULT_TILE_SIZE
         );
-        BufferedImage[] corpseset = TilesetUtility.getSpriteSet(
-            loadImage( TILESET+"spaceship/creatures2.png" ), new Point( 3*32, 0 ), 0, 0, 32, -1
+        BufferedImage[] corpseset = scaleImageSet(
+            getSpriteSet(
+                loadImage( TILESET+"spaceship/creatures2.png" ), new Point( 3*32, 0 ), 0, 0, 32, -1
+            ), DEFAULT_TILE_SIZE
         );
-        imgMap.put( ENVIRONMENT_A, loadImage( SPRITE+"land/Straw1.png" ));
-        imgMap.put( WALL0, loadImage( SPRITE+"spaceship/wall1.png" ));
-        imgMap.put( WALL1, loadImage( SPRITE+"spaceship/wall2.png" ));
-        imgMap.put( WALL2, loadImage( SPRITE+"spaceship/wall3.png" ));
-        imgMap.put( WALL3, loadImage( SPRITE+"spaceship/wall4.png" ));
-        imgMap.put( WALL4, loadImage( SPRITE+"spaceship/wall5.png" ));
-        imgMap.put( WALL5, loadImage( SPRITE+"spaceship/wall6.png" ));
-        imgMap.put( WALL6, loadImage( SPRITE+"spaceship/wall7.png" ));
-        imgMap.put( WALL7, loadImage( SPRITE+"spaceship/wall8.png" ));
-        imgMap.put( SPACE, loadImage( SPRITE+"spaceship/floor.png" ));
-        imgMap.put( CORPSE_ENEMY, corpseset[5] );
+        imgMap.put( ENVIRONMENT0, loadStretchedImage( SPRITE+"land/Straw1.png" ));
+        imgMap.put( WALL0, loadScaledImage( SPRITE+"spaceship/wall1.png" ));
+        imgMap.put( WALL1, loadScaledImage( SPRITE+"spaceship/wall2.png" ));
+        imgMap.put( WALL2, loadScaledImage( SPRITE+"spaceship/wall3.png" ));
+        imgMap.put( WALL3, loadScaledImage( SPRITE+"spaceship/wall4.png" ));
+        imgMap.put( WALL4, loadScaledImage( SPRITE+"spaceship/wall5.png" ));
+        imgMap.put( WALL5, loadScaledImage( SPRITE+"spaceship/wall6.png" ));
+        imgMap.put( WALL6, loadScaledImage( SPRITE+"spaceship/wall7.png" ));
+        imgMap.put( WALL7, loadScaledImage( SPRITE+"spaceship/wall8.png" ));
+        imgMap.put( SPACE, loadScaledImage( SPRITE+"spaceship/floor.png" ));
+        imgMap.put( CORPSE_ENEMY,  corpseset[5] );
         imgMap.put( CORPSE_PLAYER, corpseset[3] );
-        enemyAni = new Animation(tileset[5], true);
-        playerAni = Animation.buildDirectionalAnimationSet( TilesetUtility.getAnimationSet(
-            loadImage( TILESET+"spaceship/spacemarine.png" ), 0, 0, 32, 32, 3
-        ));
-        for (Animation a : playerAni) {
-            a.slowDown();
+        enemyAniData  = new AnimationData(tileset[5], true);
+        playerAniData = AnimationData.buildDirectionalAnimationSet(
+            scaleDirectionalAnimationSet(
+                getAnimationSet(
+                    loadImage( TILESET+"spaceship/spacemarine.png" ), 32, 3
+                ), DEFAULT_TILE_SIZE
+            )
+        );
+        playerAni = AnimationPlayer.createSet(playerAniData);
+        System.out.println("playerAni length: " + playerAni.length); // debug
+        for (AnimationPlayer ani : playerAni) {
+            System.out.println( "ani length: " + ani.getData().getFrameCount() ); // debug
+            ani.slowDown();
         }
     }
 
     @Override
-    Block getBlock(IsMapTile tile, int x, int y, int tileSize) {
-        switch (tile) {
+    protected BlockTile getBlockTile(int x, int y, int width, int height, IsBlockType bType) {
+        switch (bType) {
             case PLAYER:
-                MoveableSprite player = new MoveableSprite(
-                    playerAni, imgMap.get( CORPSE_PLAYER ), x, y, tileSize, PLAYER, getMaxPoint()
-                );
-                return player;
-            case ENVIRONMENT_A:
-            case WALL0:
-            case WALL1:
-            case WALL2:
-            case WALL3:
-            case WALL4:
-            case WALL5:
-            case WALL6:
-            case WALL7:
-            case WALL8:
-            case EXIT:
-            case SPACE:
-            case SPACEHOLDER:
-                return new Sprite( imgMap.get( tile ), x, y, tileSize, tile );
+                return new MoveableSprite( playerAni, PLAYER, x, y, tileSize, getMaxPoint() );
             case ENEMY:
-                // da sich mehrere Gegner die selbe Animation teilen, diese kopieren
-                AnimatedSprite enemy = new AnimatedSprite(
-                    enemyAni.copy(), imgMap.get( CORPSE_ENEMY ), x, y, tileSize, ENEMY
-                );
-                return enemy;
+                // für jeden Gegner einen eigenen AnimationPlayer erstellen
+                AnimationPlayer enemyAni = new AnimationPlayer(enemyAniData);
+                DeadOrAliveTile doaTile = new DeadOrAliveTile(x, y, tileSize, ENEMY, enemyAni);
+                doaTile.setDeadData(CORPSE_ENEMY, () -> imgMap.get( CORPSE_ENEMY ));
+                return doaTile;
             default:
-                return super.getBlock(tile, x, y, tileSize);
+                return new BlockTile(x, y, tileSize, bType, () -> imgMap.get( bType ));
         }
     }
 

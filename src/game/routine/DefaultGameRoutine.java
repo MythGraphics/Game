@@ -15,7 +15,6 @@ import game.GameFrame;
 import game.Player;
 import game.resource.Resource;
 import static game.resource.Resource.ResourceType.HEALTH;
-import game.resource.ResourceChangeListener;
 import static graphic.io.BinaryIO.TILESET;
 import graphic.io.DescriptorLoader;
 import graphic.map.CollisionEvent;
