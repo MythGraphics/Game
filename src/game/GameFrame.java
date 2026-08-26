@@ -52,11 +52,10 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
 
     public final TextFrame textFrame                            = new TextFrame(false);
 
+    public static String defaultMap                             = "land";
     public static String playerName                             = "Teufelsmaus";
     public static boolean loadCmdInput                          = false;
     public static Color menuColor                               = new Color(255, 255, 255);
-
-    private final static String CURRENT_MAP                     = "land";
 
     private final Map<JLabel, ReUsableItem> iconMap             = new HashMap<>();
     private final Map<ResourceType, JProgressBar> resourceMap   = new HashMap<>();
@@ -102,7 +101,7 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        Main.tileMap = DescriptorLoader.loadMap( MAP.getFilePath( CURRENT_MAP ), GameFrame.class );
+        Main.tileMap = DescriptorLoader.loadMap( MAP.getFilePath( defaultMap ), GameFrame.class );
         Main.main(null);
     }
 

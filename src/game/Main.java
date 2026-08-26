@@ -21,7 +21,8 @@ public class Main {
     public final static String NAME    = "MythGraphics Game";
     public final static String VERSION = "0.0.1 alpha";
 
-    public static TileMap tileMap = DescriptorLoader.loadMap( MAP.getFilePath( "space" ), Main.class );
+    public static String defaultMap = "space";
+    public static TileMap tileMap   = DescriptorLoader.loadMap( MAP.getFilePath( defaultMap ), Main.class );
 
     private Main() {}
 
@@ -46,7 +47,7 @@ public class Main {
                 }
                 case "--cmd-input" -> {
                     GameFrame.loadCmdInput = true;
-                    if ( args.length > i+1 ) {
+                    if (args.length > i) {
                         continue;
                     } else {
                         runGUI();
@@ -58,6 +59,15 @@ public class Main {
                 case "--map" -> {
                     tileMap = DescriptorLoader.loadMap(args[i+1]);
                     runGUI();
+                }
+                case "--defaultMap" -> {
+                    defaultMap = args[++i];
+                    tileMap = DescriptorLoader.loadMap( MAP.getFilePath( defaultMap ), GameFrame.class );
+                    if (args.length > i) {
+                        continue;
+                    } else {
+                        runGUI();
+                    }
                 }
                 case "--pathfinder" -> {
                     graphic.io.PathFinder.main(null);
@@ -93,6 +103,7 @@ public class Main {
         System.out.println("  --cmd-input");
         System.out.println("  --gui");
         System.out.println("  --map [map]");
+        System.out.println("  --defaultMap [map]");
         System.out.println("  --pathfinder");
         System.out.println("  --textframe [text] [title] [img]");
     }

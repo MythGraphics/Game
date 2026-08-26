@@ -76,9 +76,7 @@ public class DefaultSpaceMap extends GameMap {
             )
         );
         playerAni = AnimationPlayer.createSet(playerAniData);
-        System.out.println("playerAni length: " + playerAni.length); // debug
         for (AnimationPlayer ani : playerAni) {
-            System.out.println( "ani length: " + ani.getData().getFrameCount() ); // debug
             ani.slowDown();
         }
     }
