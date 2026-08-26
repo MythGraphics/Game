@@ -56,7 +56,7 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
     public static boolean loadCmdInput                          = false;
     public static Color menuColor                               = new Color(255, 255, 255);
 
-    private final static String CURRENT_MAP                     = "space";
+    private final static String CURRENT_MAP                     = "land";
 
     private final Map<JLabel, ReUsableItem> iconMap             = new HashMap<>();
     private final Map<ResourceType, JProgressBar> resourceMap   = new HashMap<>();
@@ -523,7 +523,7 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
 
     private void initGameUI() {
         playerImg = ImageUtility.scale(
-            player.getImg(), jPlayerIconPanel.getWidth(), jPlayerIconPanel.getHeight(), false
+            player.getImg(), jPlayerIconPanel.getWidth(), jPlayerIconPanel.getHeight(), true
         );
         jPlayerIconPanel.repaint(); // PlayerImg anzeigen
 

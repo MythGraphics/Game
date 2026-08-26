@@ -11,6 +11,7 @@ package graphic.map;
  *
  */
 
+import graphic.HasImage;
 import static graphic.io.BinaryIO.loadImage;
 import graphic.io.TextIO;
 import java.awt.image.BufferedImage;
@@ -25,7 +26,7 @@ public class Loader {
 
     private Loader() {}
 
-    public static Map<IsBlockType, BufferedImage> loadBlockTypeMap(String filePath, Class<?> clazz) throws IOException {
+    public static Map<IsBlockType, BufferedImage> loadImageMap(String filePath, Class<?> clazz) throws IOException {
         Map<IsBlockType, BufferedImage> blockTypeMap = new HashMap<>();
         blockTypeMap.put(DefaultBlockType.SPACE, null);
         try (BufferedReader reader = TextIO.getTextReader( filePath, clazz )) {

@@ -25,6 +25,8 @@ import game.item.ReUsableItem;
 import game.item.UsableItem;
 import game.resource.Resource;
 import static game.resource.Resource.ResourceType.*;
+import static graphic.io.BinaryIO.TILESET;
+import graphic.io.DescriptorLoader;
 import graphic.map.BlockTile;
 import static graphic.map.DefaultBlockType.ENVIRONMENT0;
 import static graphic.map.DefaultBlockType.TEXTSIGN;
@@ -56,6 +58,17 @@ public class LandMapGameRoutine extends RPGRoutine {
     private void updatePlayer() {
         addPlayerResource( new Resource( "Luft", AIR, 100, 100 ));
         addPlayerResource( new Resource( "Credits", CREDIT, 1000, 0 ));
+        DescriptorLoader dLoader = new DescriptorLoader( getClass() );
+        try {
+            getPlayer().setImg( dLoader.loadSpriteSets( TILESET+"player/" )[0][0] );
+
+/*          player.setImg( TilesetUtility.getSpriteSetHorizontal(
+ *              loadImage( TILESET+"player/girl_red_swimsuit.png" ), 140, 200, 4
+ *          )[0]);
+ */
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void initQuest(Npc npc) throws IOException {
