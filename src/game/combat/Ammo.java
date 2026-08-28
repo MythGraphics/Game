@@ -11,10 +11,10 @@ package game.combat;
  *
  */
 
-import graphic.texter.Message;
 import game.item.ItemEvent.ItemActionType;
 import static game.item.ItemEvent.ItemActionType.USE;
 import game.item.UsableItem;
+import graphic.texter.Message;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -31,7 +31,7 @@ public class Ammo extends UsableItem {
     }
 
     public Ammo(String name, AmmoType aType, int stackSize, int stack, Damage dmg) {
-        super(0, name);
+        super(0, name, true);
         this.aType      = aType;
         this.stackSize  = stackSize;
         this.stack      = stack;

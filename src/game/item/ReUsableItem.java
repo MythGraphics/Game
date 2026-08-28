@@ -12,11 +12,11 @@ package game.item;
  */
 
 import game.HasUIImage;
-import graphic.texter.Message;
 import game.Player;
-import game.resource.Resource;
 import game.item.ItemEvent.ItemActionType;
 import static game.item.ItemEvent.ItemActionType.REMOVE;
+import game.resource.Resource;
+import graphic.texter.Message;
 import java.util.LinkedList;
 
 public class ReUsableItem extends UsableItem implements HasUIImage {
@@ -24,7 +24,7 @@ public class ReUsableItem extends UsableItem implements HasUIImage {
     final LinkedList<Message> msgListOnRemove = new LinkedList<>();
 
     public ReUsableItem(int id, String name) {
-        super(id, name);
+        super(id, name, false); // ein ReUsableItem ist niemals 'consumable'
     }
 
     public void addMessageOnRemove(Message msg) {

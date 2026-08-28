@@ -12,12 +12,15 @@ package game.item;
  */
 
 import game.ID;
-import game.resource.Resource.ResourceType;
-import static game.item.ItemEffect.ItemEffectType.*;
+import static game.item.ItemEffect.ItemEffectType.PRÄFIX;
+import static game.item.ItemEffect.ItemEffectType.SUFFIX;
 import static game.item.ItemEffect.ValueType.ABSOLUTE;
+import game.resource.Resource.ResourceType;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 public class ItemBuilder {
 
@@ -72,7 +75,7 @@ public class ItemBuilder {
     }
 
     public static UsableItem createCoinPouch(String suffix, int value) {
-        UsableItem item = new UsableItem( 0, "Münzbeutel" );
+        UsableItem item = new UsableItem(0, "Münzbeutel", true);
         item.setPrice(value);
         item.addItemEffect( new ItemEffect( suffix, SUFFIX, ResourceType.CREDIT, value, ABSOLUTE ));
         return item;

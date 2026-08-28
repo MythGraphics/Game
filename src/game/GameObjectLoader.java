@@ -78,9 +78,10 @@ public class GameObjectLoader {
         String type = p.getProperty("type");
         Item item;
         switch ( type.toLowerCase() ) {
-            case "usable"   -> item = new UsableItem( id, p.getProperty( "name" ));
-            case "reusable" -> item = new ReUsableItem( id, p.getProperty( "name" ));
-            default         -> item = new Item( id, p.getProperty( "name" ));
+            case "consumable"   -> item = new UsableItem( id, p.getProperty( "name" ), true );
+            case "usable"       -> item = new UsableItem( id, p.getProperty( "name" ), false );
+            case "reusable"     -> item = new ReUsableItem( id, p.getProperty( "name" ));
+            default             -> item = new Item( id, p.getProperty( "name" ));
         }
         if ( p.containsKey( "description" )) {
             item.setDescription( p.getProperty( "description" ));

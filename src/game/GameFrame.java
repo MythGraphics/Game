@@ -20,8 +20,6 @@ import static game.resource.Resource.ResourceType.*;
 import game.resource.ResourceChangeListener;
 import game.routine.*;
 import static graphic.io.BinaryIO.AUDIO;
-import graphic.io.DescriptorLoader;
-import static graphic.io.FileExt.MAP;
 import graphic.io.ImageUtility;
 import graphic.map.*;
 import graphic.texter.TextFrame;
@@ -48,7 +46,7 @@ import util.EnumHelper;
 public class GameFrame extends JFrame implements ItemEffectListener, ItemActionListener, ItemMessageListener,
                                                  ResourceChangeListener {
 
-    public final static String CMD_ERROR_ARGS                   = "Befehl nicht ausführbar. Argumente unzureichend.";
+    public final static String CMD_ARGS_ERROR                   = "Befehl nicht ausführbar. Argumente unzureichend.";
 
     public final TextFrame textFrame                            = new TextFrame(false);
 
@@ -57,7 +55,7 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
     public static boolean loadCmdInput                          = false;
     public static Color menuColor                               = new Color(255, 255, 255);
 
-    private final Map<JLabel, ReUsableItem> iconMap             = new HashMap<>();
+    private final Map<JLabel, UsableItem> iconMap               = new HashMap<>();
     private final Map<ResourceType, JProgressBar> resourceMap   = new HashMap<>();
     private final MouseAdapter iconMouseAdapter;
 
@@ -101,7 +99,7 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        Main.tileMap = DescriptorLoader.loadMap( MAP.getFilePath( defaultMap ), GameFrame.class );
+        Main.defaultMap = GameFrame.defaultMap;
         Main.main(null);
     }
 
@@ -538,7 +536,7 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
         remote.addCommand( "move", args -> {
             StringTokenizer tokenizer = new StringTokenizer(args, ", ", false);
             if ( tokenizer.countTokens() < 2 ) {
-                System.err.println(CMD_ERROR_ARGS);
+                System.err.println(CMD_ARGS_ERROR);
                 return;
             }
             map.movePlayer( Integer.parseInt( tokenizer.nextToken() ), Integer.parseInt( tokenizer.nextToken() ));
@@ -546,7 +544,7 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
         remote.addCommand( "port", args -> {
             StringTokenizer tokenizer = new StringTokenizer(args, ", ", false);
             if ( tokenizer.countTokens() < 2 ) {
-                System.err.println(CMD_ERROR_ARGS);
+                System.err.println(CMD_ARGS_ERROR);
                 return;
             }
             map.setPlayerPosition( Integer.parseInt( tokenizer.nextToken() ), Integer.parseInt( tokenizer.nextToken() ));
@@ -610,11 +608,16 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
         if ( iconMap.get(jLabel) == null ) {
             return;
         }
+
         if ( evt.getButton() == MouseEvent.BUTTON3 ) {
             // rechter Mausbutton
-            // Item ablegen: heißt: Effekt rückgängig machen und Item zurück ins Inventar legen
-            jIconPanel.remove(jLabel); // Icon (JLabel) aus UI entfernen
-            player.getInventory().add( player.removeItem( iconMap.remove( jLabel )));
+            // Item ablegen, wenm ReUseable: heißt: Effekt rückgängig machen und Item zurück ins Inventar legen
+            UsableItem item = iconMap.get(jLabel);
+            if ( item != null && item instanceof ReUsableItem reusable) {
+                jIconPanel.remove(jLabel); // Icon (JLabel) aus UI entfernen
+                iconMap.remove(jLabel); // Item aus der iconMap entfernen
+                player.getInventory().add( player.removeItem( reusable )); // Items ins Inventar packen
+            }
         }
         if ( evt.getButton() == MouseEvent.BUTTON1 ) {
             // linker Mausbutton
@@ -705,6 +708,15 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
         }
     }//GEN-LAST:event_jRightListMouseClicked
 
+    private void addActiveItem(UsableItem item) {
+        JLabel icon = new JLabel();
+        icon.setIcon( item.getIcon() );
+        iconMap.put(icon, item);
+        jIconPanel.add(icon);
+        icon.addMouseListener(iconMouseAdapter);
+        icon.setToolTipText( item.toString() );
+    }
+
     @Override
     public void showItemMessage(ItemEvent e) {
         textFrame.show( e.dialog() );
@@ -714,13 +726,8 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
     public void itemActionPerformed(ItemEvent e) {
         switch ( e.actionType() ) {
             case USE -> {
-                if ( e.item() instanceof ReUsableItem reu ) {
-                    // Item im UI anzeigen
-                    JLabel icon = new JLabel();
-                    icon.setIcon( reu.getIcon() );
-                    icon.addMouseListener(iconMouseAdapter);
-                    iconMap.put(icon, reu);
-                    jIconPanel.add(icon);
+                if ( e.item() instanceof UsableItem usable && !usable.isConsumable() ) {
+                    addActiveItem(usable); // Item im UI anzeigen
                 }
             }
             case REMOVE -> {

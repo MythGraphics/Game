@@ -21,8 +21,7 @@ public class Main {
     public final static String NAME    = "MythGraphics Game";
     public final static String VERSION = "0.0.1 alpha";
 
-    public static String defaultMap = "space";
-    public static TileMap tileMap   = DescriptorLoader.loadMap( MAP.getFilePath( defaultMap ), Main.class );
+    public static String defaultMap    = "space";
 
     private Main() {}
 
@@ -30,63 +29,65 @@ public class Main {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+        TileMap tileMap = DescriptorLoader.loadMap( MAP.getFilePath( defaultMap ), Main.class );
         if ( args == null || args.length == 0 ) {
-            runGUI();
+            runGUI(tileMap);
             return;
         }
 
         for (int i = 0; i < args.length; ++i) {
             switch (args[i]) {
                 case "--player" -> {
-                    GameFrame.playerName = args[i+1];
-                    if ( args.length > i+1 ) {
-                        continue;
-                    } else {
-                        runGUI();
+                    GameFrame.playerName = args[++i];
+                    if (args.length <= i) {
+                        runGUI(tileMap);
                     }
                 }
                 case "--cmd-input" -> {
                     GameFrame.loadCmdInput = true;
-                    if (args.length > i) {
-                        continue;
-                    } else {
-                        runGUI();
+                    if (args.length <= i) {
+                        runGUI(tileMap);
                     }
                 }
                 case "--gui" -> {
-                    runGUI();
+                    runGUI(tileMap);
                 }
                 case "--map" -> {
-                    tileMap = DescriptorLoader.loadMap(args[i+1]);
-                    runGUI();
+                    tileMap = DescriptorLoader.loadMap(args[++i]);
+                    if (args.length <= i) {
+                        runGUI(tileMap);
+                    }
                 }
                 case "--defaultMap" -> {
                     defaultMap = args[++i];
-                    tileMap = DescriptorLoader.loadMap( MAP.getFilePath( defaultMap ), GameFrame.class );
-                    if (args.length > i) {
-                        continue;
-                    } else {
-                        runGUI();
+                    tileMap = DescriptorLoader.loadMap( MAP.getFilePath( defaultMap ), Main.class );
+                    if (args.length <= i) {
+                        runGUI(tileMap);
                     }
                 }
                 case "--pathfinder" -> {
                     graphic.io.PathFinder.main(null);
+                    return;
                 }
                 case "--textframe" -> {
                     String[] args2 = new String[args.length-1-i];
                     System.arraycopy(args, i+1, args2, 0, args2.length);
                     graphic.texter.TextFrame.main(args2);
+                    return;
                 }
-                case "--version" -> System.out.println(NAME + " v" + VERSION);
+                case "--version" -> {
+                    System.out.println(NAME + " v" + VERSION);
+                    return;
+                }
                 default -> {
                     printHelp();
+                    return;
                 }
             }
-            return; // standardmäßig nach 1xigem Durchlauf der Schleife beenden
         }
     }
 
-    private static void runGUI() {
+    private static void runGUI(TileMap tileMap) {
         if (tileMap != null) {
             EventQueue.invokeLater( () -> {
                 new GameFrame(tileMap).setVisible(true);
@@ -97,6 +98,7 @@ public class Main {
     }
 
     private static void printHelp() {
+        System.out.println(NAME + " v" + VERSION);
         System.out.println("Parameter:");
         System.out.println("  --? / --help");
         System.out.println("  --player [name]");

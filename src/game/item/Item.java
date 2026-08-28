@@ -11,11 +11,11 @@ package game.item;
  *
  */
 
-import graphic.texter.HasDialog;
 import game.HasName;
-import graphic.texter.Message;
 import game.TextBox;
 import game.item.ItemEvent.ItemActionType;
+import graphic.texter.HasDialog;
+import graphic.texter.Message;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -93,12 +93,12 @@ public class Item extends TextBox implements Tradable, HasName {
     }
 
     public LinkedList<Message> getDialog(ItemActionType actionType) {
-        switch (actionType) {
-            case FIND: return super.msgList;
-            case SELL: return msgListOnSell;
-            case BUY:  return msgListOnBuy;
-            default:   return new LinkedList<>();
-        }
+        return switch (actionType) {
+            case FIND -> super.msgList;
+            case SELL -> msgListOnSell;
+            case BUY  -> msgListOnBuy;
+            default   -> new LinkedList<>();
+        };
     }
 
     public void fireEvent(Object source, ItemActionType actionType) {
@@ -110,7 +110,7 @@ public class Item extends TextBox implements Tradable, HasName {
 
     @Override
     public String toString() {
-        return super.toString() + ", Preis: " + price + "\n" + description;
+        return super.toString() + ": " + description + " Wert: " + price + " Credits";
     }
 
     @Override

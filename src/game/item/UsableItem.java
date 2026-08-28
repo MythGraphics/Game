@@ -12,13 +12,13 @@ package game.item;
  *
  */
 
-import graphic.texter.Message;
 import game.Player;
-import game.resource.Resource;
 import static game.item.ItemEffect.ItemEffectType.PRÄFIX;
 import static game.item.ItemEffect.ItemEffectType.SUFFIX;
 import game.item.ItemEvent.ItemActionType;
 import static game.item.ItemEvent.ItemActionType.USE;
+import game.resource.Resource;
+import graphic.texter.Message;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -28,16 +28,23 @@ public class UsableItem extends Item {
 
     final List<ItemEffect> itemEffectList  = new ArrayList<>(); // Liste der Item Effekte auf Spieler-Ressourcen
     final LinkedList<Message> msgListOnUse = new LinkedList<>();
+    final boolean consumable;
 
-    public UsableItem(int id, String name) {
+    public UsableItem(int id, String name, boolean consumable) {
         super(id, name);
+        this.consumable = consumable;
     }
 
     UsableItem(UsableItem item) {
         super(item);
+        this.consumable = item.isConsumable();
         for ( Message m : item.getDialog( ItemActionType.USE )) {
             this.addMessageOnUse(m);
         }
+    }
+
+    public boolean isConsumable() {
+        return consumable;
     }
 
     public final void addMessageOnUse(Message msg) {
