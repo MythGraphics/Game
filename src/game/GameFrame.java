@@ -587,16 +587,16 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
 
     private void formMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMouseClicked
         switch ( evt.getButton() ) {
-            case 3 -> {
+            case MouseEvent.BUTTON3 -> {
                 // rechter Mausbutton
                 jPopupMenu1.show( evt.getComponent(), evt.getX(), evt.getY() );
             }
-            case 2 -> {
+            case MouseEvent.BUTTON2 -> {
                 // mittlerer Mausbutton
                 setLocation( evt.getXOnScreen()-super.getWidth()/2, evt.getYOnScreen()-super.getHeight()/2 );
                 repaint();
             }
-            case 1 -> {
+            case MouseEvent.BUTTON1 -> {
                 // linker Mausbutton
                 requestFocus();
             }
@@ -609,19 +609,20 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
             return;
         }
 
-        if ( evt.getButton() == MouseEvent.BUTTON3 ) {
-            // rechter Mausbutton
-            // Item ablegen, wenm ReUseable: heißt: Effekt rückgängig machen und Item zurück ins Inventar legen
-            UsableItem item = iconMap.get(jLabel);
-            if ( item != null && item instanceof ReUsableItem reusable) {
-                jIconPanel.remove(jLabel); // Icon (JLabel) aus UI entfernen
-                iconMap.remove(jLabel); // Item aus der iconMap entfernen
-                player.getInventory().add( player.removeItem( reusable )); // Items ins Inventar packen
-            }
-        }
         if ( evt.getButton() == MouseEvent.BUTTON1 ) {
             // linker Mausbutton
             System.out.println( iconMap.get( jLabel ));
+        }
+
+        if ( evt.getButton() == MouseEvent.BUTTON3 ) {
+            // rechter Mausbutton
+            // Item ablegen, wenm ReUsable: heißt: Effekt rückgängig machen und Item zurück ins Inventar legen
+            UsableItem item = iconMap.get(jLabel);
+            if (item != null && item instanceof ReUsableItem reusable) {
+                jIconPanel.remove(jLabel);  // Icon (JLabel) aus UI entfernen
+                iconMap.remove(jLabel);     // Item aus der iconMap entfernen
+                player.getInventory().add( player.removeItem( reusable )); // Items zurück ins Inventar legen
+            }
         }
     }
 
@@ -708,7 +709,7 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
         }
     }//GEN-LAST:event_jRightListMouseClicked
 
-    private void addActiveItem(UsableItem item) {
+    private void addItem(UsableItem item) {
         JLabel icon = new JLabel();
         icon.setIcon( item.getIcon() );
         iconMap.put(icon, item);
@@ -727,7 +728,7 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
         switch ( e.actionType() ) {
             case USE -> {
                 if ( e.item() instanceof UsableItem usable && !usable.isConsumable() ) {
-                    addActiveItem(usable); // Item im UI anzeigen
+                    addItem(usable); // Item im UI anzeigen
                 }
             }
             case REMOVE -> {

@@ -30,10 +30,10 @@ import java.util.Map;
 
 public class Player extends InteractiveObject implements HasHealth, Trader {
 
-    private final Map<ResourceType, Resource> resources; // Health, ...
-    private final ArrayList<UsableItem> items; // aktive, also angelegte Items
-    private final List<QuestListener> questListeners; // feuert bei Änderung des Quest-Status
-    private final DialogOutputListener dialogListener; // Dialog-Ausgabe
+    private final Map<ResourceType, Resource> resources;    // Health, ...
+    private final ArrayList<UsableItem> items;              // aktive, also angelegte Items
+    private final List<QuestListener> questListeners;       // feuert bei Änderung des Quest-Status
+    private final DialogOutputListener dialogListener;      // Dialog-Ausgabe
     private final InventoryManager inventory;
     private final MinionManager minions;
 

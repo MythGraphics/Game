@@ -1,3 +1,3 @@
 @echo off
-java -jar MythGraphics_Game.jar
+java -jar dist/MythGraphics_Game.jar
 pause
