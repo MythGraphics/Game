@@ -11,10 +11,10 @@ package game.item;
  *
  */
 
-import game.resource.Resource;
-import game.resource.Resource.ResourceType;
 import static game.item.ItemEffect.ValueType.ABSOLUTE;
 import static game.item.ItemEffect.ValueType.PERCENT;
+import game.resource.Resource;
+import game.resource.Resource.ResourceType;
 
 public class ItemEffect {
 
@@ -136,7 +136,7 @@ public class ItemEffect {
 
         switch (vType) {
             case ABSOLUTE -> value -= value2Add;
-            case PERCENT  -> value -= baseMax*value2Add/100; // % von baseMax
+            case PERCENT  -> value -= baseMax*value2Add/100; // % baseMax
         }
         resource.setValue(value);
 

@@ -509,10 +509,10 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
         resourceMap.put(STAMINA, jProgressBarRes2);
         resourceMap.put(REPUTATION, jProgressBarRep);
         jProgressBarHealth.setUI( getProgressBarUI() );
-        jProgressBarMana.setUI( getProgressBarUI() );
-        jProgressBarRes1.setUI( getProgressBarUI() );
-        jProgressBarRes2.setUI( getProgressBarUI() );
-        jProgressBarRep.setUI( getProgressBarUI() );
+        jProgressBarMana.setUI(   getProgressBarUI() );
+        jProgressBarRes1.setUI(   getProgressBarUI() );
+        jProgressBarRes2.setUI(   getProgressBarUI() );
+        jProgressBarRep.setUI(    getProgressBarUI() );
 
         jLeftList.setVisible(false);
         jRightList.setVisible(false);
@@ -533,7 +533,7 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
 
     private void initRemote() {
         remote = new ConsoleInputController(this);
-        remote.addCommand( "move", args -> {
+        remote.addCommand("move", args -> {
             StringTokenizer tokenizer = new StringTokenizer(args, ", ", false);
             if ( tokenizer.countTokens() < 2 ) {
                 System.err.println(CMD_ARGS_ERROR);
@@ -541,7 +541,7 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
             }
             map.movePlayer( Integer.parseInt( tokenizer.nextToken() ), Integer.parseInt( tokenizer.nextToken() ));
         });
-        remote.addCommand( "port", args -> {
+        remote.addCommand("port", args -> {
             StringTokenizer tokenizer = new StringTokenizer(args, ", ", false);
             if ( tokenizer.countTokens() < 2 ) {
                 System.err.println(CMD_ARGS_ERROR);
@@ -549,13 +549,13 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
             }
             map.setPlayerPosition( Integer.parseInt( tokenizer.nextToken() ), Integer.parseInt( tokenizer.nextToken() ));
         });
-        remote.addCommand( "textframe", args -> {
+        remote.addCommand("textframe", args -> {
             StringTokenizer tokenizer = new StringTokenizer(args, " ", false);
             String[] params = new String[] { "", "", "" };
             for (int i = 0; (i < params.length) && tokenizer.hasMoreTokens(); ++i) {
                 params[i] = tokenizer.nextToken();
             }
-            textFrame.show( params[1], params[0], params[2] );
+            textFrame.show(params[1], params[0], params[2]);
         });
         System.out.println("Remote-Steuerung bereit.");
     }
@@ -567,10 +567,11 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
         } else {
             bar.setVisible(true);
         }
-        return (
-            bar.getValue() + "/" + bar.getMaximum() + " | " +
+        return
+            bar.getValue() + "/" + bar.getMaximum() +
+            " | " +
             String.format( "%.1f", 100.0*bar.getValue()/bar.getMaximum() ) + " %"
-        );
+        ;
     }
 
     private void quitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_quitActionPerformed
@@ -613,7 +614,6 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
             // linker Mausbutton
             System.out.println( iconMap.get( jLabel ));
         }
-
         if ( evt.getButton() == MouseEvent.BUTTON3 ) {
             // rechter Mausbutton
             // Item ablegen, wenm ReUsable: heißt: Effekt rückgängig machen und Item zurück ins Inventar legen
@@ -627,15 +627,17 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
     }
 
     private void formKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_formKeyReleased
+        char keyChar = evt.getKeyChar();
+        if ( Character.isDigit( keyChar )) {
+            int index = Character.getNumericValue(keyChar);
+            playAudioTrack(index);
+            return;
+        }
+
         switch ( evt.getKeyCode() ) {
             case KeyEvent.VK_O  -> toggleVisibility(jLeftList);
             case KeyEvent.VK_I  -> toggleVisibility(jRightList);
             case KeyEvent.VK_M  -> toggleAudioPlayback();
-            case KeyEvent.VK_1  -> playAudioTrack(0);
-            case KeyEvent.VK_2  -> playAudioTrack(1);
-            case KeyEvent.VK_3  -> playAudioTrack(2);
-            case KeyEvent.VK_4  -> playAudioTrack(3);
-            case KeyEvent.VK_5  -> playAudioTrack(4);
             case KeyEvent.VK_PLUS, KeyEvent.VK_ADD
                                 -> audioPlayer.changeVolume(10);
             case KeyEvent.VK_MINUS, KeyEvent.VK_SUBTRACT

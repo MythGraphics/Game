@@ -110,7 +110,7 @@ public class Item extends TextBox implements Tradable, HasName {
 
     @Override
     public String toString() {
-        return super.toString() + ": " + description + " Wert: " + price + " Credits";
+        return super.toString() + ": " + description;
     }
 
     @Override
