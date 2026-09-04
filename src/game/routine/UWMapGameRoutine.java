@@ -18,32 +18,25 @@ import static game.resource.Resource.ResourceType.AIR;
 import static game.resource.Resource.ResourceType.HEALTH;
 import game.resource.ResourceConsumeListener;
 import static graphic.io.BinaryIO.TILESET;
-import static graphic.io.BinaryIO.loadImage;
-import graphic.io.TilesetUtility;
+import graphic.io.DescriptorLoader;
 import graphic.map.BlockTile;
 import graphic.map.CollisionEvent;
 import static graphic.map.DefaultBlockType.BUBBLE;
 import graphic.map.UWMap;
-import graphic.texter.DialogOutputListener;
+import java.io.IOException;
 
-public class UWMapGameRoutine extends GameRoutine implements ResourceConsumeListener {
+public class UWMapGameRoutine extends DefaultGameRoutine implements ResourceConsumeListener {
 
     private final Player player;
-    private final GameFrame gameFrame;
 
     public UWMapGameRoutine(UWMap map, GameFrame gameFrame) {
-        this.gameFrame = gameFrame;
+        super(gameFrame);
         this.player = initPlayer(map, gameFrame);
     }
 
     @Override
     public Player getPlayer() {
         return player;
-    }
-
-    @Override
-    public DialogOutputListener getDialogListener(CollisionEvent e) {
-        return gameFrame.textFrame;
     }
 
     private Player initPlayer(UWMap map, GameFrame frame) {
@@ -53,9 +46,12 @@ public class UWMapGameRoutine extends GameRoutine implements ResourceConsumeList
         air.addResourceChangeListener(frame);
         air.addResourceConsumeListener(this);
         Player player = new Player(GameFrame.playerName, frame.textFrame, health, air);
-        player.setImg( TilesetUtility.getSpriteSetHorizontal(
-            loadImage( TILESET+"player/girl_red_swimsuit.png" ), 140, 200, 4
-        )[0]);
+        DescriptorLoader dLoader = new DescriptorLoader( getClass() );
+        try {
+            player.setImg( dLoader.loadSpriteSets( TILESET+"player/" )[0][0] );
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return player;
     }
 

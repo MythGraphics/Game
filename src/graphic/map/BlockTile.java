@@ -48,9 +48,10 @@ public class BlockTile extends Block implements HasImage, Renderable {
     }
 
     public final void updateDimension() {
-        if ( getImage() != null ) {
-            setWidth(  image.getImage().getWidth() );
-            setHeight( image.getImage().getHeight() );
+        BufferedImage img = getImage();
+        if (img != null) {
+            setWidth(  img.getWidth() );
+            setHeight( img.getHeight() );
         }
     }
 
@@ -60,8 +61,7 @@ public class BlockTile extends Block implements HasImage, Renderable {
     }
 
     public void destroy() {
-        setBlockType(DefaultBlockType.NONE);
-        setImage( () -> null );
+        change(DefaultBlockType.NONE, null);
     }
 
     public void change(IsBlockType bType, HasImage image) {

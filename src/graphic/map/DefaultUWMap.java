@@ -13,21 +13,26 @@ package graphic.map;
 
 import graphic.AnimationData;
 import graphic.AnimationPlayer;
+import graphic.HasImage;
 import graphic.MoveableSprite;
 import static graphic.io.BinaryIO.*;
+import graphic.io.ImageUtility;
 import graphic.io.TilesetUtility;
+import static graphic.io.TilesetUtility.getSpriteSetVertical;
 import static graphic.map.DefaultBlockType.*;
+import static graphic.map.GameMap.DEFAULT_TILE_SIZE;
 import java.awt.Color;
 import java.awt.Point;
-import java.awt.image.BufferedImage;
+import java.util.HashMap;
+import java.util.Map;
 
 public class DefaultUWMap extends UWMap {
 
     public final static Color AMBIENT_COLOR = new Color(12, 80, 200);
 
-    private BufferedImage[] playerImg;
-    private BufferedImage wallImg, bubbleImg;
-    private AnimationData npcAniData;
+    private final Map<IsBlockType, HasImage> imgMap = new HashMap<>();
+
+    private AnimationData[] playerAniData;
 
     public DefaultUWMap(char[][] tileMap) {
         super(tileMap);
@@ -41,31 +46,28 @@ public class DefaultUWMap extends UWMap {
 
     @Override
     protected void loadSprites() {
-        playerImg = TilesetUtility.getSpriteSetVertical(
-            loadImage(TILESET+"player/lpc_female_blond/idle2.png"), 0, tileSize, 4
-        );
-        wallImg = loadImage(SPRITE+"land/Stone1.png");
-        bubbleImg = TilesetUtility.getSpriteSet(
-            loadImage(TILESET+"uw/bubble.png"),
-            new Point(0, 0),
-            0, 0, 225, 1
-        )[0];
+        playerAniData = AnimationData.buildDirectionalImageSet( getSpriteSetVertical(
+            loadImage( TILESET+"player/lpc_female_blond/idle2.png" ), 0, DEFAULT_TILE_SIZE, 4
+        ));
+        imgMap.put( WALL5,  new TileBuilder.Tile( loadStretchedImage( SPRITE+"land/Stone1.png" )));
+        imgMap.put( BUBBLE, new TileBuilder.Tile( ImageUtility.scale(
+            TilesetUtility.getSpriteSet(
+                loadImage(TILESET+"uw/bubble.png"), new Point(0, 0), 0, 0, 225, 1
+            )[0], DEFAULT_TILE_SIZE
+        )));
     }
 
     @Override
     protected BlockTile getBlockTile(int x, int y, int width, int height, IsBlockType bType) {
         switch (bType) {
             case PLAYER:
+                AnimationPlayer[] playerAni = AnimationPlayer.createSet(playerAniData);
                 return new MoveableSprite(
-                    AnimationData.buildDirectionalImageSet(playerImg), PLAYER, x, y, tileSize, getMaxPoint()
+                    playerAni, PLAYER, x, y, tileSize, getMaxPoint()
                 );
             case WALL5:
-                return new BlockTile(x, y, tileSize, WALL5, () -> wallImg);
             case BUBBLE:
-                return new BlockTile(x, y, tileSize, BUBBLE, () -> bubbleImg);
-            case NPC:
-                AnimationPlayer npcAni = new AnimationPlayer(npcAniData);
-                return new BlockTile(x, y, tileSize, NPC, npcAni);
+                return new BlockTile(x, y, tileSize, bType, imgMap.get( bType ));
             default:
                 return new BlockTile(x, y, tileSize, bType, null);
         }

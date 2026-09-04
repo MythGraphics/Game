@@ -50,7 +50,7 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
 
     public final TextFrame textFrame                            = new TextFrame(false);
 
-    public static String defaultMap                             = "land";
+    public static String defaultMap                             = "uw";
     public static String playerName                             = "Teufelsmaus";
     public static boolean loadCmdInput                          = false;
     public static Color menuColor                               = new Color(255, 255, 255);

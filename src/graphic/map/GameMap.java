@@ -168,7 +168,7 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
 
     void loadTileMapChar(char tileMapChar, int x, int y, int tileSize) {
         IsBlockType bType = DefaultBlockType.getByChar(tileMapChar);
-        BlockTile entity  = getBlockTile(x, y, tileSize, tileSize, bType);
+        BlockTile tile    = getBlockTile(x, y, tileSize, tileSize, bType);
 
         switch (bType) {
             case null -> {
@@ -178,12 +178,12 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
                 );
             }
             case PLAYER -> {
-                if (entity instanceof MoveableSprite moveable) {
+                if (tile instanceof MoveableSprite moveable) {
                     this.player = moveable;
                 } else {
                     System.err.println(
                         "Player vom Klassen-Typ " +
-                        ( entity == null ? "null" : entity.getClass() ) +
+                        ( tile == null ? "null" : tile.getClass() ) +
                         " inkompatibel: muss MoveableSprite sein."
                     );
                 }
@@ -192,14 +192,14 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
             }
             case SPACE -> {
                 if (spaceTile == null) {
-                    spaceTile = entity;
+                    spaceTile = tile;
                 }
             }
             case SPACEHOLDER -> {}
             default -> {
-                collidables.add(entity);
-                if ( entity.getImage() != null ) {
-                    renderables.add(entity);
+                collidables.add(tile);
+                if ( tile.getImage() != null ) {
+                    renderables.add(tile);
                 }
             }
         }
@@ -221,7 +221,7 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
             }
         }
         if (spaceTile == null) {
-            spaceTile = getBlockTile(0, 0, tileSize, tileSize, DefaultBlockType.SPACE);
+            spaceTile = getBlockTile(0, 0, tileSize, tileSize, SPACE);
         }
     }
 

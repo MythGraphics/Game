@@ -1,0 +1,6 @@
+# file/image:sprite_alignment:offset_x:offset_y:sprite_size_x:sprite_size_y:number_of_sprites
+# sprite_alignment have to be either x or y
+# sprite_size means the size of a single sprite
+fish.png:x:0:0:32:32:4
+fish-dart.png:x:0:0:32:32:4
+fish-big.png:x:0:0:32:32:4

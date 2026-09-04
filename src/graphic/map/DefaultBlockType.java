@@ -32,23 +32,23 @@ public enum DefaultBlockType implements IsBlockType {
 
     // special/map-dependent types; passable
     BUBBLE          ('B', InteractionType.TERRAIN,      true),  // (air) bubble
-    WATERLINE       ('-', InteractionType.SURFACE,      true),  // water line (space); 1 per map; no sprite
+    WATERLINE       ('_', InteractionType.SURFACE,      true),  // water line (space); 1 per map; no sprite
 
-    // interactive environment; impassable terrain
+    // interactive environment; impassable
     ENVIRONMENT0   ('I', InteractionType.ENVIRONMENT,   false),
     ENVIRONMENT1   ('J', InteractionType.ENVIRONMENT,   false),
     ENVIRONMENT2   ('K', InteractionType.ENVIRONMENT,   false),
     ENVIRONMENT3   ('L', InteractionType.ENVIRONMENT,   false),
     ENVIRONMENT4   ('M', InteractionType.ENVIRONMENT,   false),
 
-    // interactive types; impassable
+    // interactive entities; impassable
     ENEMY           ('E', InteractionType.ENEMY,        false), // interactive enemy
     NPC             ('N', InteractionType.NPC,          false), // interactive NPC
     PLAYER          ('P', InteractionType.PLAYER,       false), // player
     TEXTSIGN        ('T', InteractionType.TEXT,         false), // text output
     UNDEAD          ('U', InteractionType.UNDEAD,       false), // interactive undead
 
-    // WALL0-9; impassable terrain
+    // WALL0-9; impassable
     WALL0           ('v', InteractionType.WALL,         false),
     WALL1           ('V', InteractionType.WALL,         false),
     WALL2           ('w', InteractionType.WALL,         false),
@@ -60,17 +60,8 @@ public enum DefaultBlockType implements IsBlockType {
     WALL8           ('z', InteractionType.WALL,         false),
     WALL9           ('Z', InteractionType.WALL,         false),
 
-    // ENVIRONMENT0-9; passable terrain
-    TERRAIN0        ('0', InteractionType.TERRAIN,      true),
-    TERRAIN1        ('1', InteractionType.TERRAIN,      true),
-    TERRAIN2        ('2', InteractionType.TERRAIN,      true),
-    TERRAIN3        ('3', InteractionType.TERRAIN,      true),
-    TERRAIN4        ('4', InteractionType.TERRAIN,      true),
-    TERRAIN5        ('5', InteractionType.TERRAIN,      true),
-    TERRAIN6        ('6', InteractionType.TERRAIN,      true),
-    TERRAIN7        ('7', InteractionType.TERRAIN,      true),
-    TERRAIN8        ('8', InteractionType.TERRAIN,      true),
-    TERRAIN9        ('9', InteractionType.TERRAIN,      true);
+    // TERRAIN; passable
+    TERRAIN         ('+', InteractionType.TERRAIN,      true);
 
     public final char mapChar;
     public final InteractionType iType;
