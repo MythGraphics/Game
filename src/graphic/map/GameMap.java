@@ -12,7 +12,7 @@ package graphic.map;
  */
 
 import graphic.Direction;
-import graphic.MoveableSprite;
+import graphic.tile.MoveableTile;
 import static graphic.io.BinaryIO.loadImage;
 import static graphic.io.ImageUtility.scale;
 import static graphic.io.ImageUtility.stretch;
@@ -48,7 +48,7 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
     protected final Collection<Block> collidables = new ArrayList<>();
     protected final Collection<Renderable> renderables = new ArrayList<>();
 
-    protected MoveableSprite player;
+    protected MoveableTile player;
     protected BlockTile spaceTile;
 
     private final List<CollisionActionListener> collisionListeners = new ArrayList<>();
@@ -178,7 +178,7 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
                 );
             }
             case PLAYER -> {
-                if (tile instanceof MoveableSprite moveable) {
+                if (tile instanceof MoveableTile moveable) {
                     this.player = moveable;
                 } else {
                     System.err.println(

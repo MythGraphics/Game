@@ -22,6 +22,7 @@ public enum InteractionType {
     NPC,
     PLAYER,         // Player-Player-Interaktion
     PORTAL,
+    PROJECTILE,
     SURFACE,        // interactive map divider
     TERRAIN,        // interactive terrain, passable (i.e. bush, gras, mushrooms, ...)
     TEXT,           // text output

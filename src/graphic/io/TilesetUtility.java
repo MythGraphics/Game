@@ -7,10 +7,13 @@ package graphic.io;
 /**
  *
  * @author  Martin Pröhl alias MythGraphics
- * @version 1.0.2
+ * @version 1.0.3
  *
  */
 
+import graphic.Alignment;
+import static graphic.Alignment.HORIZONTAL;
+import static graphic.Alignment.VERTICAL;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
@@ -18,9 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TilesetUtility {
-
-    public final static char HORIZONTAL = 'h';
-    public final static char VERTICAL   = 'v';
 
     private TilesetUtility() {}
 
@@ -34,7 +34,7 @@ public class TilesetUtility {
     public static BufferedImage[] getSpriteSet(BufferedImage image,
                                                int tileSize, int number
     ) {
-        return getSpriteSet(image, new Point(0, 0), 0, 0, tileSize, number);
+        return getSpriteSet( image, new Point( 0, 0 ), 0, 0, tileSize, number );
     }
 
     /**
@@ -139,7 +139,7 @@ public class TilesetUtility {
      * @return SpriteSet
      */
     public static BufferedImage[] getSpriteSet(
-        BufferedImage image, int width, int height, char alignment, int tileSize, int number
+        BufferedImage image, int width, int height, Alignment alignment, int tileSize, int number
     ) {
         if (image == null || width <= 0 || height <= 0 || number <= 0) {
             return new BufferedImage[0];

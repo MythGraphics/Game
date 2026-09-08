@@ -1,4 +1,11 @@
-# file/image:sprite_alignment:ULDR:offset_x:offset_y:sprite_size_x:sprite_size_y:number_of_sprites
-# sprite_alignment have to be either x or y (animation sprites)
-# direction alignment order ULDR (UpLeftDownRight, direction sprites)
-# sprite_size means the size of a single sprite
+imgfile=
+direction=URDL
+alignment=
+offsetX=
+offsetY=
+spaceX=
+spaceY=
+sizeX=
+sizeY=
+# numberOfSprites per direction
+numberOfSprites=

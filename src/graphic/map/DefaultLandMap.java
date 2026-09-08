@@ -11,14 +11,15 @@ package graphic.map;
  *
  */
 
+import graphic.tile.TileBuilder;
 import graphic.AnimationData;
 import graphic.AnimationPlayer;
 import graphic.HasImage;
-import graphic.MoveableSprite;
+import graphic.tile.MoveableTile;
 import static graphic.io.BinaryIO.*;
 import static graphic.io.TilesetUtility.*;
 import static graphic.map.DefaultBlockType.*;
-import graphic.map.TileBuilder.Tile;
+import graphic.tile.TileBuilder.Tile;
 import java.awt.Color;
 import java.util.HashMap;
 import java.util.Map;
@@ -47,14 +48,14 @@ public class DefaultLandMap extends GameMap {
     @Override
     protected void loadSprites() {
         playerAniData = AnimationData.buildDirectionalImageSet( getSpriteSetVertical(
-            loadImage( TILESET+"player/lpc_female_blond/idle2.png" ), 0, DEFAULT_TILE_SIZE, 4
+            loadImage(TILESET+"player/lpc_female_blond/idle2.png"), 0, DEFAULT_TILE_SIZE, 4
         ));
         npcAniData = new AnimationData( getSpriteSetHorizontal(
-            loadImage( TILESET+"npc/lpc_male_blackbeard/idle2.png" ), 0, DEFAULT_TILE_SIZE, 2
+            loadImage(TILESET+"npc/lpc_male_blackbeard/idle2.png"), 0, DEFAULT_TILE_SIZE, 2
         ));
         portalAniData = new AnimationData( scaleImageSet(
             getSpriteSetHorizontal(
-                loadImage( TILESET+"portal.png" ), 0, DEFAULT_TILE_SIZE, 4
+                loadImage(TILESET+"portal.png"), 0, DEFAULT_TILE_SIZE, 4
             ), DEFAULT_TILE_SIZE
         ));
         terrainBuilder.add( loadScaledImage( SPRITE+"land/Bush1.png" ));
@@ -82,7 +83,7 @@ public class DefaultLandMap extends GameMap {
         switch (bType) {
             case PLAYER:
                 AnimationPlayer[] playerAni = AnimationPlayer.createSet(playerAniData);
-                return new MoveableSprite(
+                return new MoveableTile(
                     playerAni, PLAYER, x, y, tileSize, getMaxPoint()
                 );
             case NPC:

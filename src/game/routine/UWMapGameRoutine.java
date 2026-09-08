@@ -48,7 +48,7 @@ public class UWMapGameRoutine extends DefaultGameRoutine implements ResourceCons
         Player player = new Player(GameFrame.playerName, frame.textFrame, health, air);
         DescriptorLoader dLoader = new DescriptorLoader( getClass() );
         try {
-            player.setImg( dLoader.loadSpriteSets( TILESET+"player/" )[0][0] );
+            player.setImg( dLoader.loadSpriteSet( TILESET+"player/", "descriptor" )[0] );
         } catch (IOException e) {
             e.printStackTrace();
         }

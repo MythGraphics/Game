@@ -11,9 +11,10 @@ package graphic.map;
  *
  */
 
+import graphic.tile.DeadOrAliveTile;
 import graphic.AnimationData;
 import graphic.AnimationPlayer;
-import graphic.MoveableSprite;
+import graphic.tile.MoveableTile;
 import static graphic.io.BinaryIO.*;
 import static graphic.io.TilesetUtility.*;
 import static graphic.map.DefaultBlockType.*;
@@ -85,7 +86,7 @@ public class DefaultSpaceMap extends GameMap {
     protected BlockTile getBlockTile(int x, int y, int width, int height, IsBlockType bType) {
         switch (bType) {
             case PLAYER:
-                return new MoveableSprite( playerAni, PLAYER, x, y, tileSize, getMaxPoint() );
+                return new MoveableTile( playerAni, PLAYER, x, y, tileSize, getMaxPoint() );
             case ENEMY:
                 // für jeden Gegner einen eigenen AnimationPlayer erstellen
                 AnimationPlayer enemyAni = new AnimationPlayer(enemyAniData);

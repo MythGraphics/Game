@@ -34,6 +34,9 @@ public enum DefaultBlockType implements IsBlockType {
     BUBBLE          ('B', InteractionType.TERRAIN,      true),  // (air) bubble
     WATERLINE       ('_', InteractionType.SURFACE,      true),  // water line (space); 1 per map; no sprite
 
+    // special/map-dependent types; impassable
+//  PROJECTILE      ('*', InteractionType.PROJECTILE,   false), // an object, that is fired and moves over the map until it hits something
+
     // interactive environment; impassable
     ENVIRONMENT0   ('I', InteractionType.ENVIRONMENT,   false),
     ENVIRONMENT1   ('J', InteractionType.ENVIRONMENT,   false),

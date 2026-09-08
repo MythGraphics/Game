@@ -27,7 +27,7 @@ import static graphic.io.BinaryIO.*;
 import graphic.io.TextIO;
 import graphic.map.BlockTile;
 import graphic.map.CollisionEvent;
-import graphic.map.DeadOrAliveTile;
+import graphic.tile.DeadOrAliveTile;
 import static graphic.map.DefaultBlockType.ENVIRONMENT0;
 import static graphic.map.DefaultBlockType.EXIT;
 import graphic.texter.Message;

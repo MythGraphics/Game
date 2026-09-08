@@ -11,7 +11,6 @@ package graphic.map;
  *
  */
 
-import graphic.HasImage;
 import static graphic.io.BinaryIO.loadImage;
 import graphic.io.TextIO;
 import java.awt.image.BufferedImage;

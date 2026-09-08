@@ -17,7 +17,7 @@ import game.combat.CombatFrame;
 import game.combat.Combatant;
 import graphic.map.BlockTile;
 import graphic.map.CollisionEvent;
-import graphic.map.DeadOrAliveTile;
+import graphic.tile.DeadOrAliveTile;
 import static graphic.map.InteractionType.ENEMY;
 import java.util.ArrayList;
 import java.util.List;

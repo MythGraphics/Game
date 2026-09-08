@@ -41,17 +41,12 @@ public enum FileExt {
     }
 
     public static FileExt getFileExt(SpriteType type) {
-        switch (type) {
-            case SpriteType.SPRITE:
-                return SPRITE;
-            case SpriteType.ANIMATED_SPRITE:
-                return ANI;
-            case SpriteType.MOVEABLE_SPRITE:
-                return MOVEABLE_SPRITE;
-            case SpriteType.MOVEABLE_ANIMATED_SPRITE:
-                return MOVEABLE_ANI;
-        }
-        return null;
+        return switch (type) {
+            case SpriteType.SPRITE                   -> SPRITE;
+            case SpriteType.ANIMATED_SPRITE          -> ANI;
+            case SpriteType.MOVEABLE_SPRITE          -> MOVEABLE_SPRITE;
+            case SpriteType.MOVEABLE_ANIMATED_SPRITE -> MOVEABLE_ANI;
+        };
     }
 
     public static FileExt getByName(String s) {

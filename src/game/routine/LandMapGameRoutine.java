@@ -60,7 +60,7 @@ public class LandMapGameRoutine extends RPGRoutine {
         addPlayerResource( new Resource( "Credits", CREDIT, 1000, 0 ));
         DescriptorLoader dLoader = new DescriptorLoader( getClass() );
         try {
-            getPlayer().setImg( dLoader.loadSpriteSets( TILESET+"player/" )[0][0] );
+            getPlayer().setImg( dLoader.loadSpriteSet( TILESET+"player/", "descriptor" )[0] );
 
 /*          player.setImg( TilesetUtility.getSpriteSetHorizontal(
  *              loadImage( TILESET+"player/girl_red_swimsuit.png" ), 140, 200, 4

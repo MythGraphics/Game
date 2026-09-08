@@ -11,13 +11,14 @@ package graphic.map;
  *
  */
 
+import graphic.tile.TileBuilder;
 import graphic.AnimationData;
 import graphic.AnimationPlayer;
 import graphic.HasImage;
-import graphic.MoveableSprite;
+import graphic.tile.MoveableTile;
 import static graphic.io.BinaryIO.*;
-import graphic.io.ImageUtility;
-import graphic.io.TilesetUtility;
+import static graphic.io.ImageUtility.scale;
+import static graphic.io.TilesetUtility.getSpriteSet;
 import static graphic.io.TilesetUtility.getSpriteSetVertical;
 import static graphic.map.DefaultBlockType.*;
 import static graphic.map.GameMap.DEFAULT_TILE_SIZE;
@@ -47,11 +48,11 @@ public class DefaultUWMap extends UWMap {
     @Override
     protected void loadSprites() {
         playerAniData = AnimationData.buildDirectionalImageSet( getSpriteSetVertical(
-            loadImage( TILESET+"player/lpc_female_blond/idle2.png" ), 0, DEFAULT_TILE_SIZE, 4
+            loadImage(TILESET+"player/lpc_female_blond/idle2.png"), 0, DEFAULT_TILE_SIZE, 4
         ));
         imgMap.put( WALL5,  new TileBuilder.Tile( loadStretchedImage( SPRITE+"land/Stone1.png" )));
-        imgMap.put( BUBBLE, new TileBuilder.Tile( ImageUtility.scale(
-            TilesetUtility.getSpriteSet(
+        imgMap.put( BUBBLE, new TileBuilder.Tile( scale(
+            getSpriteSet(
                 loadImage(TILESET+"uw/bubble.png"), new Point(0, 0), 0, 0, 225, 1
             )[0], DEFAULT_TILE_SIZE
         )));
@@ -62,7 +63,7 @@ public class DefaultUWMap extends UWMap {
         switch (bType) {
             case PLAYER:
                 AnimationPlayer[] playerAni = AnimationPlayer.createSet(playerAniData);
-                return new MoveableSprite(
+                return new MoveableTile(
                     playerAni, PLAYER, x, y, tileSize, getMaxPoint()
                 );
             case WALL5:
