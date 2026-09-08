@@ -7,7 +7,7 @@ package graphic.io;
 /**
  *
  * @author  Martin Pröhl alias MythGraphics
- * @version 1.0.0
+ * @version 2.0.0
  *
  */
 
@@ -56,7 +56,7 @@ public class DescriptorLoader {
 
     public BufferedImage loadSprite(String path, String filename) throws IOException {
         String descriptor = getFileString(path, filename, FileExt.SPRITE);
-        Properties p = TextIO.loadProperties(descriptor, clazz);
+        Properties p = TextIO.load(descriptor, clazz);
 
         BufferedImage image = BinaryIO.loadImage( path + p.getProperty( "imgfile" ));
         int offsetX         = Integer.parseInt( p.getProperty( "offsetX", "0" ));
@@ -76,8 +76,8 @@ public class DescriptorLoader {
     }
 
     public BufferedImage[] loadMoveableSprite(String path, String filename) throws IOException {
-        BufferedImage[][] array = loadDescriptor2(path, filename, FileExt.MOVEABLE_SPRITE);
-        BufferedImage[] result  = new BufferedImage[4];
+        BufferedImage[][] array  = loadDescriptor2(path, filename, FileExt.MOVEABLE);
+        BufferedImage[]   result = new BufferedImage[4];
         for (int i = 0; i < 4; ++i) {
             result[i] = array[i][0];
         }
@@ -93,7 +93,7 @@ public class DescriptorLoader {
         List<BufferedImage> list = new ArrayList<>();
         BufferedImage[][] array  = new BufferedImage[4][];
         String descriptor = getFileString(path, filename, ext);
-        Properties p = TextIO.loadProperties(descriptor, clazz);
+        Properties p = TextIO.load(descriptor, clazz);
 
         BufferedImage image = BinaryIO.loadImage( path + p.getProperty( "imgfile" ));
         int offsetX         = Integer.parseInt( p.getProperty( "offsetX", "0" ));
@@ -135,7 +135,7 @@ public class DescriptorLoader {
     private BufferedImage[] loadDescriptor1(String path, String filename, FileExt ext) throws IOException {
         List<BufferedImage> list = new ArrayList<>();
         String descriptor = getFileString(path, filename, ext);
-        Properties p = TextIO.loadProperties(descriptor, clazz);
+        Properties p = TextIO.load(descriptor, clazz);
 
         BufferedImage image = BinaryIO.loadImage( path + p.getProperty( "imgfile" ));
         int offsetX         = Integer.parseInt( p.getProperty( "offsetX", "0" ));

@@ -11,13 +11,13 @@ package graphic.map;
  *
  */
 
-import graphic.tile.DeadOrAliveTile;
 import graphic.AnimationData;
 import graphic.AnimationPlayer;
-import graphic.tile.MoveableTile;
 import static graphic.io.BinaryIO.*;
 import static graphic.io.TilesetUtility.*;
 import static graphic.map.DefaultBlockType.*;
+import graphic.tile.DeadOrAliveTile;
+import graphic.tile.MoveableTile;
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
@@ -74,7 +74,7 @@ public class DefaultSpaceMap extends GameMap {
                 getAnimationSet(
                     loadImage( TILESET+"spaceship/spacemarine.png" ), 32, 3
                 ), DEFAULT_TILE_SIZE
-            )
+            ), "ULDR"
         );
         playerAni = AnimationPlayer.createSet(playerAniData);
         for (AnimationPlayer ani : playerAni) {

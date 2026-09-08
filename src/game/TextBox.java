@@ -52,6 +52,7 @@ public class TextBox extends InteractiveObject implements HasDialog, HasID {
         return msgList;
     }
 
+    @SuppressWarnings ("unchecked")
     public LinkedList<Message> getDialogCopy() {
         return (LinkedList<Message>) msgList.clone();
 /*

@@ -11,14 +11,14 @@ package graphic.map;
  *
  */
 
-import graphic.tile.TileBuilder;
 import graphic.AnimationData;
 import graphic.AnimationPlayer;
 import graphic.HasImage;
-import graphic.tile.MoveableTile;
 import static graphic.io.BinaryIO.*;
 import static graphic.io.TilesetUtility.*;
 import static graphic.map.DefaultBlockType.*;
+import graphic.tile.MoveableTile;
+import graphic.tile.TileBuilder;
 import graphic.tile.TileBuilder.Tile;
 import java.awt.Color;
 import java.util.HashMap;
@@ -47,9 +47,11 @@ public class DefaultLandMap extends GameMap {
 
     @Override
     protected void loadSprites() {
-        playerAniData = AnimationData.buildDirectionalImageSet( getSpriteSetVertical(
-            loadImage(TILESET+"player/lpc_female_blond/idle2.png"), 0, DEFAULT_TILE_SIZE, 4
-        ));
+        playerAniData = AnimationData.buildDirectionalImageSet(
+            getSpriteSetVertical(
+                loadImage(TILESET+"player/lpc_female_blond/idle2.png"), 0, DEFAULT_TILE_SIZE, 4
+            ), "ULDR"
+        );
         npcAniData = new AnimationData( getSpriteSetHorizontal(
             loadImage(TILESET+"npc/lpc_male_blackbeard/idle2.png"), 0, DEFAULT_TILE_SIZE, 2
         ));

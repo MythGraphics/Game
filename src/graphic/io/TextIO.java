@@ -7,7 +7,7 @@ package graphic.io;
 /**
  *
  * @author  Martin Pröhl alias MythGraphics
- * @version 1.0.1
+ * @version 1.0.2
  *
  */
 
@@ -79,9 +79,20 @@ public class TextIO {
         throw new IOException(filePath + " weder in JAR noch im FS gefunden.");
     }
 
+    /**
+     * Lädt aus dem properties-Verzeichnis.
+     * @param fileName      Dateiname
+     * @param clazz         Referenz-Klasse für die JAR-Laderoutine
+     * @return              Das geladene Propierties-Objekt.
+     * @throws IOException
+     */
     public static Properties loadProperties(String fileName, Class<?> clazz) throws IOException {
+        return load(PROPERTY+fileName, clazz);
+    }
+
+    public static Properties load(String filePath, Class<?> clazz) throws IOException {
         Properties p = new Properties();
-        try ( BufferedReader stream = getTextReader( PROPERTY+fileName, clazz )) {
+        try ( BufferedReader stream = getTextReader( filePath, clazz )) {
             p.load(stream);
         }
         return p;

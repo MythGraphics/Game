@@ -51,20 +51,30 @@ public class AnimationData {
         return spriteSet[index];
     }
 
-    public static AnimationData[] buildDirectionalImageSet(BufferedImage[] imageset) {
+    public static AnimationData[] buildDirectionalImageSet(BufferedImage[] imageset, String directionalString) {
         AnimationData[] set = new AnimationData[imageset.length];
+        Direction[] d = Direction.parseDirection(directionalString);
         for (int i = 0; i < imageset.length; ++i) {
-            set[i] = new AnimationData( new BufferedImage[] { imageset[i] });
+            set[d[i].ordinal()] = new AnimationData( new BufferedImage[] { imageset[i] });
+        }
+        return set;
+    }
+
+    public static AnimationData[] buildDirectionalImageSet(BufferedImage[] imageset) {
+        return buildDirectionalImageSet(imageset, Direction.DEFAULT_ORIENTATION);
+    }
+
+    public static AnimationData[] buildDirectionalAnimationSet(BufferedImage[][] imageset, String directionalString) {
+        AnimationData[] set = new AnimationData[imageset.length];
+        Direction[] d = Direction.parseDirection(directionalString);
+        for (int i = 0; i < imageset.length; ++i) {
+            set[d[i].ordinal()] = new AnimationData(imageset[i]);
         }
         return set;
     }
 
     public static AnimationData[] buildDirectionalAnimationSet(BufferedImage[][] imageset) {
-        AnimationData[] set = new AnimationData[imageset.length];
-        for (int i = 0; i < imageset.length; ++i) {
-            set[i] = new AnimationData(imageset[i]);
-        }
-        return set;
+        return buildDirectionalAnimationSet(imageset, Direction.DEFAULT_ORIENTATION);
     }
 
 }

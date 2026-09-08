@@ -47,9 +47,11 @@ public class DefaultUWMap extends UWMap {
 
     @Override
     protected void loadSprites() {
-        playerAniData = AnimationData.buildDirectionalImageSet( getSpriteSetVertical(
-            loadImage(TILESET+"player/lpc_female_blond/idle2.png"), 0, DEFAULT_TILE_SIZE, 4
-        ));
+        playerAniData = AnimationData.buildDirectionalImageSet(
+            getSpriteSetVertical(
+                loadImage(TILESET+"player/lpc_female_blond/idle2.png"), 0, DEFAULT_TILE_SIZE, 4
+            ), "ULDR"
+        );
         imgMap.put( WALL5,  new TileBuilder.Tile( loadStretchedImage( SPRITE+"land/Stone1.png" )));
         imgMap.put( BUBBLE, new TileBuilder.Tile( scale(
             getSpriteSet(

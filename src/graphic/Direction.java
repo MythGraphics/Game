@@ -18,6 +18,8 @@ public enum Direction {
     DOWN,
     LEFT;
 
+    public final static String DEFAULT_ORIENTATION = "URDL";
+
     public static Direction parseDirection(char c) {
         return switch (c) {
             case 'U', 'u' -> UP;
