@@ -86,7 +86,7 @@ public class DefaultSpaceMap extends GameMap {
     protected BlockTile getBlockTile(int x, int y, int width, int height, IsBlockType bType) {
         switch (bType) {
             case PLAYER:
-                return new MoveableTile( playerAni, PLAYER, x, y, tileSize, getMaxPoint() );
+                return new MoveableTile( x, y, tileSize, PLAYER, getMaxPoint(), playerAni );
             case ENEMY:
                 // für jeden Gegner einen eigenen AnimationPlayer erstellen
                 AnimationPlayer enemyAni = new AnimationPlayer(enemyAniData);

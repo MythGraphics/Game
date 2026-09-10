@@ -12,6 +12,7 @@ package graphic;
  */
 
 import java.awt.image.BufferedImage;
+import java.util.Map;
 
 public class AnimationPlayer implements HasImage {
 
@@ -91,6 +92,46 @@ public class AnimationPlayer implements HasImage {
 
     public AnimationData getData() {
         return data;
+    }
+
+    /**
+     * Erstellt ein neues Set von AnimationPlayer basierend auf einem Satz AnimationData.
+     * @param dataSet DataSet
+     * @return Set of AnimationPlayer
+     */
+    public static AnimationPlayer[] createAnimationPlayerSet(AnimationData[] dataSet) {
+        if (dataSet == null || dataSet.length < 4) {
+            throw new IllegalArgumentException("dataSet is null or from insufficient length.");
+        }
+        AnimationPlayer[] players = new AnimationPlayer[dataSet.length];
+        for (int i = 0; i < dataSet.length; i++) {
+            if (dataSet[i] != null) {
+                players[i] = new AnimationPlayer(dataSet[i]);
+            }
+        }
+        return players;
+    }
+
+    /**
+     * Erstellt ein neues Set von AnimationPlayer basierend auf einem Satz AnimationData.
+     * @param aniMap AnimationMap
+     * @return Set of AnimationPlayer
+     */
+    public static AnimationPlayer[] createAnimationPlayerSet(Map<Direction, AnimationData> aniMap) {
+        if (aniMap == null || aniMap.size() < 4) {
+            throw new IllegalArgumentException("aniMap is null or from insufficient length.");
+        }
+        Direction[] directionSet = Direction.values();
+        AnimationPlayer[] playerSet = new AnimationPlayer[directionSet.length];
+        for (int i = 0; i < directionSet.length; i++) {
+            AnimationData data = aniMap.get(directionSet[i]);
+            if (data != null) {
+                playerSet[i] = new AnimationPlayer(data);
+            } else {
+                throw new IllegalArgumentException("AnimationData at index " + i + " is null.");
+            }
+        }
+        return playerSet;
     }
 
 }

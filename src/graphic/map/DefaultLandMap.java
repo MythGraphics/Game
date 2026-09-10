@@ -86,7 +86,7 @@ public class DefaultLandMap extends GameMap {
             case PLAYER:
                 AnimationPlayer[] playerAni = AnimationPlayer.createSet(playerAniData);
                 return new MoveableTile(
-                    playerAni, PLAYER, x, y, tileSize, getMaxPoint()
+                    x, y, tileSize, PLAYER, getMaxPoint(), playerAni
                 );
             case NPC:
                 return new BlockTile(x, y, tileSize, NPC, npcAni);

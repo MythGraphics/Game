@@ -66,7 +66,7 @@ public class DefaultUWMap extends UWMap {
             case PLAYER:
                 AnimationPlayer[] playerAni = AnimationPlayer.createSet(playerAniData);
                 return new MoveableTile(
-                    playerAni, PLAYER, x, y, tileSize, getMaxPoint()
+                    x, y, tileSize, PLAYER, getMaxPoint(), playerAni
                 );
             case WALL5:
             case BUBBLE:

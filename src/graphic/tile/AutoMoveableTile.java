@@ -11,10 +11,10 @@ package graphic.tile;
  *
  */
 
-import graphic.AnimationPlayer;
 import graphic.AutoMoveable;
 import graphic.Direction;
 import static graphic.Direction.*;
+import graphic.HasImage;
 import graphic.map.IsBlockType;
 import java.awt.Dimension;
 import java.awt.Point;
@@ -33,16 +33,18 @@ public class AutoMoveableTile extends MoveableTile implements ActionListener, Au
     private int ticksPerStep = 1;
     private int tickCounter  = 0;
 
-    public AutoMoveableTile(Direction initialDirection, AnimationPlayer[] aniset, IsBlockType bType,
-                              int x, int y, int blockSize, Point maxPoint) {
-        super(aniset, bType, x, y, blockSize, maxPoint);
+    public AutoMoveableTile(Direction initialDirection,
+                            int x, int y, int blockSize, IsBlockType bType,
+                            Point maxPoint, HasImage[] imgset) {
+        super(x, y, blockSize, bType, maxPoint, imgset);
         this.direction = initialDirection;
         this.start = new Point(x, y);
     }
 
-    public AutoMoveableTile(Direction initialDirection, AnimationPlayer[] aniset, IsBlockType bType,
-                              Point pos, Dimension dim, int blockSize, Point maxPoint) {
-        super(aniset, bType, pos, dim, blockSize, maxPoint);
+    public AutoMoveableTile(Direction initialDirection,
+                            Point pos, Dimension dim, int blockSize, IsBlockType bType,
+                            Point maxPoint, HasImage[] imgset) {
+        super(pos, dim, blockSize, bType, maxPoint, imgset);
         this.direction = initialDirection;
         this.start = new Point(pos.x, pos.y);
     }

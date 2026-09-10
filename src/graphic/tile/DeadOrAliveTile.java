@@ -36,9 +36,8 @@ public class DeadOrAliveTile extends BlockTile {
 
     private void init(IsBlockType bType, HasImage image) {
         setAliveData(bType, image);
-        IsBlockType defaultDeadType = (bType instanceof DefaultBlockType dbt)
-                ? DefaultBlockType.getDeadTile(dbt)
-                : CORPSE;
+        IsBlockType defaultDeadType = (bType instanceof DefaultBlockType dbt) ? DefaultBlockType.getDeadTile(dbt)
+                                                                              : CORPSE;
         setDeadData(defaultDeadType, null);
     }
 
