@@ -52,6 +52,9 @@ public class AnimationData {
     }
 
     public static AnimationData[] buildDirectionalImageSet(BufferedImage[] imageset, String directionalString) {
+        if (imageset == null || directionalString == null || imageset.length < 4 || directionalString.length() < 4) {
+            throw new IllegalArgumentException("At least one parameter is null or from insufficient length.");
+        }
         AnimationData[] set = new AnimationData[imageset.length];
         Direction[] d = Direction.parseDirection(directionalString);
         for (int i = 0; i < imageset.length; ++i) {
@@ -65,6 +68,9 @@ public class AnimationData {
     }
 
     public static AnimationData[] buildDirectionalAnimationSet(BufferedImage[][] imageset, String directionalString) {
+        if (imageset == null || directionalString == null || imageset.length < 4 || directionalString.length() < 4) {
+            throw new IllegalArgumentException("At least one parameter is null or from insufficient length.");
+        }
         AnimationData[] set = new AnimationData[imageset.length];
         Direction[] d = Direction.parseDirection(directionalString);
         for (int i = 0; i < imageset.length; ++i) {

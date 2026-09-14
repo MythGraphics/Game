@@ -25,7 +25,7 @@ import static game.resource.Resource.ResourceType.*;
 import graphic.io.BinaryIO;
 import static graphic.io.BinaryIO.*;
 import graphic.io.TextIO;
-import graphic.map.BlockTile;
+import graphic.tile.BlockTile;
 import graphic.map.CollisionEvent;
 import graphic.tile.DeadOrAliveTile;
 import static graphic.map.DefaultBlockType.ENVIRONMENT0;

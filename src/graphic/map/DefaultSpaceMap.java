@@ -13,9 +13,11 @@ package graphic.map;
 
 import graphic.AnimationData;
 import graphic.AnimationPlayer;
+import graphic.DirectionalImage;
 import static graphic.io.BinaryIO.*;
 import static graphic.io.TilesetUtility.*;
 import static graphic.map.DefaultBlockType.*;
+import graphic.tile.BlockTile;
 import graphic.tile.DeadOrAliveTile;
 import graphic.tile.MoveableTile;
 import java.awt.Color;
@@ -83,10 +85,10 @@ public class DefaultSpaceMap extends GameMap {
     }
 
     @Override
-    protected BlockTile getBlockTile(int x, int y, int width, int height, IsBlockType bType) {
+    protected BlockTile getBlockTile(int x, int y, IsBlockType bType) {
         switch (bType) {
             case PLAYER:
-                return new MoveableTile( x, y, tileSize, PLAYER, getMaxPoint(), playerAni );
+                return new MoveableTile( x, y, PLAYER, tileSize, getMaxPoint(), new DirectionalImage( playerAni ));
             case ENEMY:
                 // für jeden Gegner einen eigenen AnimationPlayer erstellen
                 AnimationPlayer enemyAni = new AnimationPlayer(enemyAniData);

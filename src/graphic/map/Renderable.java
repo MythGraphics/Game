@@ -11,10 +11,11 @@ package graphic.map;
  *
  */
 
+import graphic.HasImage;
 import java.awt.Graphics2D;
 
-public interface Renderable {
+public interface Renderable extends HasImage {
 
     void draw(Graphics2D g2d, int offsetX, int offsetY);
-    
+
 }

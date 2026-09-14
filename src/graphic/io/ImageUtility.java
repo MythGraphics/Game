@@ -7,7 +7,7 @@ package graphic.io;
 /**
  *
  * @author  Martin Pröhl alias MythGraphics
- * @version 1.0.3
+ * @version 1.0.4
  *
  */
 
@@ -215,6 +215,21 @@ public class ImageUtility {
         g2d.dispose();
 
         return flippedImage;
+    }
+
+    public static BufferedImage rotateRight(BufferedImage source) {
+        int width  = source.getWidth();
+        int height = source.getHeight();
+        BufferedImage rotated = new BufferedImage( height, width, source.getType() ); // Breite und Höhe für das Zielbild tauschen
+
+        Graphics2D g2d = rotated.createGraphics();
+        AffineTransform transform = new AffineTransform();
+        transform.rotate(Math.PI/2);
+        transform.translate(height, 0);
+        g2d.drawImage(source, transform, null);
+        g2d.dispose();
+
+        return rotated;
     }
 
     public static BufferedImage toBufferedImage(Image image) {

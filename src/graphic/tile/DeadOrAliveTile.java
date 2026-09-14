@@ -12,7 +12,6 @@ package graphic.tile;
  */
 
 import graphic.HasImage;
-import graphic.map.BlockTile;
 import graphic.map.DefaultBlockType;
 import static graphic.map.DefaultBlockType.CORPSE;
 import graphic.map.IsBlockType;

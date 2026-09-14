@@ -12,12 +12,20 @@ package graphic.map;
  */
 
 import graphic.Direction;
-import graphic.tile.MoveableTile;
+import static graphic.Direction.*;
 import static graphic.io.BinaryIO.loadImage;
 import static graphic.io.ImageUtility.scale;
 import static graphic.io.ImageUtility.stretch;
 import static graphic.map.DefaultBlockType.*;
-import java.awt.*;
+import graphic.tile.BlockTile;
+import graphic.tile.MoveableTile;
+import graphic.tile.Projectile;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -26,6 +34,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -45,11 +54,13 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
 
     protected final int tileSize, rowCount, columnCount;
     protected final char[][] tileMap;
-    protected final Collection<Block> collidables = new ArrayList<>();
+    protected final Collection<Block> collidables = new HashSet<>(); // Collidable, IsBlock
     protected final Collection<Renderable> renderables = new ArrayList<>();
+    protected final Collection<Block> garbageC = new HashSet<>(); // collidable Blocks, die entfernt werden sollen
+    protected final Collection<Renderable> garbageR = new HashSet<>(); // Renderables, die entfernt werden sollen
 
     protected MoveableTile player;
-    protected BlockTile spaceTile;
+    protected Renderable spaceTile;
 
     private final List<CollisionActionListener> collisionListeners = new ArrayList<>();
     private final Point lastPlayerPos = new Point();
@@ -88,7 +99,7 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
     }
 
     protected abstract void loadSprites();
-    protected abstract BlockTile getBlockTile(int x, int y, int width, int height, IsBlockType bType);
+    protected abstract BlockTile getBlockTile(int x, int y, IsBlockType bType);
     public abstract Color getAmbientColor();
 
     public void init() {
@@ -134,7 +145,7 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
 
     /**
      * Berechnet den X-Offset für den Scroll-Buffer, um den Spieler zu zentrieren.
-     * Stellt sicher, dass der Viewport innerhalb der Kartengrenzen bleibt.
+     * Stellt sicher, dass das Ansichtsfenster innerhalb der Kartengrenzen bleibt.
      */
     private int getOffsetX() {
         // Ziel-Offset: Spieler zentrieren
@@ -151,7 +162,7 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
 
     /**
      * Berechnet den Y-Offset für den Scroll-Buffer, um den Spieler zu zentrieren.
-     * Stellt sicher, dass der Viewport innerhalb der Kartengrenzen bleibt.
+     * Stellt sicher, dass das Ansichtsfenster innerhalb der Kartengrenzen bleibt.
      */
     private int getOffsetY() {
         // Ziel-Offset: Spieler zentrieren
@@ -168,7 +179,7 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
 
     void loadTileMapChar(char tileMapChar, int x, int y, int tileSize) {
         IsBlockType bType = DefaultBlockType.getByChar(tileMapChar);
-        BlockTile tile    = getBlockTile(x, y, tileSize, tileSize, bType);
+        BlockTile tile    = getBlockTile(x, y, bType);
 
         switch (bType) {
             case null -> {
@@ -191,9 +202,7 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
                 lastPlayerPos.y = y;
             }
             case SPACE -> {
-                if (spaceTile == null) {
-                    spaceTile = tile;
-                }
+                spaceTile = tile;
             }
             case SPACEHOLDER -> {}
             default -> {
@@ -221,7 +230,7 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
             }
         }
         if (spaceTile == null) {
-            spaceTile = getBlockTile(0, 0, tileSize, tileSize, SPACE);
+            spaceTile = getBlockTile(0, 0, SPACE);
         }
     }
 
@@ -336,10 +345,10 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
         if ( !active ) { return; }
         setLastPlayerPosition();
         switch ( evt.getKeyCode() ) {
-            case KeyEvent.VK_UP,    KeyEvent.VK_W, KeyEvent.VK_8 -> player.move(Direction.UP);
-            case KeyEvent.VK_DOWN,  KeyEvent.VK_S, KeyEvent.VK_2 -> player.move(Direction.DOWN);
-            case KeyEvent.VK_RIGHT, KeyEvent.VK_D, KeyEvent.VK_6 -> player.move(Direction.RIGHT);
-            case KeyEvent.VK_LEFT,  KeyEvent.VK_A, KeyEvent.VK_4 -> player.move(Direction.LEFT);
+            case KeyEvent.VK_UP,    KeyEvent.VK_W, KeyEvent.VK_8 -> player.move(UP);
+            case KeyEvent.VK_DOWN,  KeyEvent.VK_S, KeyEvent.VK_2 -> player.move(DOWN);
+            case KeyEvent.VK_RIGHT, KeyEvent.VK_D, KeyEvent.VK_6 -> player.move(RIGHT);
+            case KeyEvent.VK_LEFT,  KeyEvent.VK_A, KeyEvent.VK_4 -> player.move(LEFT);
         }
         detectCollision();
     }
@@ -370,8 +379,8 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
 
         for (Block block : collidables) {
             if ( collision( player, block )) {
-                fireEvent(player, block);
-                boolean passable = block.onCollision(player, this);
+//              fireEvent(player, block); // über Block/Collidable implementiert
+                boolean passable = block.onCollision(this, player, this);
                 if (!passable) {
                     resetPlayerPosition();
                     break;
@@ -380,14 +389,14 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
         }
     }
 
-    private boolean collision(Block a, Block b) {
+    private boolean collision(Collidable a, Collidable b) {
         if (a == null || b == null) {
             return false;
         }
-        return  a.x < b.x + b.width  &&
-                a.x + a.width > b.x  &&
-                a.y < b.y + b.height &&
-                a.y + a.height > b.y ;
+        return  a.getX() < b.getX() + b.getWidth()  &&
+                a.getX() + a.getWidth() > b.getX()  &&
+                a.getY() < b.getY() + b.getHeight() &&
+                a.getY() + a.getHeight() > b.getY();
     }
 
     private void setRenderingHints(Graphics2D g2d) {
@@ -442,6 +451,11 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
         if (player != null) {
             player.draw(g2d, offsetX, offsetY);
         }
+
+        collidables.removeAll(garbageC);
+        garbageC.clear();
+        renderables.removeAll(garbageR);
+        garbageR.clear();
     }
 
     private void drawSpace(Graphics2D g2d, int offsetX, int offsetY) {
@@ -453,8 +467,8 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
                         spaceImg,
                         tileSize*c - offsetX,
                         tileSize*r - offsetY,
-                        spaceTile.width,
-                        spaceTile.height,
+                        tileSize,
+                        tileSize,
                         null
                     );
                 }
@@ -470,6 +484,29 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
             }
         }
         return value;
+    }
+
+    public void fireProjectile(BlockTile source, Direction d) {
+        int x = source.x;
+        int y = source.y;
+        switch (d) {
+            case RIGHT -> x += tileSize;
+            case LEFT  -> x -= tileSize;
+            case DOWN  -> y += tileSize;
+            case UP    -> y -= tileSize;
+        }
+        Projectile p = new Projectile(
+            source, d, x, y, DefaultBlockType.PROJECTILE, tileSize, new Point( 0, 0 ), source.getProjectileImage()
+        );
+        collidables.add(p);
+        renderables.add(p);
+    }
+
+    public void remove(Block block) {
+        garbageC.add(block);
+        if (block instanceof Renderable r) {
+            garbageR.add(r);
+        }
     }
 
 }

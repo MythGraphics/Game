@@ -2,7 +2,7 @@
  *
  */
 
-package graphic.map;
+package graphic.tile;
 
 /**
  *
@@ -11,14 +11,23 @@ package graphic.map;
  *
  */
 
+import graphic.CanCastProjectile;
+import graphic.DirectionalImage;
 import graphic.HasImage;
+import graphic.map.Block;
+import graphic.map.GameMap;
+import graphic.map.IsBlockType;
+import graphic.map.Renderable;
+import java.awt.Dimension;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.image.BufferedImage;
 
 // is a sprite
-public class BlockTile extends Block implements HasImage, Renderable {
+public class BlockTile extends Block implements Renderable, CanCastProjectile {
 
     private HasImage image;
+    private DirectionalImage projectileImage;
 
     public BlockTile(int x, int y, IsBlockType bType, HasImage image) {
         this(x, y, 0, bType, image);
@@ -34,9 +43,18 @@ public class BlockTile extends Block implements HasImage, Renderable {
         setImage(image);
     }
 
+    public BlockTile(Point pos, Dimension dim, IsBlockType bType, HasImage image) {
+        this(pos.x, pos.y, dim.width, dim.height, bType, image);
+    }
+
     @Override
     public BufferedImage getImage() {
         return image.getImage();
+    }
+
+    @Override
+    public DirectionalImage getProjectileImage() {
+        return projectileImage;
     }
 
     public final void setImage(HasImage image) {
@@ -57,11 +75,11 @@ public class BlockTile extends Block implements HasImage, Renderable {
 
     @Override
     public void draw(Graphics2D g2d, int offsetX, int offsetY) {
-        g2d.drawImage( getImage(), x-offsetX, y-offsetY, null );
+        g2d.drawImage( getImage(), x-offsetX, y-offsetY, width, height, null );
     }
 
-    public void destroy() {
-        change(DefaultBlockType.NONE, null);
+    public void destroy(GameMap map) {
+        map.remove(this);
     }
 
     public void change(IsBlockType bType, HasImage image) {

@@ -13,10 +13,12 @@ package graphic.map;
 
 import graphic.AnimationData;
 import graphic.AnimationPlayer;
+import graphic.DirectionalImage;
 import graphic.HasImage;
 import static graphic.io.BinaryIO.*;
 import static graphic.io.TilesetUtility.*;
 import static graphic.map.DefaultBlockType.*;
+import graphic.tile.BlockTile;
 import graphic.tile.MoveableTile;
 import graphic.tile.TileBuilder;
 import graphic.tile.TileBuilder.Tile;
@@ -81,12 +83,12 @@ public class DefaultLandMap extends GameMap {
     }
 
     @Override
-    protected BlockTile getBlockTile(int x, int y, int width, int height, IsBlockType bType) {
+    protected BlockTile getBlockTile(int x, int y, IsBlockType bType) {
         switch (bType) {
             case PLAYER:
-                AnimationPlayer[] playerAni = AnimationPlayer.createSet(playerAniData);
+                DirectionalImage playerAni = new DirectionalImage( AnimationPlayer.createSet( playerAniData ));
                 return new MoveableTile(
-                    x, y, tileSize, PLAYER, getMaxPoint(), playerAni
+                    x, y, PLAYER, tileSize, getMaxPoint(), playerAni
                 );
             case NPC:
                 return new BlockTile(x, y, tileSize, NPC, npcAni);
@@ -98,12 +100,13 @@ public class DefaultLandMap extends GameMap {
             case SPACE:
             case TEXTSIGN:
             case WALL1:
+                return new BlockTile( x, y, tileSize, bType, imgMap.get( bType ));
             case WALL3:
             case WALL5:
             case ENVIRONMENT0:
             case ENVIRONMENT1:
             case ENVIRONMENT2:
-                return new BlockTile( x, y, tileSize, bType, imgMap.get( bType ));
+                return new BlockTile( x, y, bType, imgMap.get( bType )); // Fliese in ihrer Größe belassen und nicht auf tileSize skalieren
             case TERRAIN:
                 return new BlockTile( x, y, tileSize, bType, terrainBuilder.getRandom() );
             default:

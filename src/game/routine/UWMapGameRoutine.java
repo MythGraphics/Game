@@ -19,10 +19,11 @@ import static game.resource.Resource.ResourceType.HEALTH;
 import game.resource.ResourceConsumeListener;
 import static graphic.io.BinaryIO.TILESET;
 import graphic.io.DescriptorLoader;
-import graphic.map.BlockTile;
 import graphic.map.CollisionEvent;
 import static graphic.map.DefaultBlockType.BUBBLE;
+import graphic.map.GameMap;
 import graphic.map.UWMap;
+import graphic.tile.BlockTile;
 import java.io.IOException;
 
 public class UWMapGameRoutine extends DefaultGameRoutine implements ResourceConsumeListener {
@@ -68,7 +69,7 @@ public class UWMapGameRoutine extends DefaultGameRoutine implements ResourceCons
             case BUBBLE -> {
                 getPlayer().getResource(AIR).recharge(100);
                 if ( e.getTarget() instanceof BlockTile tile ) {
-                    tile.destroy();
+                    tile.destroy( (GameMap) e.getSource() );
                 }
             }
             default -> {

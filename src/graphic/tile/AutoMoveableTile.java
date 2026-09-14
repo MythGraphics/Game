@@ -14,7 +14,7 @@ package graphic.tile;
 import graphic.AutoMoveable;
 import graphic.Direction;
 import static graphic.Direction.*;
-import graphic.HasImage;
+import graphic.DirectionalImage;
 import graphic.map.IsBlockType;
 import java.awt.Dimension;
 import java.awt.Point;
@@ -27,6 +27,7 @@ public class AutoMoveableTile extends MoveableTile implements ActionListener, Au
     final Point start;
 
     private final Random rand = new Random();
+    private final Direction initialDirection;
 
     private Direction direction;
     private boolean auto = false;
@@ -34,19 +35,27 @@ public class AutoMoveableTile extends MoveableTile implements ActionListener, Au
     private int tickCounter  = 0;
 
     public AutoMoveableTile(Direction initialDirection,
-                            int x, int y, int blockSize, IsBlockType bType,
-                            Point maxPoint, HasImage[] imgset) {
-        super(x, y, blockSize, bType, maxPoint, imgset);
-        this.direction = initialDirection;
+                            int x, int y, IsBlockType bType,
+                            int stepSize, Point maxPoint, DirectionalImage imgset) {
+        super(x, y, bType, stepSize, maxPoint, imgset);
+        this.initialDirection = initialDirection;
         this.start = new Point(x, y);
+        setDirection(initialDirection);
     }
 
     public AutoMoveableTile(Direction initialDirection,
-                            Point pos, Dimension dim, int blockSize, IsBlockType bType,
-                            Point maxPoint, HasImage[] imgset) {
-        super(pos, dim, blockSize, bType, maxPoint, imgset);
-        this.direction = initialDirection;
-        this.start = new Point(pos.x, pos.y);
+                            int x, int y, int width, int height, IsBlockType bType,
+                            int stepSize, Point maxPoint, DirectionalImage imgset) {
+        super(x, y, width, height, bType, stepSize, maxPoint, imgset);
+        this.initialDirection = initialDirection;
+        this.start = new Point(x, y);
+        setDirection(initialDirection);
+    }
+
+    public AutoMoveableTile(Direction initialDirection,
+                            Point pos, Dimension dim, IsBlockType bType,
+                            int stepSize, Point maxPoint, DirectionalImage imgset) {
+        this(initialDirection, pos.x, pos.y, dim.width, dim.height, bType, stepSize, maxPoint, imgset);
     }
 
     @Override
@@ -54,6 +63,7 @@ public class AutoMoveableTile extends MoveableTile implements ActionListener, Au
         super.x = start.x;
         super.y = start.y;
         tickCounter = 0;
+        imgset.setDirection(initialDirection);
     }
 
     @Override
@@ -78,8 +88,9 @@ public class AutoMoveableTile extends MoveableTile implements ActionListener, Au
         return direction;
     }
 
-    public void setDirection(Direction direction) {
+    public final void setDirection(Direction direction) {
         this.direction = direction;
+        imgset.setDirection(initialDirection);
     }
 
     @Override
@@ -88,7 +99,7 @@ public class AutoMoveableTile extends MoveableTile implements ActionListener, Au
             return;
         }
 
-        this.direction = direction;
+        setDirection(direction);
         super.move(direction);
 
         // Bewegungslogik: Umkehren, wenn Grenzen erreicht

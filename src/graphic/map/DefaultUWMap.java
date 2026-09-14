@@ -11,17 +11,19 @@ package graphic.map;
  *
  */
 
-import graphic.tile.TileBuilder;
 import graphic.AnimationData;
 import graphic.AnimationPlayer;
+import graphic.DirectionalImage;
 import graphic.HasImage;
-import graphic.tile.MoveableTile;
 import static graphic.io.BinaryIO.*;
 import static graphic.io.ImageUtility.scale;
 import static graphic.io.TilesetUtility.getSpriteSet;
 import static graphic.io.TilesetUtility.getSpriteSetVertical;
 import static graphic.map.DefaultBlockType.*;
 import static graphic.map.GameMap.DEFAULT_TILE_SIZE;
+import graphic.tile.BlockTile;
+import graphic.tile.MoveableTile;
+import graphic.tile.TileBuilder;
 import java.awt.Color;
 import java.awt.Point;
 import java.util.HashMap;
@@ -61,12 +63,12 @@ public class DefaultUWMap extends UWMap {
     }
 
     @Override
-    protected BlockTile getBlockTile(int x, int y, int width, int height, IsBlockType bType) {
+    protected BlockTile getBlockTile(int x, int y, IsBlockType bType) {
         switch (bType) {
             case PLAYER:
-                AnimationPlayer[] playerAni = AnimationPlayer.createSet(playerAniData);
+                DirectionalImage playerAni = new DirectionalImage( AnimationPlayer.createSet( playerAniData ));
                 return new MoveableTile(
-                    x, y, tileSize, PLAYER, getMaxPoint(), playerAni
+                    x, y, PLAYER, tileSize, getMaxPoint(), playerAni
                 );
             case WALL5:
             case BUBBLE:

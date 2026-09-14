@@ -15,7 +15,7 @@ import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Rectangle;
 
-public class Block implements Interactable {
+public class Block implements Collidable {
 
     protected int width, height;
     protected IsBlockType bType;
@@ -59,6 +59,7 @@ public class Block implements Interactable {
         this.width  = dim.width;
     }
 
+    @Override
     public int getX() {
         return x;
     }
@@ -67,6 +68,7 @@ public class Block implements Interactable {
         this.x = x;
     }
 
+    @Override
     public int getY() {
         return y;
     }
@@ -75,6 +77,7 @@ public class Block implements Interactable {
         this.y = y;
     }
 
+    @Override
     public int getWidth() {
         return width;
     }
@@ -83,6 +86,7 @@ public class Block implements Interactable {
         this.width = width;
     }
 
+    @Override
     public int getHeight() {
         return height;
     }
@@ -100,8 +104,8 @@ public class Block implements Interactable {
     }
 
     @Override
-    public boolean onCollision(Block initiator, IsCollisionHandler handler) {
-//      handler.fireEvent(initiator, this); // erledigt die GameMap
+    public boolean onCollision(GameMap souce, Block initiator, IsCollisionHandler handler) {
+        handler.fireEvent(initiator, this);
         return getBlockType().isPassable();
     }
 

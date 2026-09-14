@@ -27,7 +27,7 @@ import game.resource.Resource;
 import static game.resource.Resource.ResourceType.*;
 import static graphic.io.BinaryIO.TILESET;
 import graphic.io.DescriptorLoader;
-import graphic.map.BlockTile;
+import graphic.tile.BlockTile;
 import static graphic.map.DefaultBlockType.ENVIRONMENT0;
 import static graphic.map.DefaultBlockType.TEXTSIGN;
 import java.io.IOException;
