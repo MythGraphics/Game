@@ -24,11 +24,23 @@ public class Projectile extends AutoMoveableTile {
 
     public final Block source;
 
+    public Projectile(BlockTile source, Direction initialDirection,
+                      int x, int y, IsBlockType bType,
+                      int stepSize, Point maxPoint) {
+        this( source, initialDirection, x, y, bType, stepSize, maxPoint, source.getProjectileImage() );
+    }
+
     public Projectile(Block source, Direction initialDirection,
                       int x, int y, IsBlockType bType,
                       int stepSize, Point maxPoint, DirectionalImage imgset) {
         super(initialDirection, x, y, bType, stepSize, maxPoint, imgset);
         this.source = source;
+    }
+
+    public Projectile(BlockTile source, Direction initialDirection,
+                      Point pos, Dimension dim, IsBlockType bType,
+                      int stepSize, Point maxPoint) {
+        this( source, initialDirection, pos, dim, bType, stepSize, maxPoint, source.getProjectileImage() );
     }
 
     public Projectile(Block source, Direction initialDirection,

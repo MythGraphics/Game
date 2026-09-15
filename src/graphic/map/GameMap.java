@@ -143,6 +143,10 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
         return scale( loadImage( imgPath ), DEFAULT_TILE_SIZE, DEFAULT_TILE_SIZE, false );
     }
 
+    public MoveableTile getPlayer() {
+        return player;
+    }
+
     /**
      * Berechnet den X-Offset für den Scroll-Buffer, um den Spieler zu zentrieren.
      * Stellt sicher, dass das Ansichtsfenster innerhalb der Kartengrenzen bleibt.
@@ -377,10 +381,10 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
             return;
         }
 
-        for (Block block : collidables) {
-            if ( collision( player, block )) {
+        for (Collidable c : collidables) {
+            if ( collision( player, c )) {
 //              fireEvent(player, block); // über Block/Collidable implementiert
-                boolean passable = block.onCollision(this, player, this);
+                boolean passable = c.onCollision(this, player, this);
                 if (!passable) {
                     resetPlayerPosition();
                     break;
@@ -487,6 +491,10 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
     }
 
     public void fireProjectile(BlockTile source, Direction d) {
+        if ( !source.canFireProjectile() ) {
+            return;
+        }
+
         int x = source.x;
         int y = source.y;
         switch (d) {
@@ -496,7 +504,7 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
             case UP    -> y -= tileSize;
         }
         Projectile p = new Projectile(
-            source, d, x, y, DefaultBlockType.PROJECTILE, tileSize, new Point( 0, 0 ), source.getProjectileImage()
+            source, d, x, y, DefaultBlockType.PROJECTILE, tileSize, new Point(0, 0)
         );
         collidables.add(p);
         renderables.add(p);

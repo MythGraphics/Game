@@ -11,11 +11,9 @@ package graphic.map;
  *
  */
 
-import graphic.AnimationData;
-import graphic.AnimationPlayer;
-import graphic.DirectionalImage;
-import graphic.HasImage;
+import graphic.*;
 import static graphic.io.BinaryIO.*;
+import static graphic.io.ImageUtility.flipImage;
 import static graphic.io.ImageUtility.scale;
 import static graphic.io.TilesetUtility.getSpriteSet;
 import static graphic.io.TilesetUtility.getSpriteSetVertical;
@@ -24,8 +22,10 @@ import static graphic.map.GameMap.DEFAULT_TILE_SIZE;
 import graphic.tile.BlockTile;
 import graphic.tile.MoveableTile;
 import graphic.tile.TileBuilder;
+import graphic.tile.TilesetBuilder;
 import java.awt.Color;
 import java.awt.Point;
+import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,7 +35,7 @@ public class DefaultUWMap extends UWMap {
 
     private final Map<IsBlockType, HasImage> imgMap = new HashMap<>();
 
-    private AnimationData[] playerAniData;
+    private DirectionalImage playerAniSet, playerProjectile;
 
     public DefaultUWMap(char[][] tileMap) {
         super(tileMap);
@@ -49,27 +49,51 @@ public class DefaultUWMap extends UWMap {
 
     @Override
     protected void loadSprites() {
-        playerAniData = AnimationData.buildDirectionalImageSet(
+        AnimationData[] playerAniData = AnimationData.buildDirectionalImageSet(
             getSpriteSetVertical(
                 loadImage(TILESET+"player/lpc_female_blond/idle2.png"), 0, DEFAULT_TILE_SIZE, 4
             ), "ULDR"
         );
+        playerAniSet = new DirectionalImage( AnimationPlayer.createSet( playerAniData ));
+
         imgMap.put( WALL5,  new TileBuilder.Tile( loadStretchedImage( SPRITE+"land/Stone1.png" )));
         imgMap.put( BUBBLE, new TileBuilder.Tile( scale(
             getSpriteSet(
                 loadImage(TILESET+"uw/bubble.png"), new Point(0, 0), 0, 0, 225, 1
             )[0], DEFAULT_TILE_SIZE
         )));
+
+        TilesetBuilder builder = new TilesetBuilder( loadImage( TILESET+"dragon/dragon.png" ), 90, 85 );
+        builder.setDirection(Direction.DOWN);
+        BufferedImage[] up = builder.getTileSet(4);
+        builder.setCursorOnStart();
+        builder.moveCursorRight();
+        builder.moveCursorRight();
+        BufferedImage[] right = builder.getTileSet(4);
+        builder.setCursorOnStart();
+        builder.moveCursorRight();
+        builder.moveCursorRight();
+        BufferedImage[] down = builder.getTileSet(4);
+        BufferedImage[] left = new BufferedImage[4];
+        for (int i = 0; i < left.length; ++i) {
+            left[i] = flipImage(right[i], false);
+        }
+        AnimationData[] aniDataSet = AnimationData.buildDirectionalAnimationSet( new BufferedImage[][] {
+            up, right, down, left
+        });
+        AnimationPlayer[] aniSet = AnimationPlayer.createSet(aniDataSet);
+        playerProjectile = new DirectionalImage(aniSet);
     }
 
     @Override
     protected BlockTile getBlockTile(int x, int y, IsBlockType bType) {
         switch (bType) {
             case PLAYER:
-                DirectionalImage playerAni = new DirectionalImage( AnimationPlayer.createSet( playerAniData ));
-                return new MoveableTile(
-                    x, y, PLAYER, tileSize, getMaxPoint(), playerAni
+                MoveableTile playerTile = new MoveableTile(
+                    x, y, PLAYER, tileSize, getMaxPoint(), playerAniSet
                 );
+                playerTile.setProjectileImage(playerProjectile);
+                return playerTile;
             case WALL5:
             case BUBBLE:
                 return new BlockTile(x, y, tileSize, bType, imgMap.get( bType ));

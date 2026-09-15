@@ -48,6 +48,10 @@ public class MoveableTile extends BlockTile implements Moveable {
         return stepSize;
     }
 
+    public Direction getCurrentDirection() {
+        return imgset.getDirection();
+    }
+
     @Override
     public void move(Direction direction) {
         imgset.setDirection(direction);

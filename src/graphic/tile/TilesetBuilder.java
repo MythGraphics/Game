@@ -30,6 +30,7 @@ public class TilesetBuilder {
     private int offsetX = 0, offsetY = 0, spaceX = 0, spaceY = 0;
     private int tileSizeX, tileSizeY;
     private Direction d = RIGHT;
+//  private Alignment a = HORIZONTAL;
 
     public TilesetBuilder(BufferedImage image, int tileSize) {
         this(image, tileSize, tileSize);
@@ -96,7 +97,19 @@ public class TilesetBuilder {
     public Direction getDirection() {
         return d;
     }
+/*
+    public void setAlignment(Alignment a) {
+        this.a = a;
+    }
 
+    public Alignment getAlignment() {
+        return a;
+    }
+
+    public int calcTileSize(int numberOfTiles) {
+        return calcTileSize(numberOfTiles, a);
+    }
+ */
     public Dimension calcTileSize(int numberOfTilesX, int numberOfTilesY) {
         return new Dimension( calcTileSize( numberOfTilesX, HORIZONTAL ), calcTileSize( numberOfTilesY, VERTICAL ));
     }
@@ -206,9 +219,9 @@ public class TilesetBuilder {
     }
 
     public boolean hasNext() {
-        boolean a = cursor.x >= 0 && cursor.x + tileSizeX <= image.getWidth();
-        boolean b = cursor.y >= 0 && cursor.y + tileSizeY <= image.getHeight();
-        return a && b;
+        boolean x = cursor.x >= 0 && cursor.x + tileSizeX <= image.getWidth();
+        boolean y = cursor.y >= 0 && cursor.y + tileSizeY <= image.getHeight();
+        return x && y;
     }
 
 }

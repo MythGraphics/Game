@@ -11,8 +11,11 @@ package graphic;
  *
  */
 
-public interface CanCastProjectile {
+import graphic.map.IsBlock;
+
+public interface CanFireProjectile extends IsBlock {
 
     DirectionalImage getProjectileImage();
+    boolean canFireProjectile();
 
 }

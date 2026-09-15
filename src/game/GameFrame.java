@@ -19,6 +19,8 @@ import game.resource.Resource.ResourceType;
 import static game.resource.Resource.ResourceType.*;
 import game.resource.ResourceChangeListener;
 import game.routine.*;
+import graphic.Direction;
+import graphic.tile.MoveableTile;
 import static graphic.io.BinaryIO.AUDIO;
 import graphic.io.ImageUtility;
 import graphic.map.*;
@@ -642,6 +644,11 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
                                 -> audioPlayer.changeVolume(10);
             case KeyEvent.VK_MINUS, KeyEvent.VK_SUBTRACT
                                 -> audioPlayer.changeVolume(-10);
+            case KeyEvent.VK_C  -> {
+                // cast spell
+                MoveableTile playerTile = map.getPlayer();
+                map.fireProjectile( playerTile, playerTile.getCurrentDirection() );
+            }
             default             -> map.move(evt);
         }
     }//GEN-LAST:event_formKeyReleased

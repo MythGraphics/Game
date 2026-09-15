@@ -78,7 +78,7 @@ public class TilesetUtility {
 
     /**
      * Lädt die gegebene Anzahl an Unterbildern in ein BufferedImage-Array (SpriteSet).
-     * Die Länge des Sprites entspricht der Gesamtlänge des Bildes.
+     * Die Höhe des Sprites entspricht der Gesamtlänge des Bildes.
      * @param image Quell-Bild
      * @param width Ausdehnung eines Sprites in x-Achse (Breite) oder 0 für anteilige Breite basierend auf der
      *              Gesamtbreite des Bildes
@@ -106,7 +106,7 @@ public class TilesetUtility {
      * Lädt die gegebene Anzahl an Unterbildern in ein BufferedImage-Array (SpriteSet).
      * Die Breite des Sprites entspricht der Gesamtbreite des Bildes.
      * @param image Quell-Bild
-     * @param height Ausdehnung eines Sprites in y-Achse (Länge) oder 0 für anteilige Höhe basierend auf der
+     * @param height Ausdehnung eines Sprites in y-Achse (Höhe) oder 0 für anteilige Höhe basierend auf der
      *               Gesamthöhe des Bildes
      * @param tileSize Größe des Sprite-Blocks (tileSize x tileSize Pixel) oder 0 für Originalgröße
      * @param number Anzahl der zu ladenden Sprites
@@ -131,8 +131,8 @@ public class TilesetUtility {
     /**
      * Lädt die gegebene Anzahl an Unterbildern in ein BufferedImage-Array (SpriteSet).
      * @param image Quell-Bild
-     * @param height Ausdehnung eines Sprites in y-Achse (Länge)
      * @param width Ausdehnung eines Sprites in x-Achse (Breite)
+     * @param height Ausdehnung eines Sprites in y-Achse (Höhe)
      * @param alignment Ausrichtung des SpriteSets (horizontal oder vertical)
      * @param tileSize Größe des Sprite-Blocks (tileSize x tileSize Pixel)
      * @param number Anzahl der zu ladenden Sprites
@@ -141,15 +141,32 @@ public class TilesetUtility {
     public static BufferedImage[] getSpriteSet(
         BufferedImage image, int width, int height, Alignment alignment, int tileSize, int number
     ) {
-        if (image == null || width <= 0 || height <= 0 || number <= 0) {
+        return getSpriteSet(image, 0, width, height, alignment, tileSize, number);
+    }
+
+    /**
+     * Lädt die gegebene Anzahl an Unterbildern in ein BufferedImage-Array (SpriteSet).
+     * @param image Quell-Bild
+     * @param offset Offset in alignment-Richtung (VERTICAL -> x-Achse, HORIZONTAL -> y-Achse)
+     * @param width Ausdehnung eines Sprites in x-Achse (Breite)
+     * @param height Ausdehnung eines Sprites in y-Achse (Höhe)
+     * @param alignment Ausrichtung des SpriteSets (horizontal oder vertical)
+     * @param tileSize Größe des Sprite-Blocks (tileSize x tileSize Pixel)
+     * @param number Anzahl der zu ladenden Sprites
+     * @return SpriteSet
+     */
+    public static BufferedImage[] getSpriteSet(
+        BufferedImage image, int offset, int width, int height, Alignment alignment, int tileSize, int number
+    ) {
+        if (image == null || offset < 0 || width <= 0 || height <= 0 || number <= 0) {
             return new BufferedImage[0];
         }
 
         List<BufferedImage> list = new ArrayList<>();
 
         for (int i = 0; i < number; i++) {
-            int x = (alignment == HORIZONTAL) ? i * width  : 0;
-            int y = (alignment == VERTICAL)   ? i * height : 0;
+            int x = (alignment == HORIZONTAL) ? i * width  : offset;
+            int y = (alignment == VERTICAL)   ? i * height : offset;
 
             // Grenzen vor dem Herausschneiden prüfen
             if ( x+width > image.getWidth() || y+height > image.getHeight() ) {
@@ -176,9 +193,7 @@ public class TilesetUtility {
      * @param number Anzahl der zu ladenden Sprites pro Animation (Zeile) oder -1 für alle
      * @return AnimationSet
      */
-    public static BufferedImage[][] getAnimationSet(BufferedImage image,
-                                                    int tileSize, int number
-    ) {
+    public static BufferedImage[][] getAnimationSet(BufferedImage image, int tileSize, int number) {
         return getAnimationSet( image, new Point(0, 0), 0, 0, tileSize, tileSize, number );
     }
 
@@ -206,7 +221,7 @@ public class TilesetUtility {
      * @param start Startposition
      * @param spaceX Abstand zwischen Sprites in x-Achse
      * @param spaceY Abstand zwischen Sprites in y-Achse
-     * @param width Länge eines Sprites
+     * @param width Höhe eines Sprites
      * @param height Höhe eines Sprites
      * @param number Anzahl der zu ladenden Sprites pro Animation (Zeile) oder -1 für alle
      * @return AnimationSet

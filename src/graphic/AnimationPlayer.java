@@ -26,19 +26,6 @@ public class AnimationPlayer implements HasImage {
         this.data = data;
     }
 
-    public static AnimationPlayer[] createSet(AnimationData[] dataSet) {
-        if (dataSet == null) {
-            return new AnimationPlayer[0];
-        }
-        AnimationPlayer[] players = new AnimationPlayer[dataSet.length];
-        for (int i = 0; i < dataSet.length; i++) {
-            if (dataSet[i] != null) {
-                players[i] = new AnimationPlayer(dataSet[i]);
-            }
-        }
-        return players;
-    }
-
     public void setSpeed(int ticks) {
         this.ticksPerFrame = Math.max(1, ticks);
     }
@@ -96,28 +83,10 @@ public class AnimationPlayer implements HasImage {
 
     /**
      * Erstellt ein neues Set von AnimationPlayer basierend auf einem Satz AnimationData.
-     * @param dataSet DataSet
-     * @return Set of AnimationPlayer
-     */
-    public static AnimationPlayer[] createAnimationPlayerSet(AnimationData[] dataSet) {
-        if (dataSet == null || dataSet.length < 4) {
-            throw new IllegalArgumentException("dataSet is null or from insufficient length.");
-        }
-        AnimationPlayer[] players = new AnimationPlayer[dataSet.length];
-        for (int i = 0; i < dataSet.length; i++) {
-            if (dataSet[i] != null) {
-                players[i] = new AnimationPlayer(dataSet[i]);
-            }
-        }
-        return players;
-    }
-
-    /**
-     * Erstellt ein neues Set von AnimationPlayer basierend auf einem Satz AnimationData.
      * @param aniMap AnimationMap
      * @return Set of AnimationPlayer
      */
-    public static AnimationPlayer[] createAnimationPlayerSet(Map<Direction, AnimationData> aniMap) {
+    public static AnimationPlayer[] createSet(Map<Direction, AnimationData> aniMap) {
         if (aniMap == null || aniMap.size() < 4) {
             throw new IllegalArgumentException("aniMap is null or from insufficient length.");
         }
@@ -132,6 +101,24 @@ public class AnimationPlayer implements HasImage {
             }
         }
         return playerSet;
+    }
+
+    /**
+     * Erstellt ein neues Set von AnimationPlayer basierend auf einem Satz AnimationData.
+     * @param dataSet DataSet
+     * @return Set of AnimationPlayer
+     */
+    public static AnimationPlayer[] createSet(AnimationData[] dataSet) {
+        if (dataSet == null || dataSet.length < 4) {
+            throw new IllegalArgumentException("dataSet is null or from insufficient length.");
+        }
+        AnimationPlayer[] players = new AnimationPlayer[dataSet.length];
+        for (int i = 0; i < dataSet.length; i++) {
+            if (dataSet[i] != null) {
+                players[i] = new AnimationPlayer(dataSet[i]);
+            }
+        }
+        return players;
     }
 
 }

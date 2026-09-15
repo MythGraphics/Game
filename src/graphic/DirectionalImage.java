@@ -34,6 +34,10 @@ public class DirectionalImage implements HasImage, HasDirectionalImage {
         this.d = d;
     }
 
+    public Direction getDirection() {
+        return d;
+    }
+
     @Override
     public BufferedImage getImage() {
         return imageset[d.ordinal()].getImage();
