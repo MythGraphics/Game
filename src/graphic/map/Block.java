@@ -104,8 +104,8 @@ public class Block implements Collidable {
     }
 
     @Override
-    public boolean onCollision(GameMap souce, Block initiator, IsCollisionHandler handler) {
-        handler.fireEvent(initiator, this);
+    public boolean onCollision(GameMap map, Block initiator, IsCollisionHandler handler) {
+        handler.fireEvent(map, initiator, this);
         return getBlockType().isPassable();
     }
 

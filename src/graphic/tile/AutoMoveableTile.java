@@ -30,7 +30,7 @@ public class AutoMoveableTile extends MoveableTile implements ActionListener, Au
     private final Direction initialDirection;
 
     private Direction direction;
-    private boolean auto = false;
+    private boolean auto = true;
     private int ticksPerStep = 1;
     private int tickCounter  = 0;
 
@@ -58,7 +58,6 @@ public class AutoMoveableTile extends MoveableTile implements ActionListener, Au
         this(initialDirection, pos.x, pos.y, dim.width, dim.height, bType, stepSize, maxPoint, imgset);
     }
 
-    @Override
     public void reset() {
         super.x = start.x;
         super.y = start.y;
@@ -72,10 +71,12 @@ public class AutoMoveableTile extends MoveableTile implements ActionListener, Au
         move( Direction.values()[randi] );
     }
 
+    @Override
     public void start() {
         auto = true;
     }
 
+    @Override
     public void stop() {
         auto = false;
     }
@@ -84,22 +85,24 @@ public class AutoMoveableTile extends MoveableTile implements ActionListener, Au
         this.ticksPerStep = Math.max(1, ticks);
     }
 
-    public Direction getDirection() {
+    @Override
+    public Direction getCurrentDirection() {
         return direction;
     }
 
     public final void setDirection(Direction direction) {
         this.direction = direction;
-        imgset.setDirection(initialDirection);
+        imgset.setDirection(direction);
+    }
+
+    @Override
+    public void move() {
+        move(direction);
     }
 
     @Override
     public void move(Direction direction) {
-        if (direction == null) {
-            return;
-        }
-
-        setDirection(direction);
+        this.direction = direction;
         super.move(direction);
 
         // Bewegungslogik: Umkehren, wenn Grenzen erreicht

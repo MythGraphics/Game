@@ -54,6 +54,10 @@ public class MoveableTile extends BlockTile implements Moveable {
 
     @Override
     public void move(Direction direction) {
+        if (direction == null) {
+            return;
+        }
+
         imgset.setDirection(direction);
         // Bewegungslogik
         switch (direction) {

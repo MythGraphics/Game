@@ -13,7 +13,9 @@ package graphic;
 
 public interface AutoMoveable extends Moveable {
 
+    void move();
     void moveRandom();
-    void reset();
+    void start();
+    void stop();
 
 }

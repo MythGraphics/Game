@@ -11,6 +11,7 @@ package graphic.map;
  *
  */
 
+import graphic.AutoMoveable;
 import graphic.Direction;
 import static graphic.Direction.*;
 import static graphic.io.BinaryIO.loadImage;
@@ -54,10 +55,12 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
 
     protected final int tileSize, rowCount, columnCount;
     protected final char[][] tileMap;
-    protected final Collection<Block> collidables = new HashSet<>(); // Collidable, IsBlock
-    protected final Collection<Renderable> renderables = new ArrayList<>();
-    protected final Collection<Block> garbageC = new HashSet<>(); // collidable Blocks, die entfernt werden sollen
-    protected final Collection<Renderable> garbageR = new HashSet<>(); // Renderables, die entfernt werden sollen
+    protected final Collection<Block> collidables           = new HashSet<>(); // Collidable, IsBlock
+    protected final Collection<Renderable> renderables      = new ArrayList<>();
+    protected final Collection<AutoMoveable> scurryables    = new HashSet<>(); // sich selbst bewegende Entitäten
+    protected final Collection<Block> garbageC              = new HashSet<>(); // Collidables, die entfernt werden sollen
+    protected final Collection<Renderable> garbageR         = new HashSet<>(); // Renderables, die entfernt werden sollen
+    protected final Collection<AutoMoveable> garbageS       = new HashSet<>(); // AutoMovables, die entfernt werden sollen
 
     protected MoveableTile player;
     protected Renderable spaceTile;
@@ -266,6 +269,12 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
     @Override
     // wird vom Timer ausgelöst
     public void actionPerformed(ActionEvent evt) {
+/*
+        // DeltaTime berechnen (vergangene Zeit in Sekunden seit dem letzten Frame)
+        long currentTime = System.nanoTime();
+        double deltaTime = (currentTime - lastFrameTime) / 1_000_000_000.0;
+        lastFrameTime = currentTime;
+ */
         super.repaint();
     }
 
@@ -273,10 +282,15 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
         collisionListeners.add(actionListener);
     }
 
+    private void fireEvent(Block source, Block target) {
+        fireEvent(this, source, target);
+    }
+
     @Override
-    public void fireEvent(Block initiator, Block target) {
+    public void fireEvent(GameMap map, Block source, Block target) {
+        // collider/initiator (bewegliche Objekt), obstacle (statische Hindernis)
         System.out.println(
-            "Collision of block "   + initiator.getBlockType() +
+            "Collision of block "   + source.getBlockType() +
             " with block "          + target.getBlockType() +
             " at pixel "            + target.x + ", " + target.y +
             " (column "             + ( target.x / target.width  + 1 ) + // +1, um keine Indizes auszugeben
@@ -284,19 +298,44 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
             ")."
         );
         collisionListeners.forEach( actionListener -> actionListener.collisionPerformed(
-            new CollisionEvent(this, initiator, target)
+            new CollisionEvent(this, source, target)
         ));
+
+        // aufräumen
+        if (source instanceof Projectile projectile) {
+            remove(projectile);
+        }
+        if (target instanceof Projectile projectile) {
+            remove(projectile);
+        }
     }
 
     public void moveThroughPortal(Point target) {
-        Point destination = new Point( target.x+player.x-lastPlayerPos.x, target.y+player.y-lastPlayerPos.y );
-        setPlayerPosition(destination);
+        int destinationX = target.x + player.x - lastPlayerPos.x;
+        int destinationY = target.y + player.y - lastPlayerPos.y;
+        setPlayerPositionXY(destinationX, destinationY);
+    }
+
+    public Block getBlock(int col, int row) {
+        // 0 ist ungültig
+        if ( col <= 0 || row <= 0 ) {
+            return null;
+        }
+
+        int x = (col-1)*tileSize;
+        int y = (row-1)*tileSize;
+        for (Block block : collidables) {
+            if (block.x == x && block.y == y) {
+                return block;
+            }
+        }
+        return null;
     }
 
     public void movePlayer(int deltaCol, int deltaRow) {
         int targetX = player.x + deltaCol*tileSize;
         int targetY = player.y + deltaRow*tileSize;
-        setPlayerPosition( new Point( targetX, targetY ));
+        setPlayerPositionXY(targetX, targetY);
     }
 
     /**
@@ -322,14 +361,23 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
             targetRow = (row-1 + rowCount) % rowCount;
         }
 
-        setPlayerPosition( new Point( targetColumn*tileSize, targetRow*tileSize )); // Zuweisung der Position
+        setPlayerPositionXY(targetColumn*tileSize, targetRow*tileSize);
+    }
+
+    /**
+     * Setzt die Position des Spielers auf die gegebenen X-Y-Koordinaten.
+     * @param x
+     * @param y
+     */
+    public void setPlayerPositionXY(int x, int y) {
+        setLastPlayerPosition();
+        player.x = x;
+        player.y = y;
+        detectCollision(player);
     }
 
     public void setPlayerPosition(Point target) {
-        setLastPlayerPosition();
-        player.x = target.x;
-        player.y = target.y;
-        detectCollision();
+        setPlayerPosition(target.x, target.y);
     }
 
     private void setLastPlayerPosition() {
@@ -354,7 +402,7 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
             case KeyEvent.VK_RIGHT, KeyEvent.VK_D, KeyEvent.VK_6 -> player.move(RIGHT);
             case KeyEvent.VK_LEFT,  KeyEvent.VK_A, KeyEvent.VK_4 -> player.move(LEFT);
         }
-        detectCollision();
+        detectCollision(player);
     }
 
     private boolean detectPanelCollision() {
@@ -374,27 +422,29 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
         return false;
     }
 
-    final void detectCollision() {
+    void detectCollision(Block source) {
+        // Collidable, IsCollider, IsCollisionHandler aktuell nicht genutzt
         if ( detectPanelCollision() ) {
-            fireEvent( player, new Block( player.x, player.y, player.width, player.height, BOUNDARY ));
-            resetPlayerPosition();
+            Block target = new Block(player.x, player.y, player.width, player.height, BOUNDARY);
+            fireEvent(source, target);
             return;
         }
 
-        for (Collidable c : collidables) {
-            if ( collision( player, c )) {
-//              fireEvent(player, block); // über Block/Collidable implementiert
-                boolean passable = c.onCollision(this, player, this);
-                if (!passable) {
+        for (Block block : collidables) {
+            if ( collision( source, block )) {
+                fireEvent(source, block);
+                boolean passable = block.getBlockType().isPassable();
+                if (!passable && source == player) {
                     resetPlayerPosition();
-                    break;
                 }
+                fireEvent(source, block);
+                break;
             }
         }
     }
 
     private boolean collision(Collidable a, Collidable b) {
-        if (a == null || b == null) {
+        if (a == null || b == null || a == b) {
             return false;
         }
         return  a.getX() < b.getX() + b.getWidth()  &&
@@ -456,10 +506,17 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
             player.draw(g2d, offsetX, offsetY);
         }
 
+        for (AutoMoveable moveable : scurryables) {
+            moveable.move();
+            detectCollision(( Block) moveable );
+        }
+
         collidables.removeAll(garbageC);
         garbageC.clear();
         renderables.removeAll(garbageR);
         garbageR.clear();
+        scurryables.removeAll(garbageS);
+        garbageS.clear();
     }
 
     private void drawSpace(Graphics2D g2d, int offsetX, int offsetY) {
@@ -490,13 +547,13 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
         return value;
     }
 
-    public void fireProjectile(BlockTile source, Direction d) {
-        if ( !source.canFireProjectile() ) {
+    public void fireProjectile(BlockTile initiator, Direction d) {
+        if ( !initiator.canFireProjectile() ) {
             return;
         }
 
-        int x = source.x;
-        int y = source.y;
+        int x = initiator.x;
+        int y = initiator.y;
         switch (d) {
             case RIGHT -> x += tileSize;
             case LEFT  -> x -= tileSize;
@@ -504,16 +561,20 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
             case UP    -> y -= tileSize;
         }
         Projectile p = new Projectile(
-            source, d, x, y, DefaultBlockType.PROJECTILE, tileSize, new Point(0, 0)
+            initiator, d, x, y, DefaultBlockType.PROJECTILE, tileSize, new Point(Integer.MAX_VALUE, Integer.MAX_VALUE)
         );
         collidables.add(p);
         renderables.add(p);
+        scurryables.add(p);
     }
 
     public void remove(Block block) {
         garbageC.add(block);
         if (block instanceof Renderable r) {
             garbageR.add(r);
+        }
+        if (block instanceof AutoMoveable m) {
+            garbageS.add(m);
         }
     }
 

@@ -76,7 +76,7 @@ public class DefaultUWMap extends UWMap {
         BufferedImage[] down = builder.getTileSet(4);
         BufferedImage[] left = new BufferedImage[4];
         for (int i = 0; i < left.length; ++i) {
-            left[i] = flipImage(right[i], false);
+            left[i] = flipImage(right[i], true);
         }
         AnimationData[] aniDataSet = AnimationData.buildDirectionalAnimationSet( new BufferedImage[][] {
             up, right, down, left

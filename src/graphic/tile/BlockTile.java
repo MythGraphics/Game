@@ -54,7 +54,7 @@ public class BlockTile extends Block implements Renderable, CanFireProjectile {
 
     @Override
     public DirectionalImage getProjectileImage() {
-        return projectileImage;
+        return new DirectionalImage(projectileImage);
     }
 
     public void setProjectileImage(DirectionalImage projectileImage) {

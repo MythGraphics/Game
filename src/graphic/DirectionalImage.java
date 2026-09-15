@@ -13,13 +13,13 @@ package graphic;
 
 import java.awt.image.BufferedImage;
 
-public class DirectionalImage implements HasImage, HasDirectionalImage {
+public class DirectionalImage implements HasImage, HasDirectionalImage, Cloneable {
 
     private final HasImage[] imageset;
     private Direction d;
 
     public DirectionalImage(HasImage[] imageset) {
-        this(Direction.RIGHT, imageset);
+        this(Direction.values()[0], imageset);
     }
 
     public DirectionalImage(Direction initialDirection, HasImage[] imageset) {
@@ -28,6 +28,17 @@ public class DirectionalImage implements HasImage, HasDirectionalImage {
         }
         this.d = initialDirection;
         this.imageset = imageset;
+    }
+
+    // Copy-Constructor (shallow)
+    public DirectionalImage(DirectionalImage other) {
+        this.d = other.d;
+        this.imageset = other.imageset;
+    }
+
+    // Copy-Factory (shallow)
+    public static DirectionalImage newInstance(DirectionalImage other) {
+        return new DirectionalImage(other);
     }
 
     public void setDirection(Direction d) {
@@ -46,6 +57,11 @@ public class DirectionalImage implements HasImage, HasDirectionalImage {
     @Override
     public BufferedImage getImage(Direction d) {
         return imageset[d.ordinal()].getImage();
+    }
+
+    @Override
+    public DirectionalImage clone() {
+        return new DirectionalImage(this);
     }
 
 }

@@ -13,14 +13,29 @@ package graphic.tile;
 
 import graphic.Direction;
 import graphic.DirectionalImage;
-import graphic.map.Block;
-import graphic.map.GameMap;
-import graphic.map.IsBlockType;
-import graphic.map.IsCollisionHandler;
+import graphic.map.*;
 import java.awt.Dimension;
 import java.awt.Point;
 
-public class Projectile extends AutoMoveableTile {
+public class Projectile extends AutoMoveableTile implements IsCollider {
+
+/*
+    Methode(int startX, int startY, int targetX, int targetY, int speed) {
+        int vx = 0, vy = 0;
+        int x = startX;
+        int y = startY;
+
+        // Richtungsvektor berechnen und normalisieren
+        int dx = targetX - startX;
+        int dy = targetY - startY;
+        double distance = Math.sqrt(dx * dx + dy * dy);
+
+        if (distance != 0) {
+            vx = (int) (dx / distance) * speed;
+            vy = (int) (dy / distance) * speed;
+        }
+    }
+ */
 
     public final Block source;
 
@@ -55,9 +70,14 @@ public class Projectile extends AutoMoveableTile {
     }
 
     @Override
-    public boolean onCollision(GameMap source, Block initiator, IsCollisionHandler handler) {
-        destroy(source);
-        return super.onCollision(source, initiator, handler);
+    public boolean onCollision(GameMap map, Block initiator, IsCollisionHandler handler) {
+        map.remove(this);
+        return super.onCollision(map, initiator, handler);
+    }
+
+    @Override
+    public void collides(GameMap map, Block target, IsCollisionHandler handler) {
+        map.remove(this);
     }
 
 }
