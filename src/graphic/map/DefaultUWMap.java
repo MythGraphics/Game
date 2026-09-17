@@ -63,7 +63,7 @@ public class DefaultUWMap extends UWMap {
             )[0], DEFAULT_TILE_SIZE
         )));
 
-        TilesetBuilder builder = new TilesetBuilder( loadImage( TILESET+"dragon/dragon.png" ), 90, 85 );
+        TilesetBuilder builder = new TilesetBuilder( loadImage( TILESET+"dragon/dragon.png" ), 88, 82 );
         builder.setDirection(Direction.DOWN);
         BufferedImage[] up = builder.getTileSet(4);
         builder.setCursorOnStart();

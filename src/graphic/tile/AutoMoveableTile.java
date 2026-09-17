@@ -13,7 +13,6 @@ package graphic.tile;
 
 import graphic.AutoMoveable;
 import graphic.Direction;
-import static graphic.Direction.*;
 import graphic.DirectionalImage;
 import graphic.map.IsBlockType;
 import java.awt.Dimension;
@@ -25,11 +24,9 @@ import java.util.Random;
 public class AutoMoveableTile extends MoveableTile implements ActionListener, AutoMoveable {
 
     final Point start;
+    final Random rand = new Random();
+    final Direction initialDirection;
 
-    private final Random rand = new Random();
-    private final Direction initialDirection;
-
-    private Direction direction;
     private boolean auto = true;
     private int ticksPerStep = 1;
     private int tickCounter  = 0;
@@ -85,33 +82,13 @@ public class AutoMoveableTile extends MoveableTile implements ActionListener, Au
         this.ticksPerStep = Math.max(1, ticks);
     }
 
-    @Override
-    public Direction getCurrentDirection() {
-        return direction;
-    }
-
     public final void setDirection(Direction direction) {
-        this.direction = direction;
         imgset.setDirection(direction);
     }
 
     @Override
     public void move() {
-        move(direction);
-    }
-
-    @Override
-    public void move(Direction direction) {
-        this.direction = direction;
-        super.move(direction);
-
-        // Bewegungslogik: Umkehren, wenn Grenzen erreicht
-        switch (direction) {
-            case UP    -> { if (y <= start.y)    { this.direction = Direction.invert(Direction.UP); }}
-            case DOWN  -> { if (y >= maxPoint.y) { this.direction = Direction.invert(Direction.DOWN); }}
-            case LEFT  -> { if (x <= start.x)    { this.direction = Direction.invert(Direction.LEFT); }}
-            case RIGHT -> { if (x >= maxPoint.x) { this.direction = Direction.invert(Direction.RIGHT); }}
-        }
+        move( getCurrentDirection() );
     }
 
     @Override
@@ -120,7 +97,7 @@ public class AutoMoveableTile extends MoveableTile implements ActionListener, Au
             // Logik für die Verzögerung
             tickCounter++;
             if (tickCounter >= ticksPerStep) {
-                move(direction);
+                move();
                 tickCounter = 0;
             }
         }
