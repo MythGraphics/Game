@@ -13,9 +13,9 @@ package graphic;
 
 import graphic.map.IsBlock;
 
-public interface CanFireProjectile extends IsBlock {
+public interface CanFireMissile extends IsBlock {
 
-    DirectionalImage getProjectileImage();
-    boolean canFireProjectile();
+    DirectionalImage getMissileImage();
+    boolean canFireMissile();
 
 }

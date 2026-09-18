@@ -19,8 +19,8 @@ import static graphic.io.ImageUtility.scale;
 import static graphic.io.ImageUtility.stretch;
 import static graphic.map.DefaultBlockType.*;
 import graphic.tile.BlockTile;
+import graphic.tile.Missile;
 import graphic.tile.MoveableTile;
-import graphic.tile.Projectile;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -302,11 +302,11 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
         ));
 
         // aufräumen
-        if (source instanceof Projectile projectile) {
-            remove(projectile);
+        if (source instanceof Missile missile) {
+            remove(missile);
         }
-        if (target instanceof Projectile projectile) {
-            remove(projectile);
+        if (target instanceof Missile missile) {
+            remove(missile);
         }
     }
 
@@ -547,8 +547,8 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
         return value;
     }
 
-    public void fireProjectile(BlockTile initiator, Direction d) {
-        if ( !initiator.canFireProjectile() ) {
+    public void fireMissile(BlockTile initiator, Direction d) {
+        if ( !initiator.canFireMissile() ) {
             return;
         }
 
@@ -560,10 +560,10 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
             case DOWN  -> y += tileSize;
             case UP    -> y -= tileSize;
         }
-        Projectile p = new Projectile(initiator, d, x, y, PROJECTILE, tileSize/2);
-        collidables.add(p);
-        renderables.add(p);
-        scurryables.add(p);
+        Missile m = new Missile(initiator, d, x, y, MISSILE, tileSize/2);
+        collidables.add(m);
+        renderables.add(m);
+        scurryables.add(m);
     }
 
     public void remove(Block block) {
@@ -571,8 +571,8 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
         if (block instanceof Renderable r) {
             garbageR.add(r);
         }
-        if (block instanceof AutoMoveable m) {
-            garbageS.add(m);
+        if (block instanceof AutoMoveable am) {
+            garbageS.add(am);
         }
     }
 

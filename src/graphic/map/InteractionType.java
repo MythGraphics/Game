@@ -18,11 +18,11 @@ public enum InteractionType {
     ENVIRONMENT,    // interactive environment, impassable (i.e. buildings)
     ENEMY,
     EXIT,           // map exit
+    MISSILE,
     NONE,           // something that is not null to avoid NullPointerException
     NPC,
     PLAYER,         // Player-Player-Interaktion
     PORTAL,
-    PROJECTILE,
     SURFACE,        // interactive map divider
     TERRAIN,        // interactive terrain, passable (i.e. bush, gras, mushrooms, ...)
     TEXT,           // text output

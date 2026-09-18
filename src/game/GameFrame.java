@@ -647,7 +647,7 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
             case KeyEvent.VK_C  -> {
                 // cast spell
                 MoveableTile playerTile = map.getPlayer();
-                map.fireProjectile( playerTile, playerTile.getCurrentDirection() );
+                map.fireMissile( playerTile, playerTile.getCurrentDirection() );
             }
             default             -> map.move(evt);
         }

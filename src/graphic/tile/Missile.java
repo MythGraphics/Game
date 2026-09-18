@@ -17,7 +17,7 @@ import graphic.map.*;
 import java.awt.Dimension;
 import java.awt.Point;
 
-public class Projectile extends AutoMoveableTile implements IsCollider {
+public class Missile extends AutoMoveableTile implements IsCollider {
 
 /*
     Methode(int startX, int startY, int targetX, int targetY, int speed) {
@@ -41,26 +41,26 @@ public class Projectile extends AutoMoveableTile implements IsCollider {
 
     public final Block source;
 
-    public Projectile(BlockTile source, Direction initialDirection,
+    public Missile(BlockTile source, Direction initialDirection,
                       int x, int y, IsBlockType bType,
                       int stepSize) {
-        this( source, initialDirection, x, y, bType, stepSize, source.getProjectileImage() );
+        this( source, initialDirection, x, y, bType, stepSize, source.getMissileImage() );
     }
 
-    public Projectile(Block source, Direction initialDirection,
+    public Missile(Block source, Direction initialDirection,
                       int x, int y, IsBlockType bType,
                       int stepSize, DirectionalImage imgset) {
         super(initialDirection, x, y, bType, stepSize, MAX, imgset);
         this.source = source;
     }
 
-    public Projectile(BlockTile source, Direction initialDirection,
+    public Missile(BlockTile source, Direction initialDirection,
                       Point pos, Dimension dim, IsBlockType bType,
                       int stepSize) {
-        this( source, initialDirection, pos, dim, bType, stepSize, source.getProjectileImage() );
+        this( source, initialDirection, pos, dim, bType, stepSize, source.getMissileImage() );
     }
 
-    public Projectile(Block source, Direction initialDirection,
+    public Missile(Block source, Direction initialDirection,
                       Point pos, Dimension dim, IsBlockType bType,
                       int stepSize, DirectionalImage imgset) {
         super(initialDirection, pos, dim, bType, stepSize, MAX, imgset);

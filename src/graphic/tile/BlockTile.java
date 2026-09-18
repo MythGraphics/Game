@@ -11,7 +11,7 @@ package graphic.tile;
  *
  */
 
-import graphic.CanFireProjectile;
+import graphic.CanFireMissile;
 import graphic.DirectionalImage;
 import graphic.HasImage;
 import graphic.map.Block;
@@ -24,10 +24,10 @@ import java.awt.Point;
 import java.awt.image.BufferedImage;
 
 // is a sprite
-public class BlockTile extends Block implements Renderable, CanFireProjectile {
+public class BlockTile extends Block implements Renderable, CanFireMissile {
 
     private HasImage image;
-    private DirectionalImage projectileImage;
+    private DirectionalImage missileImage;
 
     public BlockTile(int x, int y, IsBlockType bType, HasImage image) {
         this(x, y, 0, bType, image);
@@ -53,17 +53,17 @@ public class BlockTile extends Block implements Renderable, CanFireProjectile {
     }
 
     @Override
-    public DirectionalImage getProjectileImage() {
-        return new DirectionalImage(projectileImage);
+    public DirectionalImage getMissileImage() {
+        return new DirectionalImage(missileImage);
     }
 
-    public void setProjectileImage(DirectionalImage projectileImage) {
-        this.projectileImage = projectileImage;
+    public void setProjectileImage(DirectionalImage missileImage) {
+        this.missileImage = missileImage;
     }
 
     @Override
-    public boolean canFireProjectile() {
-        return projectileImage != null;
+    public boolean canFireMissile() {
+        return missileImage != null;
     }
 
     public final void setImage(HasImage image) {
