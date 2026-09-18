@@ -15,10 +15,10 @@ import game.GameFrame;
 import game.Npc;
 import game.item.Item;
 import static game.quest.QuestStatus.INACTIVE;
-import graphic.map.Block;
 import graphic.map.CollisionEvent;
 import static graphic.map.DefaultBlockType.NPC;
 import graphic.map.InteractionType;
+import graphic.map.IsBlock;
 import java.util.*;
 
 public abstract class RPGRoutine extends MartialGameRoutine {
@@ -26,7 +26,7 @@ public abstract class RPGRoutine extends MartialGameRoutine {
     final LinkedList<Item> envLootPool = new LinkedList<>(); // Items, die zufällig in der Landschaft gefunden werden können
     final Map<Integer, Item> qLootPool = new HashMap<>(); // QuestItems, die zufällig in der Landschaft gefunden werden können, wenn die dazu gehörige Quest aktiv ist.
 
-    private final Map<Block, Npc> npcMap = new HashMap<>();
+    private final Map<IsBlock, Npc> npcMap = new HashMap<>();
     private final List<Npc> npcList;
 
     public RPGRoutine(GameFrame gameFrame, List<Npc> npcList) {
@@ -38,7 +38,7 @@ public abstract class RPGRoutine extends MartialGameRoutine {
         this( gameFrame, new LinkedList<>() );
     }
 
-    private void mapNpc(Block block, Npc npc) {
+    private void mapNpc(IsBlock block, Npc npc) {
         npcMap.put(block, npc);
     }
 
@@ -47,7 +47,7 @@ public abstract class RPGRoutine extends MartialGameRoutine {
         npcList.add(npc);
     }
 
-    public Npc getNpc(Block block) {
+    public Npc getNpc(IsBlock block) {
         Npc npc = npcMap.get(block);
         if ( npc == null && !npcList.isEmpty() ) {
             npc = npcList.removeFirst();
@@ -77,8 +77,7 @@ public abstract class RPGRoutine extends MartialGameRoutine {
         super.collisionPerformed(e);
         switch( e.getType() ) {
             case InteractionType.NPC -> {
-                Block block = e.getTarget();
-                Npc npc = getNpc(block);
+                Npc npc = getNpc( e.getTarget() );
                 if (npc == null) {
                     break;
                 }

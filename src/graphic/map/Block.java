@@ -17,9 +17,9 @@ import java.awt.Rectangle;
 
 public class Block implements Collidable {
 
+    protected int x, y;
     protected int width, height;
     protected IsBlockType bType;
-    protected int x, y;
 
     public Block(int x, int y, int width, int height, IsBlockType bType) {
         this.x = x;
@@ -95,6 +95,7 @@ public class Block implements Collidable {
         this.height = height;
     }
 
+    @Override
     public IsBlockType getBlockType() {
         return bType;
     }

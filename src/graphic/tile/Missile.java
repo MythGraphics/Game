@@ -11,6 +11,7 @@ package graphic.tile;
  *
  */
 
+import graphic.CanFireMissile;
 import graphic.Direction;
 import graphic.DirectionalImage;
 import graphic.map.*;
@@ -39,35 +40,35 @@ public class Missile extends AutoMoveableTile implements IsCollider {
 
     public final static Point MAX = new Point(Integer.MAX_VALUE, Integer.MAX_VALUE);
 
-    public final Block source;
+    public final CanFireMissile source;
 
-    public Missile(BlockTile source, Direction initialDirection,
-                      int x, int y, IsBlockType bType,
-                      int stepSize) {
+    public Missile(CanFireMissile source, Direction initialDirection,
+                   int x, int y, IsBlockType bType,
+                   int stepSize) {
         this( source, initialDirection, x, y, bType, stepSize, source.getMissileImage() );
     }
 
-    public Missile(Block source, Direction initialDirection,
-                      int x, int y, IsBlockType bType,
-                      int stepSize, DirectionalImage imgset) {
+    public Missile(CanFireMissile source, Direction initialDirection,
+                   int x, int y, IsBlockType bType,
+                   int stepSize, DirectionalImage imgset) {
         super(initialDirection, x, y, bType, stepSize, MAX, imgset);
         this.source = source;
     }
 
-    public Missile(BlockTile source, Direction initialDirection,
-                      Point pos, Dimension dim, IsBlockType bType,
-                      int stepSize) {
+    public Missile(CanFireMissile source, Direction initialDirection,
+                   Point pos, Dimension dim, IsBlockType bType,
+                   int stepSize) {
         this( source, initialDirection, pos, dim, bType, stepSize, source.getMissileImage() );
     }
 
-    public Missile(Block source, Direction initialDirection,
-                      Point pos, Dimension dim, IsBlockType bType,
-                      int stepSize, DirectionalImage imgset) {
+    public Missile(CanFireMissile source, Direction initialDirection,
+                   Point pos, Dimension dim, IsBlockType bType,
+                   int stepSize, DirectionalImage imgset) {
         super(initialDirection, pos, dim, bType, stepSize, MAX, imgset);
         this.source = source;
     }
 
-    public Block getSource() {
+    public CanFireMissile getSource() {
         return source;
     }
 

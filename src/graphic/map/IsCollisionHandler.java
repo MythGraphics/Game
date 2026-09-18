@@ -13,6 +13,6 @@ package graphic.map;
 
 public interface IsCollisionHandler {
 
-    void fireEvent(GameMap map, Block initiator, Block target);
+    void fireEvent(GameMap map, Collidable initiator, Collidable target);
 
 }

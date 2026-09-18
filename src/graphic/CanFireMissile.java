@@ -11,11 +11,13 @@ package graphic;
  *
  */
 
+import graphic.map.GameMap;
 import graphic.map.IsBlock;
 
 public interface CanFireMissile extends IsBlock {
 
-    DirectionalImage getMissileImage();
     boolean canFireMissile();
+    DirectionalImage getMissileImage();
+    void fireMissile(GameMap map, Direction direction);
 
 }

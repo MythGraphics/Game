@@ -15,9 +15,9 @@ import java.util.EventObject;
 
 public class CollisionEvent extends EventObject {
 
-    public final Block initiator, target;
+    public final IsBlock initiator, target;
 
-    public CollisionEvent(GameMap source, Block initiator, Block target) {
+    public CollisionEvent(GameMap source, IsBlock initiator, IsBlock target) {
         super(source);
         this.initiator  = initiator;
         this.target     = target;
@@ -27,11 +27,11 @@ public class CollisionEvent extends EventObject {
         return target.getBlockType().getInteractionType();
     }
 
-    public Block getInitiator() {
+    public IsBlock getInitiator() {
         return initiator;
     }
 
-    public Block getTarget() {
+    public IsBlock getTarget() {
         return target;
     }
 

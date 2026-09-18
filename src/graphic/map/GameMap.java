@@ -11,13 +11,14 @@ package graphic.map;
  *
  */
 
-import graphic.AutoMoveable;
+import graphic.CanFireMissile;
 import graphic.Direction;
 import static graphic.Direction.*;
 import static graphic.io.BinaryIO.loadImage;
 import static graphic.io.ImageUtility.scale;
 import static graphic.io.ImageUtility.stretch;
 import static graphic.map.DefaultBlockType.*;
+import graphic.tile.AutoMoveableTile;
 import graphic.tile.BlockTile;
 import graphic.tile.Missile;
 import graphic.tile.MoveableTile;
@@ -55,12 +56,13 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
 
     protected final int tileSize, rowCount, columnCount;
     protected final char[][] tileMap;
-    protected final Collection<Block> collidables           = new HashSet<>(); // Collidable, IsBlock
-    protected final Collection<Renderable> renderables      = new ArrayList<>();
-    protected final Collection<AutoMoveable> scurryables    = new HashSet<>(); // sich selbst bewegende Entitäten
-    protected final Collection<Block> garbageC              = new HashSet<>(); // Collidables, die entfernt werden sollen
-    protected final Collection<Renderable> garbageR         = new HashSet<>(); // Renderables, die entfernt werden sollen
-    protected final Collection<AutoMoveable> garbageS       = new HashSet<>(); // AutoMovables, die entfernt werden sollen
+
+    protected final Collection<Collidable> collidables          = new HashSet<>(); // Collidable, IsBlock
+    protected final Collection<Renderable> renderables          = new ArrayList<>();
+    protected final Collection<AutoMoveableTile> scurryables    = new HashSet<>(); // sich selbst bewegende Entitäten
+    protected final Collection<Collidable> garbageC             = new HashSet<>(); // Collidables, die entfernt werden sollen
+    protected final Collection<Renderable> garbageR             = new HashSet<>(); // Renderables, die entfernt werden sollen
+    protected final Collection<AutoMoveableTile> garbageS       = new HashSet<>(); // AutoMoveables, die entfernt werden sollen
 
     protected MoveableTile player;
     protected Renderable spaceTile;
@@ -282,19 +284,19 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
         collisionListeners.add(actionListener);
     }
 
-    private void fireEvent(Block source, Block target) {
+    private void fireEvent(Collidable source, Collidable target) {
         fireEvent(this, source, target);
     }
 
     @Override
-    public void fireEvent(GameMap map, Block source, Block target) {
-        // collider/initiator (bewegliche Objekt), obstacle (statische Hindernis)
+    public void fireEvent(GameMap map, Collidable source, Collidable target) {
+        // collider/initiator (bewegliche Objekt), obstacle (statisches Hindernis)
         System.out.println(
             "Collision of block "   + source.getBlockType() +
             " with block "          + target.getBlockType() +
-            " at pixel "            + target.x + ", " + target.y +
-            " (column "             + ( target.x / target.width  + 1 ) + // +1, um keine Indizes auszugeben
-            ", row "                + ( target.y / target.height + 1 ) + // +1, um keine Indizes auszugeben
+            " at pixel "            + target.getX() + ", " + target.getY() +
+            " (column "             + ( target.getX() / target.getWidth()  + 1 ) + // +1, um keine Indizes auszugeben
+            ", row "                + ( target.getY() / target.getHeight() + 1 ) + // +1, um keine Indizes auszugeben
             ")."
         );
         collisionListeners.forEach( actionListener -> actionListener.collisionPerformed(
@@ -316,7 +318,7 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
         setPlayerPositionXY(destinationX, destinationY);
     }
 
-    public Block getBlock(int col, int row) {
+    public IsBlock getBlock(int col, int row) {
         // 0 ist ungültig
         if ( col <= 0 || row <= 0 ) {
             return null;
@@ -324,9 +326,9 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
 
         int x = (col-1)*tileSize;
         int y = (row-1)*tileSize;
-        for (Block block : collidables) {
-            if (block.x == x && block.y == y) {
-                return block;
+        for (Collidable c : collidables) {
+            if ( x == c.getX() && y == c.getY() ) {
+                return c;
             }
         }
         return null;
@@ -393,7 +395,7 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
         player.y = lastPlayerPos.y;
     }
 
-    public void move(KeyEvent evt) {
+    public void movePlayer(KeyEvent evt) {
         if ( !active ) { return; }
         setLastPlayerPosition();
         switch ( evt.getKeyCode() ) {
@@ -430,14 +432,14 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
             return;
         }
 
-        for (Block block : collidables) {
-            if ( collision( source, block )) {
-                fireEvent(source, block);
-                boolean passable = block.getBlockType().isPassable();
+        for (Collidable c : collidables) {
+            if ( collision( source, c )) {
+                fireEvent(source, c);
+                boolean passable = c.getBlockType().isPassable();
                 if (!passable && source == player) {
                     resetPlayerPosition();
                 }
-                fireEvent(source, block);
+                fireEvent(source, c);
                 break;
             }
         }
@@ -506,9 +508,9 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
             player.draw(g2d, offsetX, offsetY);
         }
 
-        for (AutoMoveable moveable : scurryables) {
-            moveable.move();
-            detectCollision(( Block) moveable );
+        for (AutoMoveableTile tile : scurryables) {
+            tile.move();
+            detectCollision(tile);
         }
 
         collidables.removeAll(garbageC);
@@ -539,40 +541,55 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
 
     public int getEnemyCount() {
         int value = 0;
-        for (Renderable r : renderables) {
-            if (r instanceof Block block && block.getBlockType() == ENEMY) {
+        for (Collidable c : collidables) {
+            if ( c.getBlockType() == ENEMY ) {
                 ++value;
             }
         }
         return value;
     }
 
-    public void fireMissile(BlockTile initiator, Direction d) {
-        if ( !initiator.canFireMissile() ) {
-            return;
-        }
-
-        int x = initiator.x;
-        int y = initiator.y;
+    public void fireMissile(CanFireMissile initiator, Direction d) {
+        int x = initiator.getX();
+        int y = initiator.getY();
         switch (d) {
             case RIGHT -> x += tileSize;
             case LEFT  -> x -= tileSize;
             case DOWN  -> y += tileSize;
             case UP    -> y -= tileSize;
         }
-        Missile m = new Missile(initiator, d, x, y, MISSILE, tileSize/2);
-        collidables.add(m);
-        renderables.add(m);
-        scurryables.add(m);
+        add( new Missile( initiator, d, x, y, MISSILE, tileSize/2 ));
     }
 
-    public void remove(Block block) {
-        garbageC.add(block);
-        if (block instanceof Renderable r) {
+    public void add(Object obj) {
+        if (obj == null) {
+            return;
+        }
+
+        if (obj instanceof Collidable c) {
+            collidables.add(c);
+        }
+        if (obj instanceof Renderable r) {
+            renderables.add(r);
+        }
+        if (obj instanceof AutoMoveableTile amt) {
+            scurryables.add(amt);
+        }
+    }
+
+    public void remove(Object obj) {
+        if (obj == null) {
+            return;
+        }
+
+        if (obj instanceof Collidable c) {
+            garbageC.add(c);
+        }
+        if (obj instanceof Renderable r) {
             garbageR.add(r);
         }
-        if (block instanceof AutoMoveable am) {
-            garbageS.add(am);
+        if (obj instanceof AutoMoveableTile amt) {
+            garbageS.add(amt);
         }
     }
 

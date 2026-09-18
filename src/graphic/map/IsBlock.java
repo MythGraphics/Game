@@ -17,6 +17,6 @@ public interface IsBlock {
     int getY();
     int getWidth();
     int getHeight();
-//  IsBlockType getBlockType();
+    IsBlockType getBlockType();
 
 }

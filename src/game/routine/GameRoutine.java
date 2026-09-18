@@ -63,13 +63,13 @@ public abstract class GameRoutine implements CollisionActionListener {
         getDialogListener(e).show( dialogMap.get( e.getTarget().getBlockType() ));
         switch( e.getType() ) {
             case PORTAL -> {
-                Point target = e.getTarget().getPosition();
+                Point target = new Point( e.getTarget().getX(), e.getTarget().getY() );
                 portals.addIfAbsent(target);
                 if ( portals.size() < 2 ) {
                     // Wenn weniger als 2 Portale bekannt sind, bleibt der Spieler wo er ist.
                     return;
                 }
-                (( GameMap ) e.getSource() ).moveThroughPortal( portals.getNext() );
+                ((GameMap) e.getSource()).moveThroughPortal( portals.getNext() );
             }
         }
     }

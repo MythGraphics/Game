@@ -90,7 +90,7 @@ public class DefaultUWMap extends UWMap {
         switch (bType) {
             case PLAYER:
                 MoveableTile playerTile = new MoveableTile(x, y, PLAYER, tileSize, getMaxPoint(), playerAniSet);
-                playerTile.setProjectileImage(playerProjectile);
+                playerTile.setMissileImage(playerProjectile);
                 return playerTile;
             case WALL5:
             case BUBBLE:

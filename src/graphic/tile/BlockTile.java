@@ -12,6 +12,7 @@ package graphic.tile;
  */
 
 import graphic.CanFireMissile;
+import graphic.Direction;
 import graphic.DirectionalImage;
 import graphic.HasImage;
 import graphic.map.Block;
@@ -57,8 +58,15 @@ public class BlockTile extends Block implements Renderable, CanFireMissile {
         return new DirectionalImage(missileImage);
     }
 
-    public void setProjectileImage(DirectionalImage missileImage) {
+    public void setMissileImage(DirectionalImage missileImage) {
         this.missileImage = missileImage;
+    }
+
+    @Override
+    public void fireMissile(GameMap map, Direction direction) {
+        if ( canFireMissile() ) {
+            map.fireMissile(this, direction);
+        }
     }
 
     @Override
