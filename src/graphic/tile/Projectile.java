@@ -37,31 +37,33 @@ public class Projectile extends AutoMoveableTile implements IsCollider {
     }
  */
 
+    public final static Point MAX = new Point(Integer.MAX_VALUE, Integer.MAX_VALUE);
+
     public final Block source;
 
     public Projectile(BlockTile source, Direction initialDirection,
                       int x, int y, IsBlockType bType,
-                      int stepSize, Point maxPoint) {
-        this( source, initialDirection, x, y, bType, stepSize, maxPoint, source.getProjectileImage() );
+                      int stepSize) {
+        this( source, initialDirection, x, y, bType, stepSize, source.getProjectileImage() );
     }
 
     public Projectile(Block source, Direction initialDirection,
                       int x, int y, IsBlockType bType,
-                      int stepSize, Point maxPoint, DirectionalImage imgset) {
-        super(initialDirection, x, y, bType, stepSize, maxPoint, imgset);
+                      int stepSize, DirectionalImage imgset) {
+        super(initialDirection, x, y, bType, stepSize, MAX, imgset);
         this.source = source;
     }
 
     public Projectile(BlockTile source, Direction initialDirection,
                       Point pos, Dimension dim, IsBlockType bType,
-                      int stepSize, Point maxPoint) {
-        this( source, initialDirection, pos, dim, bType, stepSize, maxPoint, source.getProjectileImage() );
+                      int stepSize) {
+        this( source, initialDirection, pos, dim, bType, stepSize, source.getProjectileImage() );
     }
 
     public Projectile(Block source, Direction initialDirection,
                       Point pos, Dimension dim, IsBlockType bType,
-                      int stepSize, Point maxPoint, DirectionalImage imgset) {
-        super(initialDirection, pos, dim, bType, stepSize, maxPoint, imgset);
+                      int stepSize, DirectionalImage imgset) {
+        super(initialDirection, pos, dim, bType, stepSize, MAX, imgset);
         this.source = source;
     }
 

@@ -49,7 +49,7 @@ public class UWMapGameRoutine extends DefaultGameRoutine implements ResourceCons
         Player player = new Player(GameFrame.playerName, frame.textFrame, health, air);
         DescriptorLoader dLoader = new DescriptorLoader( getClass() );
         try {
-            player.setImg( dLoader.loadSpriteSet( TILESET+"player/", "descriptor" )[0] );
+            player.setImg( dLoader.loadSpriteSet(TILESET+"player/", "descriptor")[0] );
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -58,7 +58,7 @@ public class UWMapGameRoutine extends DefaultGameRoutine implements ResourceCons
 
     @Override
     public void resourceConsumePerformed(Resource r, int use, int overuse) {
-        if (overuse > 0 && r.getType() == AIR ) {
+        if ( overuse > 0 && r.getType() == AIR ) {
             player.getResource(HEALTH).forceConsume(overuse);
         }
     }

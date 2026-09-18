@@ -89,16 +89,14 @@ public class DefaultUWMap extends UWMap {
     protected BlockTile getBlockTile(int x, int y, IsBlockType bType) {
         switch (bType) {
             case PLAYER:
-                MoveableTile playerTile = new MoveableTile(
-                    x, y, PLAYER, tileSize, getMaxPoint(), playerAniSet
-                );
+                MoveableTile playerTile = new MoveableTile(x, y, PLAYER, tileSize, getMaxPoint(), playerAniSet);
                 playerTile.setProjectileImage(playerProjectile);
                 return playerTile;
             case WALL5:
             case BUBBLE:
-                return new BlockTile(x, y, tileSize, bType, imgMap.get( bType ));
+                return new BlockTile( x, y, tileSize, bType, imgMap.get( bType ));
             default:
-                return new BlockTile(x, y, tileSize, bType, null);
+                return new BlockTile( x, y, tileSize, bType, null );
         }
     }
 

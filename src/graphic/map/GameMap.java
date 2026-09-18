@@ -560,9 +560,7 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
             case DOWN  -> y += tileSize;
             case UP    -> y -= tileSize;
         }
-        Projectile p = new Projectile(
-            initiator, d, x, y, DefaultBlockType.PROJECTILE, tileSize, new Point(Integer.MAX_VALUE, Integer.MAX_VALUE)
-        );
+        Projectile p = new Projectile(initiator, d, x, y, PROJECTILE, tileSize/2);
         collidables.add(p);
         renderables.add(p);
         scurryables.add(p);
