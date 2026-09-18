@@ -390,13 +390,16 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
     /**
      * Setzt die Position des Spielers auf die Position vor dem Bewegungsbefehl zurück.
      */
-    public void resetPlayerPosition() {
+    private void resetPlayerPosition() {
         player.x = lastPlayerPos.x;
         player.y = lastPlayerPos.y;
     }
 
     public void movePlayer(KeyEvent evt) {
-        if ( !active ) { return; }
+        if (!active) {
+            return;
+        }
+
         setLastPlayerPosition();
         switch ( evt.getKeyCode() ) {
             case KeyEvent.VK_UP,    KeyEvent.VK_W, KeyEvent.VK_8 -> player.move(UP);
@@ -424,7 +427,7 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
         return false;
     }
 
-    void detectCollision(Block source) {
+    void detectCollision(Collidable source) {
         // Collidable, IsCollider, IsCollisionHandler aktuell nicht genutzt
         if ( detectPanelCollision() ) {
             Block target = new Block(player.x, player.y, player.width, player.height, BOUNDARY);
@@ -432,14 +435,14 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
             return;
         }
 
-        for (Collidable c : collidables) {
-            if ( collision( source, c )) {
-                fireEvent(source, c);
-                boolean passable = c.getBlockType().isPassable();
+        for (Collidable target : collidables) {
+            if ( collision( source, target )) {
+                fireEvent(source, target);
+                boolean passable = target.getBlockType().isPassable();
                 if (!passable && source == player) {
                     resetPlayerPosition();
                 }
-                fireEvent(source, c);
+                fireEvent(source, target);
                 break;
             }
         }
@@ -475,7 +478,7 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
         }
     }
 
-    final void drawMapImage(Graphics2D g2d, int offsetX, int offsetY, DefaultBlockType... tileExclude) {
+    public final void drawMapImage(Graphics2D g2d, int offsetX, int offsetY, DefaultBlockType... tileExclude) {
         Set<IsBlockType> excludedTypes  = Set.of(tileExclude);
         Collection<Renderable> currentBlocks =
             renderables.stream()
@@ -496,7 +499,7 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
         }
     }
 
-    void draw(Graphics2D g2d) {
+    protected void draw(Graphics2D g2d) {
         int offsetX = getOffsetX();
         int offsetY = getOffsetY();
 
@@ -521,7 +524,7 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
         garbageS.clear();
     }
 
-    private void drawSpace(Graphics2D g2d, int offsetX, int offsetY) {
+    protected void drawSpace(Graphics2D g2d, int offsetX, int offsetY) {
         if (spaceTile != null && spaceTile.getImage() != null) {
             BufferedImage spaceImg = spaceTile.getImage();
             for (int r = 0; r < rowCount; r++) {
