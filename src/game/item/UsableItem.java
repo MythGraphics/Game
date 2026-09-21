@@ -103,13 +103,7 @@ public class UsableItem extends Item {
 
     @Override
     public Item clone() throws CloneNotSupportedException {
-        if ( this.getClass() == UsableItem.class ) {
-            return new UsableItem(this);
-        } else {
-            throw new CloneNotSupportedException(
-                getClass() + ": clone() von erbender Klasse nicht unterstützt."
-            );
-        }
+        return new UsableItem(this);
     }
 
 }

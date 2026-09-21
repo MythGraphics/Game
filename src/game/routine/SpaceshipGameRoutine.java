@@ -43,7 +43,6 @@ public class SpaceshipGameRoutine extends MartialGameRoutine {
     public final static String PROLOG_BG = RESOURCE+"bg/interior_of_a_spaceship_by_parker_west.jpg";
 
     private final BufferedImage textFrameBG;
-    private final Player player;
 
     private Enemy enemy;
     private int enemies = 0;
@@ -52,7 +51,6 @@ public class SpaceshipGameRoutine extends MartialGameRoutine {
     public SpaceshipGameRoutine(GameFrame gameFrame) {
         super(gameFrame);
         setAudioTrackList("SpaceshipAudioTrackList.txt");
-        this.player = initPlayer(gameFrame);
         textFrameBG = BinaryIO.loadImage(PROLOG_BG);
         enemies = gameFrame.getCurrentMap().getEnemyCount();
         try {
@@ -69,19 +67,10 @@ public class SpaceshipGameRoutine extends MartialGameRoutine {
         showProlog();
     }
 
-    private Player initPlayer(GameFrame gameFrame) {
-        Resource health  = new Resource( "Gesundheit", HEALTH, 1000, 1000 );
-        health.addResourceChangeListener(gameFrame);
-        Resource credit  = new Resource( "Münzen", CREDIT, 1000*1000, 0 );
-        credit.addResourceChangeListener(gameFrame);
-        Player player = new Player(GameFrame.playerName, gameFrame.textFrame, health, credit);
+    protected Player createPlayer(GameFrame gameFrame) {
+        Player player = super.createPlayer();
         player.setPlayerAsMinion( CombatFactory.getDefaultSoldier( player.getHealth() ));
         player.setImg( loadImage( SPRITE+"player/man1.png" ));
-        return player;
-    }
-
-    @Override
-    public Player getPlayer() {
         return player;
     }
 
@@ -107,7 +96,7 @@ public class SpaceshipGameRoutine extends MartialGameRoutine {
             return enemy;
         }
         enemy.setMinion( CombatFactory.createRandomEnemy( ZERG ));
-        int l1 = player.getPlayerAsMinion().getLevel();
+        int l1 = getPlayer().getPlayerAsMinion().getLevel();
         int l2 = enemy.getMinion().getLevel();
         enemy.getMinion().setLevel((byte) ( Math.max( l1, l2 )+1 ));
         return enemy;
@@ -133,9 +122,9 @@ public class SpaceshipGameRoutine extends MartialGameRoutine {
 
     private void loot(Combatant enemy) {
         Ammo loot = LootManager.createAmmo(enemy, AmmoType.PROJECTILE);
-        player.getInventory().add(loot);
+        getPlayer().getInventory().add(loot);
         gameFrame.textFrame.show( new Message(
-            "Da liegt doch was!\n" + loot.toString(), player
+            "Da liegt doch was!\n" + loot.toString(), getPlayer()
         ));
     }
 
@@ -143,8 +132,8 @@ public class SpaceshipGameRoutine extends MartialGameRoutine {
     public void collisionPerformed(CollisionEvent e) {
         switch( e.getTarget().getBlockType() ) {
             case ENVIRONMENT0 -> {
-                player.getDialogOutputListener().show( new Message(
-                    "Warum liegt hier überhaupt Stroh rum?", player
+                getPlayer().getDialogOutputListener().show( new Message(
+                    "Warum liegt hier überhaupt Stroh rum?", getPlayer()
                 ));
             }
             case EXIT -> {

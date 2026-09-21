@@ -54,7 +54,7 @@ public class ReUsableItem extends UsableItem implements HasUIImage {
 
     @Override
     public Item clone() throws CloneNotSupportedException {
-        throw new CloneNotSupportedException( "Clone on " + getClass() + " not supported." );
+        throw new CloneNotSupportedException( getClass() + ": clone() not supported." );
     }
 
 }

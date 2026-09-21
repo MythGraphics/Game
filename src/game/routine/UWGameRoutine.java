@@ -28,25 +28,20 @@ import java.io.IOException;
 
 public class UWGameRoutine extends DefaultGameRoutine implements ResourceConsumeListener {
 
-    private final Player player;
+    private final UWMap map;
 
     public UWGameRoutine(UWMap map, GameFrame gameFrame) {
         super(gameFrame);
-        this.player = initPlayer(map, gameFrame);
+        this.map = map;
     }
 
     @Override
-    public Player getPlayer() {
-        return player;
-    }
-
-    private Player initPlayer(UWMap map, GameFrame frame) {
-        Resource health = new Resource("Gesundheit", HEALTH, 1000, 1000);
-        health.addResourceChangeListener(frame);
+    protected Player createPlayer() {
+        Player player = super.createPlayer();
         Resource air = map.getResource();
-        air.addResourceChangeListener(frame);
+        air.addResourceChangeListener(gameFrame);
         air.addResourceConsumeListener(this);
-        Player player = new Player(GameFrame.playerName, frame.textFrame, health, air);
+        player.addResource(air);
         DescriptorLoader dLoader = new DescriptorLoader( getClass() );
         try {
             player.setImg( dLoader.loadSpriteSet(TILESET+"player/", "descriptor")[0] );
@@ -59,7 +54,7 @@ public class UWGameRoutine extends DefaultGameRoutine implements ResourceConsume
     @Override
     public void resourceConsumePerformed(Resource r, int use, int overuse) {
         if ( overuse > 0 && r.getType() == AIR ) {
-            player.getResource(HEALTH).forceConsume(overuse);
+            getPlayer().getResource(HEALTH).forceConsume(overuse);
         }
     }
 

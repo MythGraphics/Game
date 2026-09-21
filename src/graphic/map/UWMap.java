@@ -11,16 +11,16 @@ package graphic.map;
  *
  */
 
-import game.resource.HasResource;
+import game.resource.ConsumeResource;
 import game.resource.Resource;
 import static game.resource.Resource.ResourceType.AIR;
 import static graphic.map.DefaultBlockType.WATERLINE;
 import java.awt.event.ActionEvent;
 
-public abstract class UWMap extends GameMap implements HasResource {
+public abstract class UWMap extends GameMap implements ConsumeResource {
 
     public final int resourceCost = 1;
-    public final Resource air;
+    public final Resource resource;
 
     private int uwlevel;
 
@@ -28,14 +28,14 @@ public abstract class UWMap extends GameMap implements HasResource {
         this( tileMap, new Resource( "Luft", AIR, 1000, 1000 ));
     }
 
-    public UWMap(char[][] tileMap, Resource air) {
+    public UWMap(char[][] tileMap, Resource resource) {
         super(tileMap);
-        this.air = air;
+        this.resource = resource;
     }
 
     @Override
     public Resource getResource() {
-        return air;
+        return resource;
     }
 
     public int getResourceCostPerSec() {
@@ -47,11 +47,11 @@ public abstract class UWMap extends GameMap implements HasResource {
     }
 
     public void consumeResource() {
-        air.forceConsume( getResourceCostPerSec() );
+        resource.forceConsume( getResourceCostPerSec() );
     }
 
     public void rechargeResource() {
-        air.recharge(resourceCost);
+        resource.recharge(resourceCost);
     }
 
     @Override

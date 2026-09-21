@@ -14,6 +14,7 @@ package game.routine;
 import game.GameFrame;
 import game.ID;
 import game.Npc;
+import game.Player;
 import game.combat.Combatant;
 import game.item.Item;
 import game.item.ItemEffect;
@@ -23,20 +24,18 @@ import static game.item.ItemEffect.ValueType.ABSOLUTE;
 import static game.item.ItemEffect.ValueType.PERCENT;
 import game.item.ReUsableItem;
 import game.item.UsableItem;
-import game.resource.Resource;
 import static game.resource.Resource.ResourceType.*;
 import static graphic.io.BinaryIO.TILESET;
 import graphic.io.DescriptorLoader;
-import graphic.tile.BlockTile;
 import static graphic.map.DefaultBlockType.ENVIRONMENT0;
 import static graphic.map.DefaultBlockType.TEXTSIGN;
+import graphic.tile.BlockTile;
 import java.io.IOException;
 
 public class LandGameRoutine extends RPGRoutine {
 
     public LandGameRoutine(GameFrame gameFrame) {
         super(gameFrame);
-        updatePlayer();
         init();
     }
 
@@ -55,9 +54,9 @@ public class LandGameRoutine extends RPGRoutine {
         }
     }
 
-    private void updatePlayer() {
-        addPlayerResource( new Resource( "Luft", AIR, 100, 100 ));
-        addPlayerResource( new Resource( "Credits", CREDIT, 1000, 0 ));
+    @Override
+    protected Player createPlayer() {
+        Player player = super.createPlayer();
         DescriptorLoader dLoader = new DescriptorLoader( getClass() );
         try {
             getPlayer().setImg( dLoader.loadSpriteSet( TILESET+"player/", "descriptor" )[0] );
@@ -69,6 +68,7 @@ public class LandGameRoutine extends RPGRoutine {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return player;
     }
 
     private void initQuest(Npc npc) throws IOException {

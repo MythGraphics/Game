@@ -14,6 +14,7 @@ package game.routine;
 import game.GameFrame;
 import game.Player;
 import game.resource.Resource;
+import static game.resource.Resource.ResourceType.CREDIT;
 import static game.resource.Resource.ResourceType.HEALTH;
 import graphic.map.CollisionEvent;
 import graphic.map.GameMap;
@@ -21,12 +22,14 @@ import graphic.texter.DialogOutputListener;
 
 public class DefaultGameRoutine extends GameRoutine {
 
-    private final Player player;
-    private final GameFrame gameFrame;
+    public final GameFrame gameFrame;
 
+    private final Player player;
+
+    @SuppressWarnings("OverridableMethodCallInConstructor")
     public DefaultGameRoutine(GameFrame gameFrame) {
         this.gameFrame = gameFrame;
-        this.player    = initPlayer();
+        this.player    = createPlayer();
     }
 
     @Override
@@ -44,16 +47,12 @@ public class DefaultGameRoutine extends GameRoutine {
         return gameFrame.textFrame;
     }
 
-    private Player initPlayer() {
+    protected Player createPlayer() {
         Resource health = new Resource("Gesundheit", HEALTH, 1000, 1000);
+        Resource credit = new Resource("Münzen", CREDIT, 1000*1000, 0);
         health.addResourceChangeListener(gameFrame);
-        Player player = new Player( GameFrame.playerName, getDialogListener( null ), health );
-        return player;
-    }
-
-    void addPlayerResource(Resource resource) {
-        resource.addResourceChangeListener(gameFrame);
-        getPlayer().addResource(resource);
+        credit.addResourceChangeListener(gameFrame);
+        return new Player(GameFrame.playerName, getDialogListener(null), health, credit);
     }
 
     @Override

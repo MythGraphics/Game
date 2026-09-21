@@ -4,8 +4,6 @@
 
 package game.resource;
 
-import game.resource.Resource;
-
 /**
  *
  * @author  Martin Pröhl alias MythGraphics
@@ -13,7 +11,7 @@ import game.resource.Resource;
  *
  */
 
-public interface HasResource {
+public interface ConsumeResource {
 
     Resource getResource();
 

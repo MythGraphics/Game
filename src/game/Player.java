@@ -11,6 +11,7 @@ package game;
  *
  */
 
+import game.combat.Combatant;
 import game.item.Item;
 import static game.item.ItemEvent.ItemActionType.REMOVE;
 import game.item.ReUsableItem;
@@ -29,42 +30,54 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Player extends InteractiveObject implements HasHealth, Trader {
+public class Player extends InteractiveObject implements HasHealth, Trader, HasMinion {
 
-    private final Map<ResourceType, Resource> resources;    // Health, ...
-    private final ArrayList<UsableItem> items;              // aktive, also angelegte Items
-    private final List<QuestListener> questListeners;       // feuert bei Änderung des Quest-Status
-    private final DialogOutputListener dialogListener;      // Dialog-Ausgabe
+    private final Map<Resource.ResourceType, Resource> resources;
+    private final DialogOutputListener dialogListener;  // Dialog-Ausgabe
+    private final ArrayList<UsableItem> items;          // aktive, also angelegte Items
+    private final List<QuestListener> questListeners;   // feuert bei Änderung des Quest-Status
     private final InventoryManager inventory;
     private final MinionManager minions;
 
     private Quest quest;
     private game.combat.Player playerMinion;
 
-    public Player(String name, DialogOutputListener dialogListener) {
-        this(
-            name, dialogListener,
-            new Resource( "Gesundheit", HEALTH, 1000, 1000 ),
-            new Resource( "Credits", CREDIT, 1000*1000, 0 )
-        );
+    public Player(String name, DialogOutputListener dialogListener, Resource... resources) {
+        this(name, dialogListener);
+        if (resources != null) {
+            for (Resource r : resources) {
+                addResource(r);
+            }
+        }
     }
 
-    public Player(String name, DialogOutputListener dialogListener, Resource... resources) {
+    public Player(String name, DialogOutputListener dialogListener) {
         super(name);
         this.dialogListener = dialogListener;
-        this.resources = new HashMap<>();
-        for ( Resource r : resources) {
-            addResource(r);
-        }
-        items           = new ArrayList<>();
-        questListeners  = new ArrayList<>();
-        inventory       = new InventoryManager(this);
-        minions         = new MinionManager();
+        this.questListeners = new ArrayList<>();
+        this.items          = new ArrayList<>();
+        this.inventory      = new InventoryManager(this);
+        this.minions        = new MinionManager();
+        this.resources      = new HashMap<>();
+        addResource( new Resource( "Gesundheit", HEALTH, 1000, 1000 ));
+        addResource( new Resource( "Credits", CREDIT, 1000*1000, 0 ));
+    }
+
+    /**
+     * Fügt die Resource dem Spieler und damit seiner Resourcenliste hinzu.
+     * @param r hinzuzufügende Resource
+     */
+    public final void addResource(Resource r) {
+        resources.put( r.getType(), r );
+    }
+
+    public Resource getResource(ResourceType type) {
+        return resources.get(type);
     }
 
     @Override
     public Resource getHealth() {
-        return resources.get(HEALTH);
+        return getResource(HEALTH);
     }
 
     @Override
@@ -93,24 +106,18 @@ public class Player extends InteractiveObject implements HasHealth, Trader {
         questListeners.forEach( listener -> listener.questActionPerformed( quest ));
     }
 
-    /**
-     * Fügt die Resource dem Spieler und damit seiner Resourcenliste hinzu.
-     * @param r hinzuzufügende Resource
-     */
-    public final void addResource(Resource r) {
-        resources.put( r.getType(), r );
+    public DialogOutputListener getDialogOutputListener() {
+        return dialogListener;
     }
 
-    public Resource getResource(ResourceType type) {
-        return resources.get(type);
-    }
-
+    @Override
     public MinionManager getMinionManager() {
         return minions;
     }
 
-    public DialogOutputListener getDialogOutputListener() {
-        return dialogListener;
+    @Override
+    public Combatant getMinion() {
+        return minions.getCurrent();
     }
 
     @Override

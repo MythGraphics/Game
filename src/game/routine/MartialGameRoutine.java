@@ -24,12 +24,10 @@ import java.util.List;
 
 public abstract class MartialGameRoutine extends DefaultGameRoutine {
 
-    final GameFrame gameFrame;
     final List<Enemy> enemyList;
 
     public MartialGameRoutine(GameFrame gameFrame, List<Enemy> enemyList) {
         super(gameFrame);
-        this.gameFrame = gameFrame;
         this.enemyList = enemyList;
     }
 
