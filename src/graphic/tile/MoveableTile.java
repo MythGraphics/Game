@@ -68,47 +68,4 @@ public class MoveableTile extends BlockTile implements Moveable {
         }
     }
 
-    /**
-     * Erstellt ein MoveableTile, das für ALLE Richtungen dieselbe Animation nutzt.
-     * @param bType
-     * @param x
-     * @param y
-     * @param stepSize
-     * @param maxPoint
-     * @param data
-     * @return
-     */
-    public static MoveableTile createSingleAnimation(int x, int y, IsBlockType bType,
-                                                     int stepSize, Point maxPoint,
-                                                     AnimationData data) {
-        Direction[] directionSet = Direction.values();
-        AnimationPlayer[] playerSet = new AnimationPlayer[directionSet.length];
-        AnimationPlayer sharedPlayer = new AnimationPlayer(data);
-        for (int i = 0; i < directionSet.length; i++) {
-            playerSet[i] = sharedPlayer;
-        }
-        return new MoveableTile( x, y, bType, stepSize, maxPoint, new DirectionalImage( playerSet ));
-    }
-
-    /**
-     * Erstellt ein MoveableTile, das für ALLE Richtungen dasselbe Bild nutzt.
-     * @param bType
-     * @param x
-     * @param y
-     * @param stepSize
-     * @param maxPoint
-     * @param image
-     * @return
-     */
-    public static MoveableTile createSingleTile(int x, int y, IsBlockType bType,
-                                                int stepSize, Point maxPoint,
-                                                HasImage image) {
-        Direction[] directionSet = Direction.values();
-        HasImage[] set = new HasImage[directionSet.length];
-        for (int i = 0; i < directionSet.length; i++) {
-            set[i] = image;
-        }
-        return new MoveableTile( x, y, bType, stepSize, maxPoint, new DirectionalImage( set ));
-    }
-
 }

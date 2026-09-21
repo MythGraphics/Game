@@ -19,12 +19,11 @@ import game.resource.Resource.ResourceType;
 import static game.resource.Resource.ResourceType.*;
 import game.resource.ResourceChangeListener;
 import game.routine.*;
-import graphic.Direction;
-import graphic.tile.MoveableTile;
 import static graphic.io.BinaryIO.AUDIO;
 import graphic.io.ImageUtility;
 import graphic.map.*;
 import graphic.texter.TextFrame;
+import graphic.tile.MoveableTile;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
@@ -645,7 +644,7 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
             case KeyEvent.VK_MINUS, KeyEvent.VK_SUBTRACT
                                 -> audioPlayer.changeVolume(-10);
             case KeyEvent.VK_C  -> {
-                // cast spell
+                // cast spell/missile
                 MoveableTile playerTile = map.getPlayer();
                 playerTile.fireMissile( map, playerTile.getCurrentDirection() );
             }
@@ -659,7 +658,7 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
             return;
         }
         if ( index >= audioTrackList.size() ) {
-            System.out.println("Track-Nummer nicht definiert. Abspielen nicht möglich.");
+            System.out.println("Track-Nummer unbekannt. Abspielen nicht möglich.");
             System.out.println(audioTrackList);
             return;
         }

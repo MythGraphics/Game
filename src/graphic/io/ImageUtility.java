@@ -186,7 +186,7 @@ public class ImageUtility {
      * @param horizontal TRUE für horizontal spiegeln, FALSE für vertikal
      * @return           neues, gespiegeltes BufferedImage
      */
-    public static BufferedImage flipImage(BufferedImage inputImage, boolean horizontal) {
+    public static BufferedImage flip(BufferedImage inputImage, boolean horizontal) {
         if (inputImage == null) {
             return null;
         }

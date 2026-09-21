@@ -52,7 +52,8 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
     public final int visibleWidth, visibleHeight, boardWidth, boardHeight;
     public final Dimension board, visibleBoard;
 
-    public static boolean prerenderMap = true;
+    public static boolean prerenderMap  = true;
+    public static int missileSpeed      = DEFAULT_TILE_SIZE/4; // Pixel per frame
 
     protected final int tileSize, rowCount, columnCount;
     protected final char[][] tileMap;
@@ -442,7 +443,6 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
                 if (!passable && source == player) {
                     resetPlayerPosition();
                 }
-                fireEvent(source, target);
                 break;
             }
         }
@@ -561,7 +561,7 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
             case DOWN  -> y += tileSize;
             case UP    -> y -= tileSize;
         }
-        add( new Missile( initiator, d, x, y, MISSILE, tileSize/2 ));
+        add( new Missile( initiator, d, x, y, MISSILE, missileSpeed ));
     }
 
     public void add(Object obj) {
