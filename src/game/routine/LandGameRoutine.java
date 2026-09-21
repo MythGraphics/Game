@@ -32,9 +32,9 @@ import static graphic.map.DefaultBlockType.ENVIRONMENT0;
 import static graphic.map.DefaultBlockType.TEXTSIGN;
 import java.io.IOException;
 
-public class LandMapGameRoutine extends RPGRoutine {
+public class LandGameRoutine extends RPGRoutine {
 
-    public LandMapGameRoutine(GameFrame gameFrame) {
+    public LandGameRoutine(GameFrame gameFrame) {
         super(gameFrame);
         updatePlayer();
         init();

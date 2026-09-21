@@ -11,9 +11,11 @@ package graphic.map;
  *
  */
 
-import graphic.*;
+import graphic.AnimationData;
+import graphic.AnimationPlayer;
+import graphic.DirectionalImage;
+import graphic.HasImage;
 import static graphic.io.BinaryIO.*;
-import static graphic.io.ImageUtility.flip;
 import static graphic.io.ImageUtility.scale;
 import static graphic.io.TilesetUtility.*;
 import static graphic.map.DefaultBlockType.*;
@@ -21,10 +23,8 @@ import static graphic.map.GameMap.DEFAULT_TILE_SIZE;
 import graphic.tile.BlockTile;
 import graphic.tile.MoveableTile;
 import graphic.tile.TileBuilder;
-import graphic.tile.TilesetBuilder;
 import java.awt.Color;
 import java.awt.Point;
-import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,7 +34,7 @@ public class DefaultUWMap extends UWMap {
 
     private final Map<IsBlockType, HasImage> imgMap = new HashMap<>();
 
-    private DirectionalImage playerAniSet, shipSet, playerProjectile;
+    private DirectionalImage playerAniSet, playerProjectile;
 
     public DefaultUWMap(char[][] tileMap) {
         super(tileMap);
@@ -49,14 +49,6 @@ public class DefaultUWMap extends UWMap {
     @Override
     protected void loadSprites() {
         imgMap.put( WALL5,  new TileBuilder.Tile( loadStretchedImage( SPRITE+"land/Stone1.png" )));
-
-        AnimationData portalAniData = new AnimationData(
-            getSpriteSet(
-                loadImage(TILESET+"space/portal2.png"), 80, -1
-            )
-        );
-        AnimationPlayer portalAni = new AnimationPlayer(portalAniData);
-        imgMap.put(PORTAL, portalAni);
 
         imgMap.put( BUBBLE, new TileBuilder.Tile( scale(
             getSpriteSet(
@@ -79,18 +71,13 @@ public class DefaultUWMap extends UWMap {
             )
         );
         playerProjectile = DirectionalImage.createSingleAnimation(missileAniData);
-
-        TilesetBuilder builder = new TilesetBuilder( loadImage( TILESET+"space/ships2.png" ), 36, 36 );
-        builder.setDirection(Direction.DOWN);
-        BufferedImage[] ship1 = builder.getTileSet(4);
-        shipSet = new DirectionalImage( DirectionalImage.create( ship1 ));
     }
 
     @Override
     protected BlockTile getBlockTile(int x, int y, IsBlockType bType) {
         switch (bType) {
             case PLAYER:
-                MoveableTile playerTile = new MoveableTile(x, y, PLAYER, tileSize, getMaxPoint(), shipSet);
+                MoveableTile playerTile = new MoveableTile(x, y, PLAYER, tileSize, getMaxPoint(), playerAniSet);
                 playerTile.setMissileImage(playerProjectile);
                 return playerTile;
             default:

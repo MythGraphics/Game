@@ -15,6 +15,7 @@ public enum MapType {
 
     LAND,
     UW,
-    SPACE
+    SPACE,
+    SPACESHIP;
 
 }

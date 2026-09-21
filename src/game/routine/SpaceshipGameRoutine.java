@@ -21,23 +21,24 @@ import static game.combat.CombatFactory.Group.ZERG;
 import game.combat.Combatant;
 import game.item.LootManager;
 import game.resource.Resource;
-import static game.resource.Resource.ResourceType.*;
+import static game.resource.Resource.ResourceType.CREDIT;
+import static game.resource.Resource.ResourceType.HEALTH;
 import graphic.io.BinaryIO;
 import static graphic.io.BinaryIO.*;
 import graphic.io.TextIO;
-import graphic.tile.BlockTile;
 import graphic.map.CollisionEvent;
-import graphic.tile.DeadOrAliveTile;
 import static graphic.map.DefaultBlockType.ENVIRONMENT0;
 import static graphic.map.DefaultBlockType.EXIT;
 import graphic.texter.Message;
 import graphic.texter.TextFrame;
+import graphic.tile.BlockTile;
+import graphic.tile.DeadOrAliveTile;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-public class SpaceMapGameRoutine extends MartialGameRoutine {
+public class SpaceshipGameRoutine extends MartialGameRoutine {
 
     public final static String PROLOG_BG = RESOURCE+"bg/interior_of_a_spaceship_by_parker_west.jpg";
 
@@ -48,9 +49,9 @@ public class SpaceMapGameRoutine extends MartialGameRoutine {
     private int enemies = 0;
     private boolean victory = false;
 
-    public SpaceMapGameRoutine(GameFrame gameFrame) {
+    public SpaceshipGameRoutine(GameFrame gameFrame) {
         super(gameFrame);
-        setAudioTrackList("SpaceMapAudioTrackList.txt");
+        setAudioTrackList("SpaceshipAudioTrackList.txt");
         this.player = initPlayer(gameFrame);
         textFrameBG = BinaryIO.loadImage(PROLOG_BG);
         enemies = gameFrame.getCurrentMap().getEnemyCount();
@@ -73,11 +74,7 @@ public class SpaceMapGameRoutine extends MartialGameRoutine {
         health.addResourceChangeListener(gameFrame);
         Resource credit  = new Resource( "Münzen", CREDIT, 1000*1000, 0 );
         credit.addResourceChangeListener(gameFrame);
-        Resource air     = new Resource( "Sauerstoff", AIR, 1000, 1000 );
-        air.addResourceChangeListener(gameFrame);
-        Resource stamina = new Resource( "Ausdauer", STAMINA, 100, 100 );
-        stamina.addResourceChangeListener(gameFrame);
-        Player player = new Player(GameFrame.playerName, gameFrame.textFrame, health, credit, air, stamina);
+        Player player = new Player(GameFrame.playerName, gameFrame.textFrame, health, credit);
         player.setPlayerAsMinion( CombatFactory.getDefaultSoldier( player.getHealth() ));
         player.setImg( loadImage( SPRITE+"player/man1.png" ));
         return player;

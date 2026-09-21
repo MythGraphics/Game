@@ -15,10 +15,10 @@ import game.Enemy;
 import game.GameFrame;
 import game.combat.CombatFrame;
 import game.combat.Combatant;
-import graphic.tile.BlockTile;
 import graphic.map.CollisionEvent;
-import graphic.tile.DeadOrAliveTile;
 import static graphic.map.InteractionType.ENEMY;
+import graphic.tile.BlockTile;
+import graphic.tile.DeadOrAliveTile;
 import java.util.ArrayList;
 import java.util.List;
 

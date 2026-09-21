@@ -11,30 +11,29 @@ package graphic.map;
  *
  */
 
-import graphic.AnimationData;
-import graphic.AnimationPlayer;
-import graphic.DirectionalImage;
+import graphic.*;
 import static graphic.io.BinaryIO.*;
-import static graphic.io.TilesetUtility.*;
+import graphic.io.TilesetUtility;
+import static graphic.io.TilesetUtility.getSpriteSet;
+import static graphic.io.TilesetUtility.scaleImageSet;
 import static graphic.map.DefaultBlockType.*;
+import static graphic.map.GameMap.DEFAULT_TILE_SIZE;
 import graphic.tile.BlockTile;
-import graphic.tile.DeadOrAliveTile;
 import graphic.tile.MoveableTile;
+import graphic.tile.TileBuilder;
+import graphic.tile.TilesetBuilder;
 import java.awt.Color;
-import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.Map;
 
 public class DefaultSpaceMap extends GameMap {
 
-    public final static Color AMBIENT_COLOR = new Color(50, 50, 50);
+    public final static Color AMBIENT_COLOR = new Color(0, 0, 0);
 
-    private AnimationData[] playerAniData;
-    private AnimationPlayer[] playerAni;
-    private AnimationData enemyAniData;
+    private final Map<IsBlockType, HasImage> imgMap = new HashMap<>();
 
-    private final Map<IsBlockType, BufferedImage> imgMap = new HashMap<>();
+    private DirectionalImage shipSet, playerProjectile;
 
     public DefaultSpaceMap(char[][] tileMap) {
         super(tileMap);
@@ -48,55 +47,42 @@ public class DefaultSpaceMap extends GameMap {
 
     @Override
     protected void loadSprites() {
-        BufferedImage[][] tileset = scaleDirectionalAnimationSet(
-            getAnimationSet(
-                loadImage( TILESET+"spaceship/creatures2.png" ), 32, 3
-            ), DEFAULT_TILE_SIZE
-        );
-        BufferedImage[] corpseset = scaleImageSet(
+        imgMap.put( WALL5, new TileBuilder.Tile( loadStretchedImage( SPRITE+"space/asteroidSmall.png" )));
+
+        AnimationData portalAniData = new AnimationData(
             getSpriteSet(
-                loadImage( TILESET+"spaceship/creatures2.png" ), new Point( 3*32, 0 ), 0, 0, 32, -1
-            ), DEFAULT_TILE_SIZE
+                loadImage(TILESET+"space/portal.png"), 80, -1
+            )
         );
-        imgMap.put( ENVIRONMENT0, loadStretchedImage( SPRITE+"land/Straw1.png" ));
-        imgMap.put( WALL0, loadScaledImage( SPRITE+"spaceship/wall1.png" ));
-        imgMap.put( WALL1, loadScaledImage( SPRITE+"spaceship/wall2.png" ));
-        imgMap.put( WALL2, loadScaledImage( SPRITE+"spaceship/wall3.png" ));
-        imgMap.put( WALL3, loadScaledImage( SPRITE+"spaceship/wall4.png" ));
-        imgMap.put( WALL4, loadScaledImage( SPRITE+"spaceship/wall5.png" ));
-        imgMap.put( WALL5, loadScaledImage( SPRITE+"spaceship/wall6.png" ));
-        imgMap.put( WALL6, loadScaledImage( SPRITE+"spaceship/wall7.png" ));
-        imgMap.put( WALL7, loadScaledImage( SPRITE+"spaceship/wall8.png" ));
-        imgMap.put( SPACE, loadScaledImage( SPRITE+"spaceship/floor.png" ));
-        imgMap.put( CORPSE_ENEMY,  corpseset[5] );
-        imgMap.put( CORPSE_PLAYER, corpseset[3] );
-        enemyAniData  = new AnimationData(tileset[5], true);
-        playerAniData = AnimationData.buildDirectionalAnimationSet(
-            scaleDirectionalAnimationSet(
-                getAnimationSet(
-                    loadImage( TILESET+"spaceship/spacemarine.png" ), 32, 3
+        AnimationPlayer portalAni = new AnimationPlayer(portalAniData);
+        portalAni.slowDown();
+        imgMap.put(PORTAL, portalAni);
+
+        AnimationData missileAniData = new AnimationData(
+            scaleImageSet(
+                getSpriteSet(
+                    loadImage(TILESET+"BlizzardEntertainment/succubus_missile_fly.png"), 97, -1
                 ), DEFAULT_TILE_SIZE
-            ), "ULDR"
+            )
         );
-        playerAni = AnimationPlayer.createSet(playerAniData);
-        for (AnimationPlayer ani : playerAni) {
-            ani.slowDown();
-        }
+        playerProjectile = DirectionalImage.createSingleAnimation(missileAniData);
+
+        TilesetBuilder builder = new TilesetBuilder( loadImage( TILESET+"space/ships.png" ), 36, 36 );
+        builder.setDirection(Direction.DOWN);
+        BufferedImage[] ship1 = builder.getTileSet(4);
+        ship1 = TilesetUtility.scaleImageSet(ship1, tileSize);
+        shipSet = new DirectionalImage( DirectionalImage.create( ship1 ));
     }
 
     @Override
     protected BlockTile getBlockTile(int x, int y, IsBlockType bType) {
         switch (bType) {
             case PLAYER:
-                return new MoveableTile( x, y, PLAYER, tileSize, getMaxPoint(), new DirectionalImage( playerAni ));
-            case ENEMY:
-                // für jeden Gegner einen eigenen AnimationPlayer erstellen
-                AnimationPlayer enemyAni = new AnimationPlayer(enemyAniData);
-                DeadOrAliveTile doaTile = new DeadOrAliveTile(x, y, tileSize, ENEMY, enemyAni);
-                doaTile.setDeadData(CORPSE_ENEMY, () -> imgMap.get( CORPSE_ENEMY ));
-                return doaTile;
+                MoveableTile playerTile = new MoveableTile(x, y, PLAYER, tileSize, getMaxPoint(), shipSet);
+                playerTile.setMissileImage(playerProjectile);
+                return playerTile;
             default:
-                return new BlockTile(x, y, tileSize, bType, () -> imgMap.get( bType ));
+                return new BlockTile( x, y, tileSize, bType, imgMap.get( bType ));
         }
     }
 

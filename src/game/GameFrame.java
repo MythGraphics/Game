@@ -51,7 +51,7 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
 
     public final TextFrame textFrame                            = new TextFrame(false);
 
-    public static String defaultMap                             = "uw";
+    public static String defaultMap                             = "space";
     public static String playerName                             = "Teufelsmaus";
     public static boolean loadCmdInput                          = false;
     public static Color menuColor                               = new Color(255, 255, 255);
@@ -477,9 +477,9 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
             return;
         }
         switch ( tileMap.getType() ) {
-            case SPACE  -> this.routine = new SpaceMapGameRoutine(this);
-            case LAND   -> this.routine = new LandMapGameRoutine(this);
-            case UW     -> this.routine = new UWMapGameRoutine((UWMap) this.map, this);
+            case SPACE  -> this.routine = new SpaceGameRoutine(this);
+            case LAND   -> this.routine = new LandGameRoutine(this);
+            case UW     -> this.routine = new UWGameRoutine((UWMap) this.map, this);
         }
         this.map.addCollisionActionListener(routine);
     }

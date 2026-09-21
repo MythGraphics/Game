@@ -26,11 +26,11 @@ import graphic.map.UWMap;
 import graphic.tile.BlockTile;
 import java.io.IOException;
 
-public class UWMapGameRoutine extends DefaultGameRoutine implements ResourceConsumeListener {
+public class UWGameRoutine extends DefaultGameRoutine implements ResourceConsumeListener {
 
     private final Player player;
 
-    public UWMapGameRoutine(UWMap map, GameFrame gameFrame) {
+    public UWGameRoutine(UWMap map, GameFrame gameFrame) {
         super(gameFrame);
         this.player = initPlayer(map, gameFrame);
     }
