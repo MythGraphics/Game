@@ -59,9 +59,9 @@ public class LandGameRoutine extends RPGRoutine {
         Player player = super.createPlayer();
         DescriptorLoader dLoader = new DescriptorLoader( getClass() );
         try {
-            getPlayer().setImg( dLoader.loadSpriteSet( TILESET+"player/", "descriptor" )[0] );
+            getPlayer().setImage( dLoader.loadSpriteSet( TILESET+"player/", "descriptor" )[0] );
 
-/*          player.setImg( TilesetUtility.getSpriteSetHorizontal(
+/*          player.setImage( TilesetUtility.getSpriteSetHorizontal(
  *              loadImage( TILESET+"player/girl_red_swimsuit.png" ), 140, 200, 4
  *          )[0]);
  */

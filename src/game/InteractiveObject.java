@@ -32,12 +32,12 @@ public class InteractiveObject implements HasName, HasUIImage, Cloneable {
     }
 
     InteractiveObject(InteractiveObject obj) {
-        this.name   = obj.getName();
-        this.img    = obj.getImg();
-        this.icon   = obj.getIcon().getImage();
+        this.name = obj.getName();
+        this.img  = obj.getImage();
+        this.icon = obj.getIcon().getImage();
     }
 
-    public void setImg(BufferedImage img) {
+    public void setImage(BufferedImage img) {
         this.img = img;
     }
 
@@ -46,7 +46,7 @@ public class InteractiveObject implements HasName, HasUIImage, Cloneable {
     }
 
     @Override
-    public BufferedImage getImg() {
+    public BufferedImage getImage() {
         return img;
     }
 

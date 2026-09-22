@@ -20,9 +20,6 @@ import game.combat.CombatFactory;
 import static game.combat.CombatFactory.Group.ZERG;
 import game.combat.Combatant;
 import game.item.LootManager;
-import game.resource.Resource;
-import static game.resource.Resource.ResourceType.CREDIT;
-import static game.resource.Resource.ResourceType.HEALTH;
 import graphic.io.BinaryIO;
 import static graphic.io.BinaryIO.*;
 import graphic.io.TextIO;
@@ -70,7 +67,7 @@ public class SpaceshipGameRoutine extends MartialGameRoutine {
     protected Player createPlayer(GameFrame gameFrame) {
         Player player = super.createPlayer();
         player.setPlayerAsMinion( CombatFactory.getDefaultSoldier( player.getHealth() ));
-        player.setImg( loadImage( SPRITE+"player/man1.png" ));
+        player.setImage( loadImage( SPRITE+"player/man1.png" ));
         return player;
     }
 

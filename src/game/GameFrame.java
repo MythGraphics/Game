@@ -521,7 +521,7 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
 
     private void initGameUI() {
         playerImg = ImageUtility.scale(
-            player.getImg(), jPlayerIconPanel.getWidth(), jPlayerIconPanel.getHeight(), true
+            player.getImage(), jPlayerIconPanel.getWidth(), jPlayerIconPanel.getHeight(), true
         );
         jPlayerIconPanel.repaint(); // PlayerImg anzeigen
 

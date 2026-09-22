@@ -12,14 +12,15 @@ package game.combat;
  */
 
 import game.HasName;
-import game.resource.Resource;
 import static game.combat.DamageType.*;
+import game.resource.Resource;
+import game.resource.ResourceChangeListener;
 import java.awt.Component;
 import java.awt.Graphics;
+import java.awt.image.BufferedImage;
 import java.text.DecimalFormat;
 import java.util.List;
 import javax.swing.*;
-import game.resource.ResourceChangeListener;
 
 public class AttributePanel extends JPanel implements BattleActionListener, ResourceChangeListener {
 
@@ -82,8 +83,9 @@ public class AttributePanel extends JPanel implements BattleActionListener, Reso
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                if ( combatant.getImg() != null ) {
-                    g.drawImage( combatant.getImg(), 0, 0, this );
+                BufferedImage img = combatant.getImage();
+                if (img != null) {
+                    g.drawImage(img, 0, 0, this);
                 }
             }
         };

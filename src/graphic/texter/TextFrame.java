@@ -210,7 +210,7 @@ public class TextFrame extends JFrame implements DialogOutputListener {
         if ( imgpath == null || imgpath.isBlank() ) {
             return new HasUIImage() {
                 @Override
-                public BufferedImage getImg() { return null; }
+                public BufferedImage getImage() { return null; }
                 @Override
                 public ImageIcon getIcon() { return null; }
             };
@@ -219,7 +219,7 @@ public class TextFrame extends JFrame implements DialogOutputListener {
         BufferedImage img = scale( BinaryIO.loadImage( imgpath ), DEFAULT_IMG_SIZE.height );
         return new HasUIImage() {
             @Override
-            public BufferedImage getImg() { return img; }
+            public BufferedImage getImage() { return img; }
             @Override
             public ImageIcon getIcon() { return new ImageIcon(img); }
         };
@@ -258,7 +258,7 @@ public class TextFrame extends JFrame implements DialogOutputListener {
         if (bg == null) {
             bg = loadUIImg(null);
         }
-        show( new Message( message, new InteractiveObject( name, bg.getImg() )));
+        show( new Message( message, new InteractiveObject( name, bg.getImage() )));
     }
 
     @Override

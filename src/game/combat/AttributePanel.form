@@ -542,7 +542,7 @@
     </Component>
     <Container class="javax.swing.JPanel" name="jImgPanel">
       <AuxValues>
-        <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new javax.swing.JPanel() {&#xa;    @Override&#xa;    protected void paintComponent(Graphics g) {&#xa;        super.paintComponent(g);&#xa;        if ( combatant.getImg() != null ) {&#xa;            g.drawImage( combatant.getImg(), 0, 0, this );&#xa;        }&#xa;    }&#xa;}"/>
+        <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new javax.swing.JPanel() {&#xa;    @Override&#xa;    protected void paintComponent(Graphics g) {&#xa;        super.paintComponent(g);&#xa;        BufferedImage img = combatant.getImage();&#xa;        if (img != null) {&#xa;            g.drawImage(img, 0, 0, this);&#xa;        }&#xa;    }&#xa;}"/>
       </AuxValues>
 
       <Layout>

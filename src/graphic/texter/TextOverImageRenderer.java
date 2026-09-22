@@ -146,7 +146,7 @@ public class TextOverImageRenderer extends TextRenderer {
             super.stop();
             return false;
         }
-        setBackground( msg.getSource().getImg() );
+        setBackground( msg.getSource().getImage() );
         super.printCharByChar( msg.getText() );
         return true;
     }

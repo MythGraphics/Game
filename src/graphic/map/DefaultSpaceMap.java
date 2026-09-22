@@ -33,7 +33,7 @@ public class DefaultSpaceMap extends GameMap {
 
     private final Map<IsBlockType, HasImage> imgMap = new HashMap<>();
 
-    private DirectionalImage shipSet, playerProjectile;
+    private DirectionalImage playerShipSet, playerProjectile;
 
     public DefaultSpaceMap(char[][] tileMap) {
         super(tileMap);
@@ -69,16 +69,19 @@ public class DefaultSpaceMap extends GameMap {
 
         TilesetBuilder builder = new TilesetBuilder( loadImage( TILESET+"space/ships.png" ), 36, 36 );
         builder.setDirection(Direction.DOWN);
-        BufferedImage[] ship1 = builder.getTileSet(4);
-        ship1 = TilesetUtility.scaleImageSet(ship1, tileSize);
-        shipSet = new DirectionalImage( DirectionalImage.create( ship1 ));
+        BufferedImage[][] ships = new BufferedImage[8][];
+        for (int i = 0; i < ships.length; ++i) {
+            ships[i] = builder.getTileSet(4);
+            ships[i] = TilesetUtility.scaleImageSet(ships[i], tileSize);
+        }
+        playerShipSet = new DirectionalImage( DirectionalImage.create( ships[7] ));
     }
 
     @Override
     protected BlockTile getBlockTile(int x, int y, IsBlockType bType) {
         switch (bType) {
             case PLAYER:
-                MoveableTile playerTile = new MoveableTile(x, y, PLAYER, tileSize, getMaxPoint(), shipSet);
+                MoveableTile playerTile = new MoveableTile(x, y, PLAYER, tileSize, getMaxPoint(), playerShipSet);
                 playerTile.setMissileImage(playerProjectile);
                 return playerTile;
             default:

@@ -11,26 +11,33 @@ package game.combat;
  *
  */
 
-import graphic.texter.Message;
 import game.item.ItemEvent.ItemActionType;
 import static game.item.ItemEvent.ItemActionType.USE;
 import game.item.ReUsableItem;
-import java.awt.image.BufferedImage;
+import graphic.texter.Message;
 import java.util.*;
-import javax.swing.ImageIcon;
+import java.util.concurrent.ThreadLocalRandom;
 
+@SuppressWarnings("CloneableImplementsClone")
 public abstract class AbstractWeapon extends ReUsableItem implements Blockable {
 
     final WeaponType wType;
+    final Random rand = ThreadLocalRandom.current();
 
     private final ArrayList<WeaponActionListener> actionListeners;
-    private final Random rand;
 
     public AbstractWeapon(int id, String name, WeaponType wType) {
         super(id, name);
         this.wType = wType;
         this.actionListeners = new ArrayList<>();
-        rand = new Random();
+    }
+
+    public AbstractWeapon(int id, WeaponType wType) {
+        this(
+            id,
+            wType.getRandomName(),
+            wType
+        );
     }
 
     abstract Map<DamageType, Damage> getDamageList();
@@ -62,18 +69,6 @@ public abstract class AbstractWeapon extends ReUsableItem implements Blockable {
             }
         }
         return super.getDialog(actionType);
-    }
-
-    @Override
-    public BufferedImage getImg() {
-        // ToDo implementieren
-        return null;
-    }
-
-    @Override
-    public ImageIcon getIcon() {
-        // ToDo implementieren
-        return null;
     }
 
     @Override

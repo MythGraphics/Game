@@ -30,7 +30,7 @@ public class Message {
         } else {
             this.source = new HasUIImage() {
                 @Override
-                public BufferedImage getImg() { return null; }
+                public BufferedImage getImage() { return null; }
                 @Override
                 public ImageIcon getIcon() { return null; }
                 @Override

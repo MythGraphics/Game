@@ -13,6 +13,7 @@ package game.combat;
 
 import static game.combat.AmmoType.*;
 import static game.combat.NamePool.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 public enum WeaponType {
 
@@ -61,6 +62,10 @@ public enum WeaponType {
 
     public String[] getNamePool() {
         return namePool;
+    }
+
+    public String getRandomName() {
+        return namePool[ ThreadLocalRandom.current().nextInt( namePool.length )];
     }
 
 }

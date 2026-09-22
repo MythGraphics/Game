@@ -13,11 +13,8 @@ package game.routine;
 
 import game.GameFrame;
 import game.Npc;
-import game.Player;
 import game.item.Item;
 import static game.quest.QuestStatus.INACTIVE;
-import game.resource.Resource;
-import static game.resource.Resource.ResourceType.CREDIT;
 import graphic.map.CollisionEvent;
 import static graphic.map.DefaultBlockType.NPC;
 import graphic.map.InteractionType;

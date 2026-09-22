@@ -222,7 +222,7 @@ public class CombatFactory {
         c.addArmor( new Armor( "Asbestschuppen", ASBEST, 50 ));
         c.addWeapon( new Weapon( -1, "rasiermesserscharfe Klauen", DOLCH, PHYSISCH, 25 ));
         c.addWeapon( new Weapon( -1, "langer, spitzer Stachel", SCHWERT, PHYSISCH, 10 ));
-        c.setImg( scale( loadImage( SPRITE+"minion/zerg.png" ), 100 ));
+        c.setImage( scale( loadImage( SPRITE+"minion/zerg.png" ), 100 ));
         return c;
     }
 
@@ -232,7 +232,7 @@ public class CombatFactory {
         c.addArmor( new Armor( "Chitinschuppen", MECHANISCH, 20 ));
         c.addWeapon( new Weapon( -1, "rasiermesserscharfe Klauen", DOLCH, PHYSISCH, 25 ));
         c.addWeapon( new Weapon( -1, "giftiger Stachel", SCHWERT, GIFT, 10 ));
-        c.setImg( scale( loadImage( SPRITE+"minion/zerg.png" ), 100 ));
+        c.setImage( scale( loadImage( SPRITE+"minion/zerg.png" ), 100 ));
         return c;
     }
 
@@ -242,7 +242,7 @@ public class CombatFactory {
         c.addArmor( new Armor( "Chitinschuppen", MECHANISCH, 20 ));
         c.addWeapon( new Weapon( -1, "rasiermesserscharfe Klauen", DOLCH, PHYSISCH, 25 ));
         c.addWeapon( new Weapon( -1, "langer, spitzer Stachel", SCHWERT, PHYSISCH, 10 ));
-        c.setImg( scale( loadImage( SPRITE+"minion/zerg.png" ), 100 ));
+        c.setImage( scale( loadImage( SPRITE+"minion/zerg.png" ), 100 ));
         return c;
     }
 
@@ -252,7 +252,7 @@ public class CombatFactory {
         c.addArmor( new Armor( "Dicke Haut", MECHANISCH, 20 ));
         c.addWeapon( new Weapon( -1, "rasiermesserscharfe Klauen", DOLCH, PHYSISCH, 25 ));
         c.addWeapon( new Weapon( -1, "säurehaltiger Stachel", SCHWERT, SÄURE, 10 ));
-        c.setImg( scale( loadImage( SPRITE+"minion/zerg.png" ), 100 ));
+        c.setImage( scale( loadImage( SPRITE+"minion/zerg.png" ), 100 ));
         return c;
     }
 
@@ -262,7 +262,7 @@ public class CombatFactory {
         c.addArmor( new Armor( "Wolfram-Iridium-Schuppen", MECHANISCH, 30 ));
         c.addWeapon( new Weapon( -1, "rasiermesserscharfe Klauen", DOLCH, PHYSISCH, 5 ));
         c.addWeapon( new Weapon( -1, "langer, spitzer Stachel", SCHWERT, PHYSISCH, 10 ));
-        c.setImg( scale( loadImage( SPRITE+"minion/zerg.png" ), 100 ));
+        c.setImage( scale( loadImage( SPRITE+"minion/zerg.png" ), 100 ));
         return c;
     }
 
@@ -271,7 +271,7 @@ public class CombatFactory {
         c.addArmor( new Armor( "Chitinpanzerplatten", MECHANISCH, 75 ));
         c.addWeapon( new Weapon( -1, "rasiermesserscharfe Klauen", DOLCH, PHYSISCH, 5 ));
         c.addWeapon( new Weapon( -1, "langer, spitzer Stachel", SCHWERT, PHYSISCH, 10 ));
-        c.setImg( scale( loadImage( SPRITE+"minion/zerg.png" ), 100 ));
+        c.setImage( scale( loadImage( SPRITE+"minion/zerg.png" ), 100 ));
         return c;
     }
 
@@ -280,7 +280,7 @@ public class CombatFactory {
         c.addArmor( new Armor( "verfilztes Fell", MECHANISCH, 50 ));
         c.addWeapon( new Weapon( -1, "rasiermesserscharfe Krallen", GLEVE, PHYSISCH, 5 ));
         c.addWeapon( new Weapon( -1, "giftiger Biss", DOLCH, GIFT, 15 ));
-        c.setImg( scale( loadImage( "sprites/minion/rat.png" ), 100 ));
+        c.setImage( scale( loadImage( "sprites/minion/rat.png" ), 100 ));
         return c;
     }
 
@@ -289,7 +289,7 @@ public class CombatFactory {
         c.addArmor( new Armor( "dickes Fell", MECHANISCH, 50 ));
         c.addWeapon( new Weapon( -1, "rasiermesserscharfe Krallen", GLEVE, PHYSISCH, 5 ));
         c.addWeapon( new Weapon( -1, "kräftiger Biss", DOLCH, PHYSISCH, 5 ));
-        c.setImg( scale( loadImage( "sprites/minion/cat.png" ), 100 ));
+        c.setImage( scale( loadImage( "sprites/minion/cat.png" ), 100 ));
         return c;
     }
 
@@ -298,7 +298,7 @@ public class CombatFactory {
         c.addArmor( new Armor( "Asbestfell", ASBEST, 50 ));
         c.addWeapon( new Weapon( -1, "brennende Krallen", GLEVE, FEUER, 5 ));
         c.addWeapon( new Weapon( -1, "brennender Biss", DOLCH, FEUER, 5 ));
-        c.setImg( scale( loadImage( "sprites/minion/rabbit3.png" ), 100 ));
+        c.setImage( scale( loadImage( "sprites/minion/rabbit3.png" ), 100 ));
         return c;
     }
 

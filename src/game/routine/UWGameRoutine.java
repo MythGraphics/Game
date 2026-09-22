@@ -44,7 +44,7 @@ public class UWGameRoutine extends DefaultGameRoutine implements ResourceConsume
         player.addResource(air);
         DescriptorLoader dLoader = new DescriptorLoader( getClass() );
         try {
-            player.setImg( dLoader.loadSpriteSet(TILESET+"player/", "descriptor")[0] );
+            player.setImage( dLoader.loadSpriteSet(TILESET+"player/", "descriptor")[0] );
         } catch (IOException e) {
             e.printStackTrace();
         }

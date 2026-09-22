@@ -13,22 +13,29 @@ package game.combat;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
 
+@SuppressWarnings("CloneableImplementsClone")
 public class Weapon extends AbstractWeapon {
 
     final DamageType dType; // Basis-Schadenstyp der Waffe
     final int baseDmg;      // Basis-Schaden der Waffe
 
-    private final Random rand;
-
     private Map<DamageType, Damage> dmgList;
+
+    public Weapon(int id, WeaponType wType, DamageType dType, int baseDmg) {
+        this(
+            id,
+            wType.getRandomName(),
+            wType,
+            dType,
+            baseDmg
+        );
+    }
 
     public Weapon(int id, String name, WeaponType wType, DamageType dType, int baseDmg) {
         super(id, name, wType);
         this.dType = dType;
         this.baseDmg = baseDmg;
-        rand = new Random();
         resetDamage(); // init dmgList
     }
 

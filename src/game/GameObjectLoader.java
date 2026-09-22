@@ -87,7 +87,7 @@ public class GameObjectLoader {
             item.setDescription( p.getProperty( "description" ));
         }
         item.setPrice( Integer.parseInt( p.getProperty( "price" )));
-        item.setImg( scale( loadImage( p.getProperty( "img" )), 200 ));
+        item.setImage( scale( loadImage( p.getProperty( "img" )), 200 ));
         item.setIcon( loadImage( p.getProperty( "uiImg" )));
 
         List<PropertiesHelperItem> helperList = new ArrayList<>();
@@ -163,7 +163,7 @@ public class GameObjectLoader {
         int id = ID.getNextNpcId();
         Properties p = loadProperties( buildFileString( NPC, id ));
         Npc npc = new Npc( id, p.getProperty( "name" ));
-        npc.setImg( scale( loadImage( p.getProperty( "img" )), 200 ));
+        npc.setImage( scale( loadImage( p.getProperty( "img" )), 200 ));
         npc.addMessage( new Message( p.getProperty( "text" ), npc ));
         return npc;
     }
@@ -176,7 +176,7 @@ public class GameObjectLoader {
             p.getProperty("name"),
             p.getProperty("text")
         );
-        text.setImg( scale( loadImage( p.getProperty( "img" )), 200 ));
+        text.setImage( scale( loadImage( p.getProperty( "img" )), 200 ));
         loadText(p, text, player);
         return text;
     }
@@ -198,7 +198,7 @@ public class GameObjectLoader {
             w = new Weapon(id, name, wType, dType, dmg);
         }
         w.setDescription(description);
-        w.setImg(img);
+        w.setImage(img);
         return w;
     }
 
@@ -214,7 +214,7 @@ public class GameObjectLoader {
         int dmg = Integer.parseInt( p.getProperty( "dmg" ));
         BufferedImage img = scale( loadImage( p.getProperty( "img" )), 100 );
         Ammo ammo = new Ammo( name, aType, size, 0, new Damage( dType, dmg ));
-        ammo.setImg(img);
+        ammo.setImage(img);
         ammo.setDescription(description);
         return ammo;
     }
@@ -227,11 +227,11 @@ public class GameObjectLoader {
         String name = p.getProperty( "name", minion.getName() );
         BufferedImage img = scale( loadImage( p.getProperty( "img" )), 100 );
         if (img == null) {
-            img = minion.getImg();
+            img = minion.getImage();
         }
         Enemy e = new Enemy(lvl, name, (game.combat.Enemy) minion );
         e.getMinion().setLevel((byte) lvl);
-        e.setImg(img);
+        e.setImage(img);
         return e;
     }
 
@@ -252,11 +252,11 @@ public class GameObjectLoader {
         String name = p.getProperty( "name", minion.getName() );
         BufferedImage img = scale( loadImage( p.getProperty( "img" )), 200 );
         if (img == null) {
-            img = minion.getImg();
+            img = minion.getImage();
         }
         if ( minion instanceof game.combat.Enemy enemy ) {
             Enemy e = new Enemy(id, name, enemy);
-            e.setImg(img);
+            e.setImage(img);
             return e;
         } else {
             throw new NoSuchElementException(
@@ -286,7 +286,7 @@ public class GameObjectLoader {
         minion.setLevel( Byte.parseByte( p.getProperty( "lvl" )));
         if ( p.containsKey( "img" )) {
             // optional, da auch über das Default-Objekt das Bild geliefert werden kann
-            minion.setImg( scale( loadImage( p.getProperty( "img" )), 100 ));
+            minion.setImage( scale( loadImage( p.getProperty( "img" )), 100 ));
         }
         return minion;
     }
@@ -324,7 +324,7 @@ public class GameObjectLoader {
 
     public void loadQuestObjectiveDialog(Item qObj, Player player) throws IOException {
         Properties p = loadProperties( buildFileString( QUEST_OBJECTIVE, qObj.getId() ));
-        qObj.setImg( scale( loadImage( p.getProperty( "img" )), 200 ));
+        qObj.setImage( scale( loadImage( p.getProperty( "img" )), 200 ));
         loadText(p, qObj, player);
     }
 

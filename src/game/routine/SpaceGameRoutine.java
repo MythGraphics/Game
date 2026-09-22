@@ -25,7 +25,7 @@ public class SpaceGameRoutine extends DefaultGameRoutine {
     @Override
     protected Player createPlayer() {
         Player player = super.createPlayer();
-        player.setImg( loadImage( SPRITE + "player/man1.png" ));
+        player.setImage( loadImage( SPRITE + "player/man1.png" ));
         return player;
     }
 
