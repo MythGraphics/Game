@@ -11,6 +11,8 @@ package game.combat;
  *
  */
 
+import game.resource.Resource;
+import static game.resource.Resource.ResourceType.HEALTH;
 import graphic.texter.MultiTextRenderer;
 import graphic.texter.TextRenderer;
 import java.awt.EventQueue;
@@ -278,7 +280,9 @@ public class CombatFrame extends JDialog implements CombatActionListener, Battle
     public static void main(String args[]) {
         EventQueue.invokeLater( () -> {
             new CombatFrame(
-                null, CombatFactory.getDefaultSoldier(null), CombatFactory.getDefaultWarriorZerg()
+                null,
+                CombatFactory.getDefaultSoldier(null),
+                CombatFactory.getDefaultWarriorZerg()
             ).setVisible(true);
             System.exit(0);
         });

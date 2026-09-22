@@ -11,7 +11,6 @@ package game;
  *
  */
 
-import game.combat.Combatant;
 import game.item.Item;
 import static game.item.ItemEvent.ItemActionType.REMOVE;
 import game.item.ReUsableItem;
@@ -40,7 +39,7 @@ public class Player extends InteractiveObject implements HasHealth, Trader, HasM
     private final MinionManager minions;
 
     private Quest quest;
-    private game.combat.Player playerMinion;
+    private game.combat.Player playerMinion;            // ToDo: entfernen -> MinionManager verwenden
 
     public Player(String name, DialogOutputListener dialogListener, Resource... resources) {
         this(name, dialogListener);
@@ -113,11 +112,6 @@ public class Player extends InteractiveObject implements HasHealth, Trader, HasM
     @Override
     public MinionManager getMinionManager() {
         return minions;
-    }
-
-    @Override
-    public Combatant getMinion() {
-        return minions.getCurrent();
     }
 
     @Override

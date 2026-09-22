@@ -11,12 +11,12 @@ package game.combat;
  *
  */
 
-import game.resource.Resource;
 import static game.combat.AmmoType.PROJECTILE;
 import static game.combat.ArmorType.*;
 import static game.combat.CombatantType.*;
 import static game.combat.DamageType.*;
 import static game.combat.WeaponType.*;
+import game.resource.Resource;
 import static graphic.io.BinaryIO.SPRITE;
 import static graphic.io.BinaryIO.loadImage;
 import static graphic.io.ImageUtility.scale;

@@ -22,12 +22,11 @@ public class Player extends Combatant {
 
     public final static int XP_PER_LEVEL = 100;
 
-    private final Map<AttributeType, DamageAttribute> attributes;
+    private final Map<AttributeType, DamageAttribute> attributes = new HashMap<>();
     private int xp = 0;
 
     public Player(String name, CombatantType cType, Resource health, int xp) {
         super(name, cType, health);
-        this.attributes = new HashMap<>();
         addXP(xp);
         buffDmgAttr();
     }

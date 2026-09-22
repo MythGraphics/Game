@@ -48,6 +48,7 @@ public class DefaultGameRoutine extends GameRoutine {
     }
 
     protected Player createPlayer() {
+        // Resourcen health & credit essentiell für das Player-Objekt
         Resource health = new Resource("Gesundheit", HEALTH, 1000, 1000);
         Resource credit = new Resource("Münzen", CREDIT, 1000*1000, 0);
         health.addResourceChangeListener(gameFrame);

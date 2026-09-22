@@ -38,13 +38,20 @@ public class Combatant extends InteractiveObject implements Combatable {
     // Attribute über cType (CombatantType) implementiert
 
     public Combatant(String name, CombatantType cType) {
-        this(name, cType, new Resource( MAIN_RESOURCE_NAME, HEALTH, HP_PER_LEVEL ));
+        this(name, cType, null);
     }
 
     public Combatant(String name, CombatantType cType, Resource health) {
         super(name);
+        if (cType == null) {
+            throw new IllegalArgumentException("CombatantType cannot be NULL.");
+        }
         this.cType  = cType;
-        this.health = health;
+        if (health == null) {
+            this.health = new Resource(MAIN_RESOURCE_NAME, HEALTH, HP_PER_LEVEL);
+        } else {
+            this.health = health;
+        }
         armorList   = new ArrayList<>();
         weaponList  = new ArrayList<>(2); // 0-2 Einträge
     }
