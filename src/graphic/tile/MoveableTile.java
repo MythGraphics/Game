@@ -11,13 +11,15 @@ package graphic.tile;
  *
  */
 
+import graphic.Direction;
 import static graphic.Direction.RIGHT;
-import graphic.*;
+import graphic.DirectionalImage;
+import graphic.Maneuverable;
 import graphic.map.IsBlockType;
 import java.awt.Dimension;
 import java.awt.Point;
 
-public class MoveableTile extends BlockTile implements Moveable {
+public class MoveableTile extends BlockTile implements Maneuverable {
 
     final DirectionalImage imgset;
     final Point maxPoint;
@@ -44,21 +46,63 @@ public class MoveableTile extends BlockTile implements Moveable {
         this(pos.x, pos.y, dim.width, dim.height, bType, stepSize, maxPoint, imgset);
     }
 
+    @Override
     public int getStepSize() {
         return stepSize;
     }
 
+    public Point getMaxPoint() {
+        return maxPoint;
+    }
+
+    @Override
+    public int getMaxX() {
+        return maxPoint.x;
+    }
+
+    @Override
+    public int getMaxY() {
+        return maxPoint.y;
+    }
+
+    @Override
     public Direction getCurrentDirection() {
         return imgset.getDirection();
     }
 
+    /**
+     * Dreht und bewegt den Spieler in die gegebene Richtung.
+     * @param direction
+     */
     @Override
     public void move(Direction direction) {
+        tilt(direction);
+        step(direction);
+    }
+
+    /**
+     * Dreht den Spieler in die gegebene Richtung.
+     * @param direction
+     */
+    @Override
+    public void tilt(Direction direction) {
         if (direction == null) {
             return;
         }
 
         imgset.setDirection(direction);
+    }
+
+    /**
+     * Bewegt den Spieler in die gegebene Richtung ohne ihn zu drehen.
+     * @param direction
+     */
+    @Override
+    public void step(Direction direction) {
+        if (direction == null) {
+            return;
+        }
+
         // Bewegungslogik
         switch (direction) {
             case UP    -> { if (y - stepSize >= 0)          { y -= stepSize; }}

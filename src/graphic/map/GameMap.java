@@ -14,6 +14,7 @@ package graphic.map;
 import graphic.CanFireMissile;
 import graphic.Direction;
 import static graphic.Direction.*;
+import graphic.Moveable;
 import static graphic.io.BinaryIO.loadImage;
 import static graphic.io.ImageUtility.scale;
 import static graphic.io.ImageUtility.stretch;
@@ -35,9 +36,11 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
@@ -118,7 +121,7 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
         ready = true;
     }
 
-    public void renderMapImage(DefaultBlockType... bTypes) {
+    public void renderMapImage(IsBlockType... bTypes) {
         BufferedImage prerenderedMap = new BufferedImage(boardWidth, boardHeight, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2d = prerenderedMap.createGraphics();
         drawMapImage(g2d, 0, 0, bTypes);
@@ -141,16 +144,16 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
         return new Point(boardWidth, boardHeight);
     }
 
+    public MoveableTile getPlayer() {
+        return player;
+    }
+
     public BufferedImage loadStretchedImage(String imgPath) {
         return stretch( loadImage( imgPath ), DEFAULT_TILE_SIZE, DEFAULT_TILE_SIZE, false );
     }
 
     public BufferedImage loadScaledImage(String imgPath) {
         return scale( loadImage( imgPath ), DEFAULT_TILE_SIZE, DEFAULT_TILE_SIZE, false );
-    }
-
-    public MoveableTile getPlayer() {
-        return player;
     }
 
     /**
@@ -239,6 +242,10 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
                 loadTileMapChar(tileMapChar, x, y, tileSize);
             }
         }
+        if (player != null) {
+            collidables.add(player);
+            renderables.add(player); // MUSS letzter Eintrag sein, damit Player über allen anderen Fliesen liegt
+        }
         if (spaceTile == null) {
             spaceTile = getBlockTile(0, 0, SPACE);
         }
@@ -259,11 +266,14 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
     public void deactivate() {
         active = false;
         renderLoop.stop();
-        super.repaint();
+        repaint();
         System.out.println("Map rendering deactivated.");
     }
 
     public void dispose() {
+        if (active) {
+            deactivate();
+        }
         System.out.println("Map is closing ...");
         ready = false;
         renderLoop.stop();
@@ -278,7 +288,7 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
         double deltaTime = (currentTime - lastFrameTime) / 1_000_000_000.0;
         lastFrameTime = currentTime;
  */
-        super.repaint();
+        repaint();
     }
 
     public void addCollisionActionListener(CollisionActionListener actionListener) {
@@ -313,12 +323,6 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
         }
     }
 
-    public void moveThroughPortal(Point target) {
-        int destinationX = target.x + player.x - lastPlayerPos.x;
-        int destinationY = target.y + player.y - lastPlayerPos.y;
-        setPlayerPositionXY(destinationX, destinationY);
-    }
-
     public IsBlock getBlock(int col, int row) {
         // 0 ist ungültig
         if ( col <= 0 || row <= 0 ) {
@@ -335,10 +339,28 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
         return null;
     }
 
+    public void moveThroughPortal(Moveable moveable, Point targetPos) {
+        int a = 0;
+        int b = 0;
+        switch ( moveable.getCurrentDirection() ) {
+            case UP    -> b = -tileSize;
+            case RIGHT -> a =  tileSize;
+            case DOWN  -> b =  tileSize;
+            case LEFT  -> a = -tileSize;
+        }
+        int destinationX = targetPos.x + a;
+        int destinationY = targetPos.y + b;
+        moveable.setX(destinationX);
+        moveable.setY(destinationY);
+        if (moveable instanceof Collidable c) {
+            detectCollision(c);
+        }
+    }
+
     public void movePlayer(int deltaCol, int deltaRow) {
-        int targetX = player.x + deltaCol*tileSize;
-        int targetY = player.y + deltaRow*tileSize;
-        setPlayerPositionXY(targetX, targetY);
+        int destinationX = player.x + deltaCol*tileSize;
+        int destinationY = player.y + deltaRow*tileSize;
+        setPlayerPositionXY(destinationX, destinationY);
     }
 
     /**
@@ -367,23 +389,23 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
         setPlayerPositionXY(targetColumn*tileSize, targetRow*tileSize);
     }
 
-    /**
-     * Setzt die Position des Spielers auf die gegebenen X-Y-Koordinaten.
-     * @param x
-     * @param y
-     */
     public void setPlayerPositionXY(int x, int y) {
-        setLastPlayerPosition();
+        if (x < 0 || y < 0 || x > boardWidth-tileSize || y > boardHeight-tileSize) {
+            System.err.println("Koordinaten für Spielerposition " + x + ", " + y + " ungültig -> wird ignoriert.");
+            return;
+        }
+
+        setCurrentPlayerPosition();
         player.x = x;
         player.y = y;
         detectCollision(player);
     }
 
-    public void setPlayerPosition(Point target) {
-        setPlayerPosition(target.x, target.y);
+    public void setPlayerPositionXY(Point destination) {
+        setPlayerPosition(destination.x, destination.y);
     }
 
-    private void setLastPlayerPosition() {
+    private void setCurrentPlayerPosition() {
         lastPlayerPos.x = player.x;
         lastPlayerPos.y = player.y;
     }
@@ -401,12 +423,22 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
             return;
         }
 
-        setLastPlayerPosition();
+        setCurrentPlayerPosition();
         switch ( evt.getKeyCode() ) {
-            case KeyEvent.VK_UP,    KeyEvent.VK_W, KeyEvent.VK_8 -> player.move(UP);
-            case KeyEvent.VK_DOWN,  KeyEvent.VK_S, KeyEvent.VK_2 -> player.move(DOWN);
-            case KeyEvent.VK_RIGHT, KeyEvent.VK_D, KeyEvent.VK_6 -> player.move(RIGHT);
-            case KeyEvent.VK_LEFT,  KeyEvent.VK_A, KeyEvent.VK_4 -> player.move(LEFT);
+            case KeyEvent.VK_W, KeyEvent.VK_NUMPAD8 -> player.move(UP);
+            case KeyEvent.VK_S, KeyEvent.VK_NUMPAD2 -> player.move(DOWN);
+            case KeyEvent.VK_D, KeyEvent.VK_NUMPAD6 -> player.move(RIGHT);
+            case KeyEvent.VK_A, KeyEvent.VK_NUMPAD4 -> player.move(LEFT);
+
+            case KeyEvent.VK_R, KeyEvent.VK_NUMPAD3 -> player.step(UP);
+            case KeyEvent.VK_F, KeyEvent.VK_NUMPAD1 -> player.step(DOWN);
+            case KeyEvent.VK_E, KeyEvent.VK_NUMPAD9 -> player.step(RIGHT);
+            case KeyEvent.VK_Q, KeyEvent.VK_NUMPAD7 -> player.step(LEFT);
+
+            case KeyEvent.VK_UP                     -> player.tilt(UP);
+            case KeyEvent.VK_DOWN                   -> player.tilt(DOWN);
+            case KeyEvent.VK_RIGHT                  -> player.tilt(RIGHT);
+            case KeyEvent.VK_LEFT                   -> player.tilt(LEFT);
         }
         detectCollision(player);
     }
@@ -429,14 +461,17 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
     }
 
     void detectCollision(Collidable source) {
-        // Collidable, IsCollider, IsCollisionHandler aktuell nicht genutzt
+        // IsCollider, IsCollisionHandler aktuell nicht genutzt
         if ( detectPanelCollision() ) {
-            Block target = new Block(player.x, player.y, player.width, player.height, BOUNDARY);
+            Block target = new Block(source.getX(), source.getY(), source.getWidth(), source.getHeight(), BOUNDARY);
             fireEvent(source, target);
             return;
         }
 
         for (Collidable target : collidables) {
+            if (source == target) {
+                continue;
+            }
             if ( collision( source, target )) {
                 fireEvent(source, target);
                 boolean passable = target.getBlockType().isPassable();
@@ -478,8 +513,11 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
         }
     }
 
-    public final void drawMapImage(Graphics2D g2d, int offsetX, int offsetY, DefaultBlockType... tileExclude) {
-        Set<IsBlockType> excludedTypes  = Set.of(tileExclude);
+    public final void drawMapImage(Graphics2D g2d, int offsetX, int offsetY, IsBlockType... tileExclude) {
+        Set<IsBlockType> excludedTypes =
+            tileExclude == null ? Set.of() : Arrays.stream(tileExclude)
+                                                   .filter(Objects::nonNull)
+                                                   .collect( Collectors.toSet() );
         Collection<Renderable> currentBlocks =
             renderables.stream()
                        .filter(r -> {
@@ -507,9 +545,6 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
         for (Renderable r : renderables) {
             r.draw(g2d, offsetX, offsetY);
         }
-        if (player != null) {
-            player.draw(g2d, offsetX, offsetY);
-        }
 
         for (AutoMoveableTile tile : scurryables) {
             tile.move();
@@ -526,11 +561,11 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
 
     protected void drawSpace(Graphics2D g2d, int offsetX, int offsetY) {
         if (spaceTile != null && spaceTile.getImage() != null) {
-            BufferedImage spaceImg = spaceTile.getImage();
+            BufferedImage spaceImage = spaceTile.getImage();
             for (int r = 0; r < rowCount; r++) {
                 for (int c = 0; c < columnCount; c++) {
                     g2d.drawImage(
-                        spaceImg,
+                        spaceImage,
                         tileSize*c - offsetX,
                         tileSize*r - offsetY,
                         tileSize,

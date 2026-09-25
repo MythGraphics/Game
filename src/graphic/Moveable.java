@@ -11,8 +11,16 @@ package graphic;
  *
  */
 
-public interface Moveable {
+import graphic.map.IsBlock;
+
+public interface Moveable extends IsBlock {
 
     void move(Direction direction);
+    int getStepSize();
+    int getMaxX();
+    int getMaxY();
+    void setX(int x);
+    void setY(int y);
+    Direction getCurrentDirection();
 
 }

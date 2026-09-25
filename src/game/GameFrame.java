@@ -181,8 +181,8 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
             }
         });
         addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyReleased(java.awt.event.KeyEvent evt) {
-                formKeyReleased(evt);
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                formKeyPressed(evt);
             }
         });
 
@@ -455,17 +455,18 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
     private void initGameCore(TileMap tileMap) {
         // Map laden
         switch ( tileMap.getType() ) {
-            case SPACE  -> this.map = new DefaultSpaceMap( tileMap.getTileMap() );
-            case LAND   -> this.map = new DefaultLandMap(  tileMap.getTileMap() );
-            case UW     -> this.map = new DefaultUWMap(    tileMap.getTileMap() );
-            default     -> {
-                System.err.println("Initialisieren der Map fehlgeschlagen - Typ unbekannt - Abbruch!");
+            case SPACE      -> this.map = new DefaultSpaceMap(      tileMap.getTileMap() );
+            case SPACESHIP  -> this.map = new DefaultSpaceshipMap(  tileMap.getTileMap() );
+            case LAND       -> this.map = new DefaultLandMap(       tileMap.getTileMap() );
+            case UW         -> this.map = new DefaultUWMap(         tileMap.getTileMap() );
+            default         -> {
+                System.err.println("Kritischer Fehler - Map-Typ unbekannt - Abbruch!");
                 System.exit(255);
                 return;
             }
         }
         if (this.map == null) {
-            System.err.println("Laden der Map fehlgeschlagen - Abbruch!");
+            System.err.println("Kritischer Fehler - Laden der Map fehlgeschlagen - Abbruch!");
             System.exit(255);
             return;
         }
@@ -474,13 +475,21 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
         if (loadCmdInput) {
             // Fernsteuerung aktiv
             routine = new DefaultGameRoutine(this);
+            // kein CollisionActionListener erforderlich
             return;
         }
         switch ( tileMap.getType() ) {
-            case SPACE  -> this.routine = new SpaceGameRoutine(this);
-            case LAND   -> this.routine = new LandGameRoutine(this);
-            case UW     -> this.routine = new UWGameRoutine((UWMap) this.map, this);
+            case SPACE      -> this.routine = new SpaceGameRoutine(this);
+            case SPACESHIP  -> this.routine = new SpaceshipGameRoutine(this);
+            case LAND       -> this.routine = new LandGameRoutine(this);
+            case UW         -> this.routine = new UWGameRoutine((UWMap) this.map, this);
         }
+        if (this.routine == null) {
+            System.err.println("Kritischer Fehler - Laden der SpielRoutine fehlgeschlagen - Abbruch!");
+            System.exit(255);
+            return;
+        }
+
         this.map.addCollisionActionListener(routine);
     }
 
@@ -523,7 +532,7 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
         playerImg = ImageUtility.scale(
             player.getImage(), jPlayerIconPanel.getWidth(), jPlayerIconPanel.getHeight(), true
         );
-        jPlayerIconPanel.repaint(); // PlayerImg anzeigen
+        jPlayerIconPanel.repaint(); // PlayerImage anzeigen
 
         jLeftList.setModel( player.getMinionManager().getListModel() );
         jRightList.setModel( player.getInventory().getListModel() );
@@ -627,31 +636,6 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
         }
     }
 
-    private void formKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_formKeyReleased
-        char keyChar = evt.getKeyChar();
-        if ( Character.isDigit( keyChar )) {
-            int index = Character.getNumericValue(keyChar);
-            playAudioTrack(index);
-            return;
-        }
-
-        switch ( evt.getKeyCode() ) {
-            case KeyEvent.VK_O  -> toggleVisibility(jLeftList);
-            case KeyEvent.VK_I  -> toggleVisibility(jRightList);
-            case KeyEvent.VK_M  -> toggleAudioPlayback();
-            case KeyEvent.VK_PLUS, KeyEvent.VK_ADD
-                                -> audioPlayer.changeVolume(10);
-            case KeyEvent.VK_MINUS, KeyEvent.VK_SUBTRACT
-                                -> audioPlayer.changeVolume(-10);
-            case KeyEvent.VK_C  -> {
-                // cast spell/missile
-                MoveableTile playerTile = map.getPlayer();
-                playerTile.fireMissile( map, playerTile.getCurrentDirection() );
-            }
-            default             -> map.movePlayer(evt);
-        }
-    }//GEN-LAST:event_formKeyReleased
-
     private void playAudioTrack(int index) {
         List<String> audioTrackList = routine.getAudioTrackList();
         if ( audioTrackList == null || audioTrackList.isEmpty() ) {
@@ -716,6 +700,27 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
             }
         }
     }//GEN-LAST:event_jRightListMouseClicked
+
+    private void formKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_formKeyPressed
+        int keyCode = evt.getKeyCode();
+        if (keyCode >= KeyEvent.VK_0 && keyCode <= KeyEvent.VK_9) {
+            playAudioTrack(keyCode-KeyEvent.VK_0);
+            return;
+        }
+
+        switch (keyCode) {
+            case KeyEvent.VK_O  -> toggleVisibility(jLeftList);
+            case KeyEvent.VK_I  -> toggleVisibility(jRightList);
+            case KeyEvent.VK_M  -> toggleAudioPlayback();
+            case KeyEvent.VK_PLUS, KeyEvent.VK_ADD
+                                -> audioPlayer.changeVolume(10);
+            case KeyEvent.VK_MINUS, KeyEvent.VK_SUBTRACT
+                                -> audioPlayer.changeVolume(-10);
+            case KeyEvent.VK_SPACE, KeyEvent.VK_NUMPAD0
+                                -> map.getPlayer().fireMissile( map, map.getPlayer().getCurrentDirection() ); // cast spell/missile
+            default             -> map.movePlayer(evt);
+        }
+    }//GEN-LAST:event_formKeyPressed
 
     private void addItem(UsableItem item) {
         JLabel icon = new JLabel();

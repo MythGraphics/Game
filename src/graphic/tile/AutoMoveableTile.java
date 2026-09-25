@@ -88,7 +88,11 @@ public class AutoMoveableTile extends MoveableTile implements ActionListener, Au
 
     @Override
     public void move() {
-        move( getCurrentDirection() );
+        if ( getX() > getMaxX() || getY() > getMaxY() || getX() < 0 || getY() < 0 ) {
+            move( Direction.invert( getCurrentDirection() ));
+        } else {
+            move( getCurrentDirection() );
+        }
     }
 
     @Override
