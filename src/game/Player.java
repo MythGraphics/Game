@@ -20,85 +20,48 @@ import game.quest.QuestListener;
 import static game.quest.QuestStatus.ACTIVE;
 import static game.quest.QuestStatus.COMPLETE;
 import game.resource.Resource;
-import game.resource.Resource.ResourceType;
 import static game.resource.Resource.ResourceType.CREDIT;
 import static game.resource.Resource.ResourceType.HEALTH;
 import graphic.texter.DialogOutputListener;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import game.combat.Combatant;
 
-public class Player extends InteractiveObject implements HasHealth, Trader, HasMinion {
+public class Player extends Enemy implements Trader {
 
-    private final Map<Resource.ResourceType, Resource> resources;
-    private final DialogOutputListener dialogListener;  // Dialog-Ausgabe
-    private final ArrayList<UsableItem> items;          // aktive, also angelegte Items
-    private final List<QuestListener> questListeners;   // feuert bei Änderung des Quest-Status
+    private final DialogOutputListener dialogListener;                          // Dialog-Ausgabe
+    private final ArrayList<UsableItem> items           = new ArrayList<>();    // aktive, also angelegte Items
+    private final List<QuestListener> questListeners    = new ArrayList<>();    // feuert bei Änderung des Quest-Status
     private final InventoryManager inventory;
-    private final MinionManager minions;
 
     private Quest quest;
-    private game.combat.Player playerMinion;            // ToDo: entfernen -> MinionManager verwenden
 
     public Player(String name, DialogOutputListener dialogListener, Resource... resources) {
-        this(name, dialogListener);
-        if (resources != null) {
-            for (Resource r : resources) {
-                addResource(r);
-            }
-        }
+        super(-1, name, resources);
+        this.dialogListener = dialogListener;
+        this.inventory      = new InventoryManager(this);
     }
 
     public Player(String name, DialogOutputListener dialogListener) {
-        super(name);
-        this.dialogListener = dialogListener;
-        this.questListeners = new ArrayList<>();
-        this.items          = new ArrayList<>();
-        this.inventory      = new InventoryManager(this);
-        this.minions        = new MinionManager();
-        this.resources      = new HashMap<>();
-        addResource( new Resource( "Gesundheit", HEALTH, 1000, 1000 ));
-        addResource( new Resource( "Credits", CREDIT, 1000*1000, 0 ));
-    }
+        this(name,
+             dialogListener,
+             new Resource( "Gesundheit", HEALTH, 1000, 1000 ),
+             new Resource( "Credits", CREDIT, 1000*1000, 0 )
+        );
 
-    /**
-     * Fügt die Resource dem Spieler und damit seiner Resourcenliste hinzu.
-     * @param r hinzuzufügende Resource
-     */
-    public final void addResource(Resource r) {
-        resources.put( r.getType(), r );
-    }
-
-    public Resource getResource(ResourceType type) {
-        return resources.get(type);
-    }
-
-    @Override
-    public Resource getHealth() {
-        return getResource(HEALTH);
-    }
-
-    @Override
-    public boolean isAlive() {
-        return getHealth().getValue() > 0;
-    }
-
-    @Override
-    public void takeDamage(int damage) {
-        if ( damage < 0 ) {
-            getHealth().recharge(damage);
-        } else {
-            getHealth().forceConsume(damage);
-        }
     }
 
     public void setPlayerAsMinion(game.combat.Player minion) {
-        this.playerMinion = minion;
+        getMinionManager().add(minion);
     }
 
     public game.combat.Player getPlayerAsMinion() {
-        return playerMinion;
+        Combatant c = getMinion();
+        if (c != null && c instanceof game.combat.Player player) {
+            return player;
+        } else {
+            return null;
+        }
     }
 
     private void fireQuestEvent(Quest quest) {
@@ -107,11 +70,6 @@ public class Player extends InteractiveObject implements HasHealth, Trader, HasM
 
     public DialogOutputListener getDialogOutputListener() {
         return dialogListener;
-    }
-
-    @Override
-    public MinionManager getMinionManager() {
-        return minions;
     }
 
     @Override
@@ -197,7 +155,7 @@ public class Player extends InteractiveObject implements HasHealth, Trader, HasM
     }
 
     @Override
-    public InteractiveObject clone() throws CloneNotSupportedException {
+    public Player clone() throws CloneNotSupportedException {
         throw new CloneNotSupportedException( "Clone on " + getClass() + " not supported." );
     }
 

@@ -11,6 +11,7 @@ package game;
  *
  */
 
+@FunctionalInterface
 public interface HasID {
 
     int getId();

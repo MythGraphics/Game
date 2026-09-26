@@ -11,9 +11,11 @@ package game;
  *
  */
 
-@FunctionalInterface
+import game.combat.Combatant;
+
 public interface HasMinion {
 
-    MinionManager getMinionManager();
+    Combatant getMinion();
+    void setMinion(Combatant minion);
 
 }

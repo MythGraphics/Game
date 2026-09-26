@@ -13,6 +13,7 @@ package graphic;
 
 import java.awt.image.BufferedImage;
 
+@FunctionalInterface
 public interface HasImage {
 
     BufferedImage getImage();

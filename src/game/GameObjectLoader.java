@@ -229,10 +229,11 @@ public class GameObjectLoader {
         if (img == null) {
             img = minion.getImage();
         }
-        Enemy e = new Enemy(lvl, name, (game.combat.Enemy) minion );
-        e.getMinion().setLevel((byte) lvl);
-        e.setImage(img);
-        return e;
+        Enemy enemy = new Enemy(lvl, name);
+        enemy.setMinion(minion);
+        enemy.getMinion().setLevel((byte) lvl);
+        enemy.setImage(img);
+        return enemy;
     }
 
     public Enemy loadNextEnemy() throws IOException, NoSuchElementException {
@@ -255,7 +256,8 @@ public class GameObjectLoader {
             img = minion.getImage();
         }
         if ( minion instanceof game.combat.Enemy enemy ) {
-            Enemy e = new Enemy(id, name, enemy);
+            Enemy e = new Enemy(id, name);
+            e.setMinion(enemy);
             e.setImage(img);
             return e;
         } else {

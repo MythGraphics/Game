@@ -11,7 +11,7 @@ package game.combat;
  *
  */
 
-public interface DamageActionListener extends WeaponActionListener {
+public interface DamageActionListener extends IsWeaponActionListener {
 
     void damagePerformed(Combatant combatant, int dmg);
     void lethalDamagePerformed(Combatant combatant, int dmg, int overkillDmg);

@@ -11,6 +11,7 @@ package graphic.map;
  *
  */
 
+@FunctionalInterface
 public interface IsCollider {
 
     /**

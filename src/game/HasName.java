@@ -11,6 +11,7 @@ package game;
  *
  */
 
+@FunctionalInterface
 public interface HasName {
 
     String getName();

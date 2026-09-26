@@ -24,7 +24,7 @@ public abstract class AbstractWeapon extends ReUsableItem implements Blockable {
     final WeaponType wType;
     final Random rand = ThreadLocalRandom.current();
 
-    private final ArrayList<WeaponActionListener> actionListeners;
+    private final ArrayList<IsWeaponActionListener> actionListeners;
 
     public AbstractWeapon(int id, String name, WeaponType wType) {
         super(id, name);
@@ -86,11 +86,11 @@ public abstract class AbstractWeapon extends ReUsableItem implements Blockable {
         return this;
     }
 
-    public List<WeaponActionListener> getActionListeners() {
+    public List<IsWeaponActionListener> getActionListeners() {
         return actionListeners;
     }
 
-    public void addWeaponActionListener(WeaponActionListener actionListener) {
+    public void addWeaponActionListener(IsWeaponActionListener actionListener) {
         this.actionListeners.add(actionListener);
     }
 

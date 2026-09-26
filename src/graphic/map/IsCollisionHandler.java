@@ -11,6 +11,7 @@ package graphic.map;
  *
  */
 
+@FunctionalInterface
 public interface IsCollisionHandler {
 
     void fireEvent(GameMap map, Collidable initiator, Collidable target);
