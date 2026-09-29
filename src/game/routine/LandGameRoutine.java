@@ -1,0 +1,98 @@
+/*
+ *
+ */
+
+package game.routine;
+
+/**
+ *
+ * @author  Martin Pröhl alias MythGraphics
+ * @version 1.0.0
+ *
+ */
+
+import game.GameFrame;
+import game.ID;
+import game.Npc;
+import game.Player;
+import game.combat.Combatant;
+import game.item.Item;
+import game.item.ItemEffect;
+import static game.item.ItemEffect.ItemEffectType.PRÄFIX;
+import static game.item.ItemEffect.ItemEffectType.SUFFIX;
+import static game.item.ItemEffect.ValueType.ABSOLUTE;
+import static game.item.ItemEffect.ValueType.PERCENT;
+import game.item.ReUsableItem;
+import game.item.UsableItem;
+import static game.resource.Resource.ResourceType.*;
+import static graphic.io.BinaryIO.TILESET;
+import graphic.io.DescriptorLoader;
+import static graphic.map.DefaultBlockType.ENVIRONMENT0;
+import static graphic.map.DefaultBlockType.TEXTSIGN;
+import graphic.tile.BlockTile;
+import java.io.IOException;
+
+public class LandGameRoutine extends RPGRoutine {
+
+    public LandGameRoutine(GameFrame gameFrame) {
+        super(gameFrame);
+        init();
+    }
+
+    private void init() {
+        try {
+            addDialog( TEXTSIGN, getLoader().loadNextDialog( getPlayer() ));
+            addDialog( ENVIRONMENT0, getLoader().loadNextDialog( getPlayer() ));
+            Npc npc = getLoader().loadNextNpc( getPlayer() );
+            addNpc(npc);
+            initQuest(npc);
+            initEnvLoot();
+        } catch (IOException | NullPointerException e) {
+            System.err.println( "Initialisieren der Spiel-Routine fehlgeschlagen - Abbruch!" );
+            System.err.println( "Ursache: " + e.getMessage() );
+            System.exit(255);
+        }
+    }
+
+    @Override
+    protected Player buildPlayer() {
+        Player player = super.buildPlayer();
+        DescriptorLoader dLoader = new DescriptorLoader( getClass() );
+        try {
+            getPlayer().setImage( dLoader.loadSpriteSet( TILESET+"player/", "descriptor" )[0] );
+
+/*          player.setImage( TilesetUtility.getSpriteSetHorizontal(
+ *              loadImage( TILESET+"player/girl_red_swimsuit.png" ), 140, 200, 4
+ *          )[0]);
+ */
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return player;
+    }
+
+    private void initQuest(Npc npc) throws IOException {
+        ReUsableItem qItem = new ReUsableItem(-1, "Halskette");
+        qItem.addItemEffect(
+            new ItemEffect("Neptunes", PRÄFIX, HEALTH, 100, PERCENT, false),
+            new ItemEffect("des Delfins", SUFFIX, AIR, 100, PERCENT, false)
+        );
+        int id = ID.getNextQuestId();
+        Item qObj = getLoader().loadQuest( id, npc, qItem, getPlayer() );
+        getLoader().loadQuestObjectiveDialog( qObj, getPlayer() );
+        addQuestLoot(id, qObj);
+    }
+
+    private void initEnvLoot() throws IOException {
+        UsableItem item = (UsableItem) getLoader().loadNextItem( getPlayer() );
+        item.addItemEffect( new ItemEffect( "Blutsaugender", PRÄFIX, HEALTH, 20, PERCENT, false ));
+        addEnvironmentLoot(item);
+        item = (UsableItem) getLoader().loadNextItem( getPlayer() );
+        item.addItemEffect( new ItemEffect( "einfacher", PRÄFIX, CREDIT, item.getPrice(), ABSOLUTE ));
+        addEnvironmentLoot(item);
+    }
+
+    @Override
+    public void playerDead(Combatant player, BlockTile tile) {}
+
+}

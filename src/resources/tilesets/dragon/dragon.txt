@@ -1,0 +1,20 @@
+TilesetBuilder builder = new TilesetBuilder( loadImage( TILESET+"dragon/dragon.png" ), 88, 82 );
+builder.setDirection(Direction.DOWN);
+BufferedImage[] up = builder.getTileSet(4);
+builder.setCursorOnStart();
+builder.moveCursorRight();
+builder.moveCursorRight();
+BufferedImage[] right = builder.getTileSet(4);
+builder.setCursorOnStart();
+builder.moveCursorRight();
+builder.moveCursorRight();
+BufferedImage[] down = builder.getTileSet(4);
+BufferedImage[] left = new BufferedImage[4];
+for (int i = 0; i < left.length; ++i) {
+    left[i] = flip(right[i], true);
+}
+AnimationData[] aniDataSet = AnimationData.buildDirectionalAnimationSet( new BufferedImage[][] {
+    up, right, down, left
+});
+AnimationPlayer[] aniSet = AnimationPlayer.createSet(aniDataSet);
+DirectionalImage dragonAniSet = new DirectionalImage(aniSet);

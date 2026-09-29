@@ -1,0 +1,39 @@
+/*
+ *
+ */
+
+package game.quest;
+
+/**
+ *
+ * @author  Martin Pröhl alias MythGraphics
+ * @version 1.0.0
+ *
+ */
+
+import game.item.Item;
+import graphic.texter.Message;
+import java.util.List;
+
+public class Quest extends AbstractQuest {
+
+    private final List<Message> msgList;
+    private final Item reward;
+
+    public Quest(int id, List<Message> msgList, Item reward) {
+        super(id);
+        this.msgList = msgList;
+        this.reward  = reward;
+    }
+
+    @Override
+    List<Message> getMessageList() {
+        return msgList;
+    }
+
+    @Override
+    Item getReward() {
+        return reward;
+    }
+
+}
