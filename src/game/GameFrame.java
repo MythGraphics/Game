@@ -19,6 +19,7 @@ import game.resource.Resource.ResourceType;
 import static game.resource.Resource.ResourceType.*;
 import game.resource.ResourceChangeListener;
 import game.routine.*;
+import graphic.Direction;
 import static graphic.io.BinaryIO.AUDIO;
 import graphic.io.ImageUtility;
 import graphic.map.*;
@@ -28,6 +29,7 @@ import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import static java.awt.event.MouseEvent.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.HashMap;
@@ -514,10 +516,10 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
     private void initMainUI() {
         jGamePanel.setBackground( map.getAmbientColor() );
 
-        resourceMap.put(HEALTH, jProgressBarHealth);
-        resourceMap.put(MANA, jProgressBarMana);
-        resourceMap.put(AIR, jProgressBarRes1);
-        resourceMap.put(STAMINA, jProgressBarRes2);
+        resourceMap.put(HEALTH,     jProgressBarHealth);
+        resourceMap.put(MANA,       jProgressBarMana);
+        resourceMap.put(AIR,        jProgressBarRes1);
+        resourceMap.put(STAMINA,    jProgressBarRes2);
         resourceMap.put(REPUTATION, jProgressBarRep);
         jProgressBarHealth.setUI( getProgressBarUI() );
         jProgressBarMana.setUI(   getProgressBarUI() );
@@ -544,7 +546,7 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
 
     private void initRemote() {
         remote = new ConsoleInputController(this);
-        remote.addCommand("move", args -> {
+        remote.addCommand("move", args -> { // deltaCol, deltaRow
             StringTokenizer tokenizer = new StringTokenizer(args, ", ", false);
             if ( tokenizer.countTokens() < 2 ) {
                 System.err.println(CMD_ARGS_ERROR);
@@ -552,7 +554,20 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
             }
             map.movePlayer( Integer.parseInt( tokenizer.nextToken() ), Integer.parseInt( tokenizer.nextToken() ));
         });
-        remote.addCommand("port", args -> {
+        remote.addCommand("moved", args -> { // move direction (u,r,d,l)
+            StringTokenizer tokenizer = new StringTokenizer(args, ", ", false);
+            if ( tokenizer.countTokens() < 1 ) {
+                System.err.println(CMD_ARGS_ERROR);
+                return;
+            }
+            Direction d = Direction.parseDirection( tokenizer.nextToken().charAt( 0 ));
+            if (d != null) {
+                map.getPlayer().move(d);
+            } else {
+                System.err.println("Richtungsangabe unverständlich.");
+            }
+        });
+        remote.addCommand("port", args -> { // column, row
             StringTokenizer tokenizer = new StringTokenizer(args, ", ", false);
             if ( tokenizer.countTokens() < 2 ) {
                 System.err.println(CMD_ARGS_ERROR);
@@ -599,16 +614,16 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
 
     private void formMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMouseClicked
         switch ( evt.getButton() ) {
-            case MouseEvent.BUTTON3 -> {
+            case BUTTON3 -> {
                 // rechter Mausbutton
                 jPopupMenu1.show( evt.getComponent(), evt.getX(), evt.getY() );
             }
-            case MouseEvent.BUTTON2 -> {
+            case BUTTON2 -> {
                 // mittlerer Mausbutton
                 setLocation( evt.getXOnScreen()-super.getWidth()/2, evt.getYOnScreen()-super.getHeight()/2 );
                 repaint();
             }
-            case MouseEvent.BUTTON1 -> {
+            case BUTTON1 -> {
                 // linker Mausbutton
                 requestFocus();
             }
@@ -621,18 +636,20 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
             return;
         }
 
-        if ( evt.getButton() == MouseEvent.BUTTON1 ) {
-            // linker Mausbutton
-            System.out.println( iconMap.get( jLabel ));
-        }
-        if ( evt.getButton() == MouseEvent.BUTTON3 ) {
-            // rechter Mausbutton
-            // Item ablegen, wenm ReUsable: heißt: Effekt rückgängig machen und Item zurück ins Inventar legen
-            UsableItem item = iconMap.get(jLabel);
-            if (item != null && item instanceof ReUsableItem reusable) {
-                jIconPanel.remove(jLabel);  // Icon (JLabel) aus UI entfernen
-                iconMap.remove(jLabel);     // Item aus der iconMap entfernen
-                player.getInventory().add( player.removeItem( reusable )); // Items zurück ins Inventar legen
+        switch ( evt.getButton() ) {
+            case BUTTON1 -> {
+                // linker Mausbutton
+                System.out.println( iconMap.get( jLabel ));
+            }
+            case BUTTON3 -> {
+                // rechter Mausbutton
+                // Item ablegen, wenm ReUsable: heißt: Effekt rückgängig machen und Item zurück ins Inventar legen
+                UsableItem item = iconMap.get(jLabel);
+                if (item != null && item instanceof ReUsableItem reusable) {
+                    jIconPanel.remove(jLabel);  // Icon (JLabel) aus UI entfernen
+                    iconMap.remove(jLabel);     // Item aus der iconMap entfernen
+                    player.getInventory().add( player.removeItem( reusable )); // Items zurück ins Inventar legen
+                }
             }
         }
     }
@@ -667,9 +684,10 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
     }
 
     private void toggleAudioPlayback() {
-        if ( audioPlayer == null ) {
+        if (audioPlayer == null) {
             return;
         }
+
         if ( audioPlayer.isPaused() ) {
             audioPlayer.resume();
         } else {
@@ -710,18 +728,32 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
         }
 
         switch (keyCode) {
-            case KeyEvent.VK_O  -> toggleVisibility(jLeftList);
             case KeyEvent.VK_I  -> toggleVisibility(jRightList);
+            case KeyEvent.VK_O  -> toggleVisibility(jLeftList);
             case KeyEvent.VK_M  -> toggleAudioPlayback();
+            case KeyEvent.VK_V  -> toggleVisibility(jTopPanel); // PlayerPanel
             case KeyEvent.VK_PLUS, KeyEvent.VK_ADD
                                 -> audioPlayer.changeVolume(10);
             case KeyEvent.VK_MINUS, KeyEvent.VK_SUBTRACT
                                 -> audioPlayer.changeVolume(-10);
             case KeyEvent.VK_SPACE, KeyEvent.VK_NUMPAD0
                                 -> map.getPlayer().fireMissile( map, map.getPlayer().getCurrentDirection() ); // cast spell/missile
+
             default             -> map.movePlayer(evt);
         }
     }//GEN-LAST:event_formKeyPressed
+
+    public static void printKeyBindings() {
+        System.out.println("i: open/close inventory");
+        System.out.println("o: open/close minion manager");
+        System.out.println("m: start/stop audio playback");
+        System.out.println("v: show/hide  player panel");
+        System.out.println("+: increase audio volume");
+        System.out.println("-: decrease audio volume");
+        System.out.println("0/space: fire missile");
+        System.out.println();
+        GameMap.printKeyBindings();
+    }
 
     private void addItem(UsableItem item) {
         JLabel icon = new JLabel();

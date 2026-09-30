@@ -235,8 +235,8 @@ public class DeadOrAliveTileDecorator<T extends BlockTile> implements IsDeadOrAl
     }
 
     @Override
-    public void fireMissile(GameMap map, Direction direction) {
-        tile.fireMissile(map, direction);
+    public void fireMissile(GameMap map, Direction d) {
+        tile.fireMissile(map, d);
     }
 
     @Override

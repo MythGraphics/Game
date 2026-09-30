@@ -11,8 +11,6 @@ package graphic.map;
  *
  */
 
-import graphic.tile.CanFireMissile;
-import graphic.Direction;
 import static graphic.Direction.*;
 import graphic.Moveable;
 import static graphic.io.BinaryIO.loadImage;
@@ -55,12 +53,12 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
     public final int visibleWidth, visibleHeight, boardWidth, boardHeight;
     public final Dimension board, visibleBoard;
 
-    public static boolean prerenderMap  = true;
-    public static int missileSpeed      = DEFAULT_TILE_SIZE/4; // Pixel per frame
+    public static boolean prerenderMap = true;
+    public static int defaultMissileSpeed = DEFAULT_TILE_SIZE/4; // Pixel per frame
 
-    protected final int tileSize, rowCount, columnCount;
+    public final int tileSize, rowCount, columnCount;
+
     protected final char[][] tileMap;
-
     protected final Collection<Collidable> collidables          = new HashSet<>(); // Collidable, IsBlock
     protected final Collection<Renderable> renderables          = new ArrayList<>();
     protected final Collection<AutoMoveableTile> scurryables    = new HashSet<>(); // sich selbst bewegende Entitäten
@@ -110,6 +108,10 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
     protected abstract void loadSprites();
     protected abstract IsBlockTile getBlockTile(int x, int y, IsBlockType bType);
     public abstract Color getAmbientColor();
+
+    public int getTileSize() {
+        return tileSize;
+    }
 
     public void init() {
         loadSprites();
@@ -447,6 +449,13 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
         detectCollision(player);
     }
 
+    public static void printKeyBindings() {
+        System.out.println("wsad / 8246 (numpad): move player");
+        System.out.println("qe / 79 (numpad): move player sideways without changing view direction");
+        System.out.println("rf / 31 (numpad): move player up/down without changing view direction");
+        System.out.println("arrow keys: tilt player: change players view direction without moving");
+    }
+
     private boolean detectPanelCollision() {
         if (player.getX() < 0) {
             player.setX(0);
@@ -585,25 +594,17 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
     }
 
     public int getEnemyCount() {
+        return getBlockCount(ENEMY);
+    }
+
+    public int getBlockCount(IsBlockType bType) {
         int value = 0;
         for (Collidable c : collidables) {
-            if ( c.getBlockType() == ENEMY ) {
+            if ( c.getBlockType() == bType ) {
                 ++value;
             }
         }
         return value;
-    }
-
-    public void fireMissile(CanFireMissile initiator, Direction d) {
-        int x = initiator.getX();
-        int y = initiator.getY();
-        switch (d) {
-            case RIGHT -> x += tileSize;
-            case LEFT  -> x -= tileSize;
-            case DOWN  -> y += tileSize;
-            case UP    -> y -= tileSize;
-        }
-        add( new Missile( initiator, d, x, y, MISSILE, missileSpeed ));
     }
 
     public void add(Object obj) {

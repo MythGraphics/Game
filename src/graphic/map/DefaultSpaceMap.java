@@ -52,7 +52,6 @@ public class DefaultSpaceMap extends GameMap {
     @Override
     protected void loadSprites() {
         imgMap.put( WALL5, new TileBuilder.Tile( loadStretchedImage( SPRITE+"space/asteroidSmall.png" )));
-        imgMap.put( ENEMY, new TileBuilder.Tile( loadStretchedImage( SPRITE+"space/asteroid2Small.png" )));
 
         AnimationData portalAniData = new AnimationData(
             getSpriteSet(
@@ -80,6 +79,7 @@ public class DefaultSpaceMap extends GameMap {
             ships[i] = TilesetUtility.scaleImageSet(ships[i], tileSize);
         }
         playerShipSet = new DirectionalImage( DirectionalImage.create( ships[7] ));
+        imgMap.put( ENEMY, () -> ships[0][2] );
     }
 
     @Override

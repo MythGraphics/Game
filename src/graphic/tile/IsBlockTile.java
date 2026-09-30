@@ -14,4 +14,4 @@ package graphic.tile;
 import graphic.map.Collidable;
 import graphic.map.Renderable;
 
-public interface IsBlockTile extends Renderable, Collidable, CanFireMissile {}
+public interface IsBlockTile extends Renderable, Collidable {}

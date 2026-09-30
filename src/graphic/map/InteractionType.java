@@ -18,6 +18,7 @@ public enum InteractionType {
     ENVIRONMENT,    // interactive environment, impassable (i.e. buildings)
     ENEMY,
     EXIT,           // map exit
+    LOOT,
     MISSILE,
     NONE,           // something that is not null to avoid NullPointerException
     NPC,
