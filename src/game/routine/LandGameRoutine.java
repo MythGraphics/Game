@@ -29,13 +29,14 @@ import static graphic.io.BinaryIO.TILESET;
 import graphic.io.DescriptorLoader;
 import static graphic.map.DefaultBlockType.ENVIRONMENT0;
 import static graphic.map.DefaultBlockType.TEXTSIGN;
+import graphic.map.GameMap;
 import graphic.tile.BlockTile;
 import java.io.IOException;
 
 public class LandGameRoutine extends RPGRoutine {
 
-    public LandGameRoutine(GameFrame gameFrame) {
-        super(gameFrame);
+    public LandGameRoutine(GameFrame gameFrame, GameMap map) {
+        super(gameFrame, map);
         init();
     }
 

@@ -16,6 +16,7 @@ import game.GameFrame;
 import game.combat.CombatFrame;
 import game.combat.Combatant;
 import graphic.map.CollisionEvent;
+import graphic.map.GameMap;
 import static graphic.map.InteractionType.ENEMY;
 import graphic.tile.BlockTile;
 import graphic.tile.DeadOrAliveTileDecorator;
@@ -27,13 +28,13 @@ public abstract class CombatGameRoutine extends DefaultGameRoutine {
 
     final List<Enemy> enemyList;
 
-    public CombatGameRoutine(GameFrame gameFrame, List<Enemy> enemyList) {
-        super(gameFrame);
+    public CombatGameRoutine(GameFrame gameFrame, GameMap map, List<Enemy> enemyList) {
+        super(gameFrame, map);
         this.enemyList = enemyList;
     }
 
-    public CombatGameRoutine(GameFrame frame) {
-        this( frame, new ArrayList<>() );
+    public CombatGameRoutine(GameFrame frame, GameMap map) {
+        this( frame, map, new ArrayList<>() );
     }
 
     /**

@@ -123,6 +123,10 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
         ready = true;
     }
 
+    public boolean isInitialized() {
+        return ready;
+    }
+
     public void renderMapImage(IsBlockType... bTypes) {
         BufferedImage prerenderedMap = new BufferedImage(boardWidth, boardHeight, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2d = prerenderedMap.createGraphics();

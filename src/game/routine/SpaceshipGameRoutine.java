@@ -26,6 +26,7 @@ import graphic.io.TextIO;
 import graphic.map.CollisionEvent;
 import static graphic.map.DefaultBlockType.ENVIRONMENT0;
 import static graphic.map.DefaultBlockType.EXIT;
+import graphic.map.GameMap;
 import graphic.texter.Message;
 import graphic.texter.TextFrame;
 import graphic.tile.BlockTile;
@@ -45,8 +46,8 @@ public class SpaceshipGameRoutine extends CombatGameRoutine {
     private int enemies = 0;
     private boolean victory = false;
 
-    public SpaceshipGameRoutine(GameFrame gameFrame) {
-        super(gameFrame);
+    public SpaceshipGameRoutine(GameFrame gameFrame, GameMap map) {
+        super(gameFrame, map);
         setAudioTrackList("SpaceshipAudioTrackList.txt");
         textFrameBG = BinaryIO.loadImage(PROLOG_BG);
         enemies = gameFrame.getCurrentMap().getEnemyCount();

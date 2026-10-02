@@ -20,7 +20,7 @@ import java.awt.image.BufferedImage;
 
 @SuppressWarnings("CloneableImplementsClone")
 public class DeadOrAliveTileDecorator<T extends BlockTile> implements IsDeadOrAliveTile, IsBlockTile, IsMoveableTile,
-                                                                      AutoMoveable {
+                                                                      AutoMoveable, CanFireMissile {
 
     private final T tile;
     private IsBlockType aliveType, deadType;

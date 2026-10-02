@@ -20,7 +20,7 @@ import graphic.map.DefaultSpaceMap;
 public class SpaceGameRoutine extends MartialGameRoutine {
 
     public SpaceGameRoutine(GameFrame gameFrame, DefaultSpaceMap map) {
-        super(gameFrame);
+        super(gameFrame, map);
         map.init( getPlayer().getHealth() );
     }
 

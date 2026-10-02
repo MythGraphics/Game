@@ -17,6 +17,7 @@ import game.item.Item;
 import static game.quest.QuestStatus.INACTIVE;
 import graphic.map.CollisionEvent;
 import static graphic.map.DefaultBlockType.NPC;
+import graphic.map.GameMap;
 import graphic.map.InteractionType;
 import graphic.map.IsBlock;
 import java.util.*;
@@ -29,13 +30,13 @@ public abstract class RPGRoutine extends CombatGameRoutine {
     private final Map<IsBlock, Npc> npcMap = new HashMap<>();
     private final List<Npc> npcList;
 
-    public RPGRoutine(GameFrame gameFrame, List<Npc> npcList) {
-        super(gameFrame);
+    public RPGRoutine(GameFrame gameFrame, GameMap map, List<Npc> npcList) {
+        super(gameFrame, map);
         this.npcList = npcList;
     }
 
-    public RPGRoutine(GameFrame gameFrame) {
-        this( gameFrame, new LinkedList<>() );
+    public RPGRoutine(GameFrame gameFrame, GameMap map) {
+        this( gameFrame, map, new LinkedList<>() );
     }
 
     private void mapNpc(IsBlock block, Npc npc) {

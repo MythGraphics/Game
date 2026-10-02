@@ -75,8 +75,7 @@ public class DefaultSpaceMap extends GameMap {
         builder.setDirection(Direction.DOWN);
         BufferedImage[][] ships = new BufferedImage[8][];
         for (int i = 0; i < ships.length; ++i) {
-            ships[i] = builder.getTileSet(4);
-            ships[i] = TilesetUtility.scaleImageSet(ships[i], tileSize);
+            ships[i] = TilesetUtility.scaleImageSet(builder.getTileSet(4), tileSize);
         }
         playerShipSet = new DirectionalImage( DirectionalImage.create( ships[7] ));
         imgMap.put( ENEMY, () -> ships[0][2] );

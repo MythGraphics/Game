@@ -14,13 +14,14 @@ package game.routine;
 import game.GameFrame;
 import game.resource.Resource;
 import graphic.map.CollisionEvent;
+import graphic.map.GameMap;
 import static graphic.map.InteractionType.PLAYER;
 import graphic.tile.IsDeadOrAliveTile;
 
 public class MartialGameRoutine extends DefaultGameRoutine {
 
-    public MartialGameRoutine(GameFrame gameFrame) {
-        super(gameFrame);
+    public MartialGameRoutine(GameFrame gameFrame, GameMap map) {
+        super(gameFrame, map);
     }
 
     @Override

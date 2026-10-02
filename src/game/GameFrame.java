@@ -24,6 +24,7 @@ import static graphic.io.BinaryIO.AUDIO;
 import graphic.io.ImageUtility;
 import graphic.map.*;
 import graphic.texter.TextFrame;
+import graphic.tile.CanFireMissile;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
@@ -459,16 +460,16 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
     private boolean initGameCore(TileMap tileMap) {
         // Map laden
         switch ( tileMap.getType() ) {
-            case SPACE     -> this.map = new DefaultSpaceMap(     tileMap.getTileMap() );
-            case SPACESHIP -> this.map = new DefaultSpaceshipMap( tileMap.getTileMap() );
-            case LAND      -> this.map = new DefaultLandMap(      tileMap.getTileMap() );
-            case UW        -> this.map = new DefaultUWMap(        tileMap.getTileMap() );
+            case SPACE     -> map = new DefaultSpaceMap(     tileMap.getTileMap() );
+            case SPACESHIP -> map = new DefaultSpaceshipMap( tileMap.getTileMap() );
+            case LAND      -> map = new DefaultLandMap(      tileMap.getTileMap() );
+            case UW        -> map = new DefaultUWMap(        tileMap.getTileMap() );
             default        -> {
                 System.err.println("Kritischer Fehler - Map-Typ unbekannt - Abbruch.");
                 return false;
             }
         }
-        if (this.map == null) {
+        if (map == null) {
             System.err.println("Kritischer Fehler - Laden der Map fehlgeschlagen - Abbruch.");
             return false;
         }
@@ -476,23 +477,23 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
         // Routine laden
         if (loadCmdInput) {
             // Fernsteuerung aktiv
-            routine = new DefaultGameRoutine(this);
+            routine = new DefaultGameRoutine(this, map);
             // kein CollisionActionListener erforderlich
             return true;
         }
 
         switch ( tileMap.getType() ) {
-            case SPACE      -> this.routine = new SpaceGameRoutine(this, (DefaultSpaceMap) this.map);
-            case SPACESHIP  -> this.routine = new SpaceshipGameRoutine(this);
-            case LAND       -> this.routine = new LandGameRoutine(this);
-            case UW         -> this.routine = new UWGameRoutine(this, (UWMap) this.map);
+            case SPACE      -> routine = new SpaceGameRoutine(this, (DefaultSpaceMap) map);
+            case SPACESHIP  -> routine = new SpaceshipGameRoutine(this, map);
+            case LAND       -> routine = new LandGameRoutine(this, map);
+            case UW         -> routine = new UWGameRoutine(this, (UWMap) map);
         }
-        if (this.routine == null) {
+        if (routine == null) {
             System.err.println("Kritischer Fehler - Laden der SpielRoutine fehlgeschlagen - Abbruch.");
             return false;
         }
 
-        this.map.addCollisionActionListener(routine);
+        map.addCollisionActionListener(routine);
         return true;
     }
 
@@ -737,7 +738,11 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
             case KeyEvent.VK_MINUS, KeyEvent.VK_SUBTRACT
                                 -> audioPlayer.changeVolume(-10);
             case KeyEvent.VK_SPACE, KeyEvent.VK_NUMPAD0
-                                -> map.getPlayer().fireMissile( map, map.getPlayer().getCurrentDirection() ); // cast spell/missile
+                                -> {
+                                    if ( map.getPlayer() instanceof CanFireMissile caster) {
+                                        caster.fireMissile( map, map.getPlayer().getCurrentDirection() ); // cast spell/missile
+                                    }
+                                }
 
             default             -> map.movePlayer(evt);
         }

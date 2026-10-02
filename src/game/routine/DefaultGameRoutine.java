@@ -22,18 +22,27 @@ import graphic.texter.DialogOutputListener;
 public class DefaultGameRoutine extends GameRoutine {
 
     public final GameFrame gameFrame;
+    public final GameMap map;
 
     private final Player player;
 
     @SuppressWarnings("OverridableMethodCallInConstructor")
-    public DefaultGameRoutine(GameFrame gameFrame) {
-        this.gameFrame = gameFrame;
-        this.player    = buildPlayer();
+    public DefaultGameRoutine(GameFrame gameFrame, GameMap map) {
+        this.gameFrame  = gameFrame;
+        this.map        = map;
+        this.player     = buildPlayer();
+        if ( !map.isInitialized() ) {
+            map.init();
+        }
     }
 
     @Override
     public Player getPlayer() {
         return player;
+    }
+
+    public GameMap getMap() {
+        return map;
     }
 
     /**

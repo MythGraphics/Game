@@ -13,6 +13,7 @@ package game.routine;
 
 import game.GameFrame;
 import game.Player;
+import game.resource.ConsumeResource;
 import game.resource.Resource;
 import static game.resource.Resource.ResourceType.AIR;
 import static game.resource.Resource.ResourceType.HEALTH;
@@ -28,17 +29,14 @@ import java.io.IOException;
 
 public class UWGameRoutine extends DefaultGameRoutine implements ResourceConsumeListener {
 
-    private final UWMap map;
-
     public UWGameRoutine(GameFrame gameFrame, UWMap map) {
-        super(gameFrame);
-        this.map = map;
+        super(gameFrame, map);
     }
 
     @Override
     protected Player buildPlayer() {
         Player player = super.buildPlayer();
-        Resource air = map.getResource();
+        Resource air  = ((ConsumeResource) map).getResource();
         air.addResourceChangeListener(gameFrame);
         air.addResourceConsumeListener(this);
         player.addResource(air);
