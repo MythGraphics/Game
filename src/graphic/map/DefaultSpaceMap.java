@@ -46,6 +46,9 @@ public class DefaultSpaceMap extends GameMap {
     }
 
     @Override
+    public void init() {}
+
+    @Override
     public Color getAmbientColor() {
         return AMBIENT_COLOR;
     }

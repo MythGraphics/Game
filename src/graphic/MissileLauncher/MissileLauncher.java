@@ -37,6 +37,7 @@ public abstract class MissileLauncher {
 
     public void fireMissile(GameMap map, IsBlock source, Direction d) {
         if ( !hasMissile() ) {
+            System.out.println("Feuern nicht möglich: Nicht geladen.");
             return;
         }
 

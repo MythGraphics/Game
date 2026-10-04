@@ -113,7 +113,7 @@ public class DirectionalImage implements HasDirectionalImage, Cloneable {
     }
 
     @Override
-    public DirectionalImage clone() {
+    public DirectionalImage clone() throws CloneNotSupportedException {
         return new DirectionalImage(this);
     }
 

@@ -14,9 +14,11 @@ package game.routine;
 import game.GameObjectLoader;
 import game.Player;
 import game.TextBox;
-import graphic.Moveable;
 import graphic.io.TextIO;
-import graphic.map.*;
+import graphic.map.CollisionActionListener;
+import graphic.map.CollisionEvent;
+import graphic.map.DefaultBlockType;
+import graphic.map.IsBlockType;
 import graphic.texter.DialogOutputListener;
 import java.awt.Point;
 import java.util.HashMap;
@@ -62,17 +64,6 @@ public abstract class GameRoutine implements CollisionActionListener {
 //      System.out.println( "(debug) InteractionType: " + e.getType() );            // debug
 //      System.out.println( "(debug) BlockType: " + e.getTarget().getBlockType() ); // debug
         getDialogListener(e).show( dialogMap.get( e.getTarget().getBlockType() ));
-        switch( e.getType() ) {
-            case PORTAL -> {
-                Point targetPoint = new Point( e.getTarget().getX(), e.getTarget().getY() );
-                portals.addIfAbsent(targetPoint);
-                if ( portals.size() < 2 ) {
-                    // Wenn weniger als 2 Portale bekannt sind, bleibt der Spieler wo er ist.
-                    return;
-                }
-                (( GameMap ) e.getSource() ).moveThroughPortal(( Moveable ) e.initiator, portals.getNext() );
-            }
-        }
     }
 
 }

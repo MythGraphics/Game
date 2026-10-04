@@ -459,7 +459,7 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
     }// </editor-fold>//GEN-END:initComponents
 
     private boolean initGameCore(TileMap tileMap) {
-        // Map laden
+        // Map laden, Initialisierung erfolgt über GameRoutine
         switch ( tileMap.getType() ) {
             case SPACE     -> map = new DefaultSpaceMap(     tileMap.getTileMap() );
             case SPACESHIP -> map = new DefaultSpaceshipMap( tileMap.getTileMap() );
@@ -475,7 +475,7 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
             return false;
         }
 
-        // Routine laden
+        // Routine laden, initialisiert auch die Map
         if (loadCmdInput) {
             // Fernsteuerung aktiv
             routine = new DefaultGameRoutine(this, map);

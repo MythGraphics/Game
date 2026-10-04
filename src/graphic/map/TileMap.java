@@ -15,8 +15,8 @@ import java.util.List;
 
 public class TileMap {
 
-    final MapType type;
     final char[][] tileMap;
+    final MapType type;
 
     public TileMap(String[] tileRows, MapType type) {
         tileMap = new char[tileRows.length][tileRows[0].length()];

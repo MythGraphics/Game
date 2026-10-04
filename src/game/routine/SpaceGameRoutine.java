@@ -21,7 +21,11 @@ public class SpaceGameRoutine extends MartialGameRoutine {
 
     public SpaceGameRoutine(GameFrame gameFrame, DefaultSpaceMap map) {
         super(gameFrame, map);
-        map.init( getPlayer().getHealth() );
+    }
+
+    @Override
+    public void initMap() {
+        ((DefaultSpaceMap) map).init( getPlayer().getHealth() );
     }
 
     @Override

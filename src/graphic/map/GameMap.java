@@ -114,6 +114,11 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
     }
 
     public void init() {
+        if (ready) {
+            System.err.println("Map already initialised.");
+            return;
+        }
+
         loadSprites();
         initMap();
         if (prerenderMap) {
