@@ -56,6 +56,7 @@ public class DefaultSpaceMap extends GameMap {
     @Override
     protected void loadSprites() {
         imgMap.put( WALL5, new TileBuilder.Tile( loadStretchedImage( SPRITE+"space/asteroidSmall.png" )));
+        imgMap.put( CORPSE, new TileBuilder.Tile( loadStretchedImage( SPRITE+"space/wreck.png" )));
 
         AnimationData portalAniData = new AnimationData(
             getSpriteSet(
@@ -100,6 +101,7 @@ public class DefaultSpaceMap extends GameMap {
                     new BlockTile(x, y, tileSize, ENEMY, imgMap.get( bType ))
                 );
                 enemyTile.setOverlayResource( new Resource( "HP", HEALTH, 25, 25 ));
+                enemyTile.setDeadTile( CORPSE, imgMap.get( CORPSE ));
                 return enemyTile;
             default:
                 return new BlockTile( x, y, tileSize, bType, imgMap.get( bType ));
