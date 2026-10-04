@@ -14,6 +14,7 @@ package graphic.map;
 import game.resource.Resource;
 import static game.resource.Resource.ResourceType.HEALTH;
 import graphic.*;
+import graphic.MissileLauncher.DefaultMissileLauncher;
 import static graphic.io.BinaryIO.*;
 import graphic.io.TilesetUtility;
 import static graphic.io.TilesetUtility.getSpriteSet;
@@ -88,7 +89,7 @@ public class DefaultSpaceMap extends GameMap {
                 DeadOrAliveTileDecorator<MoveableTile> playerTile = new DeadOrAliveTileDecorator<>(
                     new MoveableTile(x, y, PLAYER, tileSize, getMaxPoint(), playerShipSet)
                 );
-                playerTile.getTile().setMissileImage(playerProjectile);
+                playerTile.setMissileLauncher( new DefaultMissileLauncher( playerProjectile ));
                 playerTile.setOverlayResource(playerHealth);
                 return playerTile;
             case ENEMY:

@@ -12,6 +12,9 @@ package graphic.tile;
  */
 
 import game.resource.Resource;
+import graphic.MissileLauncher.DefaultMissileLauncher;
+import graphic.MissileLauncher.HasMissileLauncher;
+import graphic.MissileLauncher.MissileLauncher;
 import graphic.*;
 import static graphic.map.DefaultBlockType.CORPSE;
 import graphic.map.*;
@@ -20,14 +23,16 @@ import java.awt.image.BufferedImage;
 
 @SuppressWarnings("CloneableImplementsClone")
 public class DeadOrAliveTileDecorator<T extends BlockTile> implements IsDeadOrAliveTile, IsBlockTile, IsMoveableTile,
-                                                                      AutoMoveable, CanFireMissile {
+                                                                      AutoMoveable, HasMissileLauncher {
 
     private final T tile;
+
     private IsBlockType aliveType, deadType;
     private DeadOrAliveImageSet imageSet;
     private Resource health;
     private boolean alive = true;
     private boolean drawOverlay = true;
+    private MissileLauncher missileLauncher = new DefaultMissileLauncher(null);
 
     public DeadOrAliveTileDecorator(T aliveTile) {
         this(aliveTile, CORPSE, null, null);
@@ -48,6 +53,15 @@ public class DeadOrAliveTileDecorator<T extends BlockTile> implements IsDeadOrAl
         } else {
             this.imageSet = imageSet;
         }
+    }
+
+    public void setMissileLauncher(MissileLauncher missileLauncher) {
+        this.missileLauncher = missileLauncher;
+    }
+
+    @Override
+    public MissileLauncher getMissileLauncher() {
+        return missileLauncher;
     }
 
     public final void setDeadTile(IsBlockType bType, HasImage image) {
@@ -227,21 +241,6 @@ public class DeadOrAliveTileDecorator<T extends BlockTile> implements IsDeadOrAl
             setDead();
         }
         return b;
-    }
-
-    @Override
-    public DirectionalImage getMissileImage() {
-        return tile.getMissileImage();
-    }
-
-    @Override
-    public void fireMissile(GameMap map, Direction d) {
-        tile.fireMissile(map, d);
-    }
-
-    @Override
-    public boolean hasMissile() {
-        return tile.hasMissile();
     }
 
 }

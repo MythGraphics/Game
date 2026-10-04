@@ -15,6 +15,7 @@ import graphic.AnimationData;
 import graphic.AnimationPlayer;
 import graphic.DirectionalImage;
 import graphic.HasImage;
+import graphic.MissileLauncher.DefaultMissileLauncher;
 import static graphic.io.BinaryIO.*;
 import static graphic.io.ImageUtility.scale;
 import static graphic.io.TilesetUtility.*;
@@ -62,24 +63,13 @@ public class DefaultUWMap extends UWMap {
             ), "ULDR"
         );
         playerAniSet = new DirectionalImage( AnimationPlayer.createSet( playerAniData ));
-
-        AnimationData missileAniData = new AnimationData(
-            scaleImageSet(
-                getSpriteSet(
-                    loadImage(TILESET+"BlizzardEntertainment/succubus_missile_fly.png"), 97, -1
-                ), DEFAULT_TILE_SIZE
-            )
-        );
-        playerProjectile = DirectionalImage.createSingleAnimation(missileAniData);
     }
 
     @Override
     protected BlockTile getBlockTile(int x, int y, IsBlockType bType) {
         switch (bType) {
             case PLAYER:
-                MoveableTile playerTile = new MoveableTile(x, y, PLAYER, tileSize, getMaxPoint(), playerAniSet);
-                playerTile.setMissileImage(playerProjectile);
-                return playerTile;
+                return new MoveableTile(x, y, PLAYER, tileSize, getMaxPoint(), playerAniSet);
             default:
                 return new BlockTile( x, y, tileSize, bType, imgMap.get( bType ));
         }

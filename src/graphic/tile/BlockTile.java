@@ -11,12 +11,8 @@ package graphic.tile;
  *
  */
 
-import graphic.Direction;
-import static graphic.Direction.*;
-import graphic.DirectionalImage;
 import graphic.HasImage;
 import graphic.map.Block;
-import static graphic.map.DefaultBlockType.MISSILE;
 import graphic.map.GameMap;
 import graphic.map.IsBlockType;
 import java.awt.Dimension;
@@ -25,14 +21,12 @@ import java.awt.Point;
 import java.awt.image.BufferedImage;
 
 // is a sprite
-public class BlockTile extends Block implements IsBlockTile, CanFireMissile, Cloneable {
+public class BlockTile extends Block implements IsBlockTile, Cloneable {
 
     private HasImage image;
-    private DirectionalImage missileImage;
 
     public BlockTile(BlockTile blockTile) {
         this(blockTile.x, blockTile.y, blockTile.width, blockTile.height, blockTile.bType, blockTile);
-        setMissileImage(blockTile.missileImage);
     }
 
     public BlockTile(int x, int y, IsBlockType bType, HasImage image) {
@@ -56,37 +50,6 @@ public class BlockTile extends Block implements IsBlockTile, CanFireMissile, Clo
     @Override
     public BufferedImage getImage() {
         return image.getImage();
-    }
-
-    @Override
-    public DirectionalImage getMissileImage() {
-        return new DirectionalImage(missileImage);
-    }
-
-    @Override
-    public void fireMissile(GameMap map, Direction d) {
-        if ( !hasMissile() ) {
-            return;
-        }
-
-        int missileX = x;
-        int missileY = y;
-        switch (d) {
-            case RIGHT -> missileX += map.tileSize;
-            case LEFT  -> missileX -= map.tileSize;
-            case DOWN  -> missileY += map.tileSize;
-            case UP    -> missileY -= map.tileSize;
-        }
-        map.add( new Missile( this, d, missileX, missileY, MISSILE, GameMap.defaultMissileSpeed ));
-    }
-
-    @Override
-    public boolean hasMissile() {
-        return missileImage != null;
-    }
-
-    public final void setMissileImage(DirectionalImage missileImage) {
-        this.missileImage = missileImage;
     }
 
     public final void setImage(HasImage image) {

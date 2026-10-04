@@ -20,11 +20,12 @@ import static game.resource.Resource.ResourceType.*;
 import game.resource.ResourceChangeListener;
 import game.routine.*;
 import graphic.Direction;
+import graphic.MissileLauncher.HasMissileLauncher;
 import static graphic.io.BinaryIO.AUDIO;
 import graphic.io.ImageUtility;
 import graphic.map.*;
 import graphic.texter.TextFrame;
-import graphic.tile.CanFireMissile;
+import graphic.tile.IsMoveableTile;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
@@ -729,22 +730,20 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
         }
 
         switch (keyCode) {
-            case KeyEvent.VK_I  -> toggleVisibility(jRightList);
-            case KeyEvent.VK_O  -> toggleVisibility(jLeftList);
-            case KeyEvent.VK_M  -> toggleAudioPlayback();
-            case KeyEvent.VK_V  -> toggleVisibility(jTopPanel); // PlayerPanel
-            case KeyEvent.VK_PLUS, KeyEvent.VK_ADD
-                                -> audioPlayer.changeVolume(10);
-            case KeyEvent.VK_MINUS, KeyEvent.VK_SUBTRACT
-                                -> audioPlayer.changeVolume(-10);
-            case KeyEvent.VK_SPACE, KeyEvent.VK_NUMPAD0
-                                -> {
-                                    if ( map.getPlayer() instanceof CanFireMissile caster) {
-                                        caster.fireMissile( map, map.getPlayer().getCurrentDirection() ); // cast spell/missile
-                                    }
-                                }
+            case KeyEvent.VK_I                              -> toggleVisibility(jRightList);
+            case KeyEvent.VK_O                              -> toggleVisibility(jLeftList);
+            case KeyEvent.VK_M                              -> toggleAudioPlayback();
+            case KeyEvent.VK_V                              -> toggleVisibility(jTopPanel); // PlayerPanel
+            case KeyEvent.VK_PLUS, KeyEvent.VK_ADD          -> audioPlayer.changeVolume(10);
+            case KeyEvent.VK_MINUS, KeyEvent.VK_SUBTRACT    -> audioPlayer.changeVolume(-10);
+            case KeyEvent.VK_SPACE, KeyEvent.VK_NUMPAD0     -> {
+                IsMoveableTile p = map.getPlayer();
+                if ( p instanceof HasMissileLauncher hasLauncher) {
+                    hasLauncher.getMissileLauncher().fireMissile( map, p, p.getCurrentDirection() ); // cast spell/missile
+                }
+            }
 
-            default             -> map.movePlayer(evt);
+            default                                         -> map.movePlayer(evt);
         }
     }//GEN-LAST:event_formKeyPressed
 
