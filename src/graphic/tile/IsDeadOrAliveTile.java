@@ -11,7 +11,9 @@ package graphic.tile;
  *
  */
 
-public interface IsDeadOrAliveTile extends HasOverlayResource {
+import graphic.map.IsBlock;
+
+public interface IsDeadOrAliveTile extends IsBlock, HasOverlayResource {
 
     boolean isAlive();
     void setDead();

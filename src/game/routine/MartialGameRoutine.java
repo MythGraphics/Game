@@ -24,44 +24,33 @@ public class MartialGameRoutine extends DefaultGameRoutine {
         super(gameFrame, map);
     }
 
+    public void consume(IsDeadOrAliveTile doa, int quantity) {
+        Resource r = doa.getOverlayResource();
+        r.forceConsume(quantity);
+        if ( r.getValue() <= 0 ) {
+            System.out.println( doa.getBlockType() + " destroyed.");
+            doa.setDead();
+        }
+    }
+
     @Override
     public void collisionPerformed(CollisionEvent e) {
         switch( e.getType() ) {
             case PLAYER -> {
                 if ( e.getTarget() instanceof IsDeadOrAliveTile doa ) {
-                    Resource r = doa.getOverlayResource();
                     System.out.println( "Player hit by " + e.getInitiator().getBlockType() );
-                    r.forceConsume(10);
-                    if ( r.getValue() <= 0 ) {
-                        System.out.println( e.getTarget().getBlockType() + " destroyed.");
-                        doa.setDead();
-                    }
+                    consume(doa, 10);
                     if ( e.getInitiator() instanceof IsDeadOrAliveTile doa2 ) {
-                        Resource r2 = doa2.getOverlayResource();
-                        r2.forceConsume(10);
-                        if ( r2.getValue() <= 0 ) {
-                            System.out.println( e.getInitiator().getBlockType() + " destroyed.");
-                            doa2.setDead();
-                        }
+                        consume(doa2, 10);
                     }
                 }
             }
             case ENEMY -> {
                 if ( e.getTarget() instanceof IsDeadOrAliveTile doa ) {
-                    Resource r = doa.getOverlayResource();
                     System.out.println( "Enemy hit by " + e.getInitiator().getBlockType() );
-                    r.forceConsume(10);
-                    if ( r.getValue() <= 0 ) {
-                        System.out.println("Enemy destroyed.");
-                        doa.setDead();
-                    }
+                    consume(doa, 10);
                     if ( e.getInitiator() instanceof IsDeadOrAliveTile doa2 ) {
-                        Resource r2 = doa2.getOverlayResource();
-                        r2.forceConsume(10);
-                        if ( r2.getValue() <= 0 ) {
-                            System.out.println( e.getInitiator().getBlockType() + " destroyed." );
-                            doa2.setDead();
-                        }
+                        consume(doa2, 10);
                     }
                 }
             }

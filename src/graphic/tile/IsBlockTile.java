@@ -12,6 +12,7 @@ package graphic.tile;
  */
 
 import graphic.map.Collidable;
+import graphic.map.IsBlock;
 import graphic.map.Renderable;
 
-public interface IsBlockTile extends Renderable, Collidable {}
+public interface IsBlockTile extends IsBlock, Renderable, Collidable {}
