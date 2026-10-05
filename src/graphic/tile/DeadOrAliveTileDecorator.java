@@ -32,6 +32,7 @@ public class DeadOrAliveTileDecorator<T extends BlockTile> implements IsDeadOrAl
     private Resource health;
     private boolean alive = true;
     private boolean drawOverlay = true;
+    private boolean autoMoveAsCorpse = false;
     private MissileLauncher missileLauncher = new DefaultMissileLauncher(null);
 
     public DeadOrAliveTileDecorator(T aliveTile) {
@@ -110,8 +111,19 @@ public class DeadOrAliveTileDecorator<T extends BlockTile> implements IsDeadOrAl
         }
     }
 
+    public boolean getAutoMoveAsCorpse() {
+        return autoMoveAsCorpse;
+    }
+
+    public void setAutoMoveAsCorpse(boolean autoMoveAsCorpse) {
+        this.autoMoveAsCorpse = autoMoveAsCorpse;
+    }
+
     @Override
     public void move() {
+        if ( !isAlive() && !autoMoveAsCorpse ) {
+            return;
+        }
         if (tile instanceof AutoMoveable auto) {
             auto.move();
         }
@@ -119,6 +131,9 @@ public class DeadOrAliveTileDecorator<T extends BlockTile> implements IsDeadOrAl
 
     @Override
     public void move(Direction direction) {
+        if ( !isAlive() ) {
+            return;
+        }
         if (tile instanceof Moveable m) {
             m.move(direction);
         }
@@ -167,13 +182,19 @@ public class DeadOrAliveTileDecorator<T extends BlockTile> implements IsDeadOrAl
 
     @Override
     public void tilt(Direction direction) {
+        if ( !isAlive() ) {
+            return;
+        }
         if (tile instanceof Maneuverable m) {
             m.tilt(direction);
         }
     }
 
     @Override
-    public void step(Direction direction){
+    public void step(Direction direction) {
+        if ( !isAlive() ) {
+            return;
+        }
         if (tile instanceof Maneuverable m) {
             m.step(direction);
         }
@@ -241,6 +262,11 @@ public class DeadOrAliveTileDecorator<T extends BlockTile> implements IsDeadOrAl
             setDead();
         }
         return b;
+    }
+
+    @Override
+    public String toString() {
+        return tile.toString();
     }
 
 }

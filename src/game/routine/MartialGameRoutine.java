@@ -27,18 +27,26 @@ public class MartialGameRoutine extends DefaultGameRoutine {
     @Override
     public void collisionPerformed(CollisionEvent e) {
         switch( e.getType() ) {
-            case PLAYER -> { // Missile -> Player
+            case PLAYER -> {
                 if ( e.getTarget() instanceof IsDeadOrAliveTile doa ) {
                     Resource r = doa.getOverlayResource();
                     System.out.println( "Player hit by " + e.getInitiator().getBlockType() );
                     r.forceConsume(10);
                     if ( r.getValue() <= 0 ) {
-                        System.out.println("Player destroyed.");
+                        System.out.println( e.getTarget().getBlockType() + " destroyed.");
                         doa.setDead();
+                    }
+                    if ( e.getInitiator() instanceof IsDeadOrAliveTile doa2 ) {
+                        Resource r2 = doa2.getOverlayResource();
+                        r2.forceConsume(10);
+                        if ( r2.getValue() <= 0 ) {
+                            System.out.println( e.getInitiator().getBlockType() + " destroyed.");
+                            doa2.setDead();
+                        }
                     }
                 }
             }
-            case ENEMY -> { // Missile -> Enemy
+            case ENEMY -> {
                 if ( e.getTarget() instanceof IsDeadOrAliveTile doa ) {
                     Resource r = doa.getOverlayResource();
                     System.out.println( "Enemy hit by " + e.getInitiator().getBlockType() );
@@ -46,6 +54,14 @@ public class MartialGameRoutine extends DefaultGameRoutine {
                     if ( r.getValue() <= 0 ) {
                         System.out.println("Enemy destroyed.");
                         doa.setDead();
+                    }
+                    if ( e.getInitiator() instanceof IsDeadOrAliveTile doa2 ) {
+                        Resource r2 = doa2.getOverlayResource();
+                        r2.forceConsume(10);
+                        if ( r2.getValue() <= 0 ) {
+                            System.out.println( e.getInitiator().getBlockType() + " destroyed." );
+                            doa2.setDead();
+                        }
                     }
                 }
             }
