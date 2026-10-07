@@ -29,10 +29,6 @@ public class Block implements Collidable {
         this.bType  = bType;
     }
 
-    public Block(Point pos, Dimension dim, IsBlockType bType) {
-        this(pos.x, pos.y, dim.width, dim.height, bType);
-    }
-
     public Block(int x, int y, int blockSize, IsBlockType bType) {
         this(x, y, blockSize, blockSize, bType);
     }
@@ -52,11 +48,6 @@ public class Block implements Collidable {
 
     public Dimension getDimension() {
         return new Dimension(width, height);
-    }
-
-    public void setDimension(Dimension dim) {
-        this.height = dim.height;
-        this.width  = dim.width;
     }
 
     @Override

@@ -70,7 +70,7 @@ public abstract class UWMap extends GameMap implements ConsumeResource {
     }
 
     @Override
-    void loadTileMapChar(char tileMapChar, int x, int y, int tileSize) {
+    public void loadTileMapChar(char tileMapChar, int x, int y, int tileSize) {
         super.loadTileMapChar(tileMapChar, x, y, tileSize); // SUPER muss zwingend zuerst aufgerufen werden
         DefaultBlockType tile = DefaultBlockType.getByChar(tileMapChar);
         switch (tile) {

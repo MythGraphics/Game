@@ -13,8 +13,8 @@ package graphic.tile;
 
 import graphic.Direction;
 import graphic.DirectionalImage;
-import graphic.MissileLauncher.MissileLauncher;
 import graphic.map.*;
+import graphic.missileLauncher.MissileLauncher;
 import java.awt.Point;
 
 @SuppressWarnings("CloneableImplementsClone")

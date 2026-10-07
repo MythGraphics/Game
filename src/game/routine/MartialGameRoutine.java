@@ -24,7 +24,7 @@ public class MartialGameRoutine extends DefaultGameRoutine {
         super(gameFrame, map);
     }
 
-    public void consume(IsDeadOrAliveTile doa, int quantity) {
+    public void attack(IsDeadOrAliveTile doa, int quantity) {
         Resource r = doa.getOverlayResource();
         r.forceConsume(quantity);
         if ( r.getValue() <= 0 ) {
@@ -39,18 +39,18 @@ public class MartialGameRoutine extends DefaultGameRoutine {
             case PLAYER -> {
                 if ( e.getTarget() instanceof IsDeadOrAliveTile doa ) {
                     System.out.println( "Player hit by " + e.getInitiator().getBlockType() );
-                    consume(doa, 10);
+                    attack(doa, 10);
                     if ( e.getInitiator() instanceof IsDeadOrAliveTile doa2 ) {
-                        consume(doa2, 10);
+                        attack(doa2, 10);
                     }
                 }
             }
             case ENEMY -> {
                 if ( e.getTarget() instanceof IsDeadOrAliveTile doa ) {
                     System.out.println( "Enemy hit by " + e.getInitiator().getBlockType() );
-                    consume(doa, 10);
+                    attack(doa, 10);
                     if ( e.getInitiator() instanceof IsDeadOrAliveTile doa2 ) {
-                        consume(doa2, 10);
+                        attack(doa2, 10);
                     }
                 }
             }

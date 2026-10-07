@@ -14,13 +14,13 @@ package graphic.map;
 import game.resource.Resource;
 import static game.resource.Resource.ResourceType.HEALTH;
 import graphic.*;
-import graphic.MissileLauncher.DefaultMissileLauncher;
 import static graphic.io.BinaryIO.*;
 import graphic.io.TilesetUtility;
 import static graphic.io.TilesetUtility.getSpriteSet;
 import static graphic.io.TilesetUtility.scaleImageSet;
 import static graphic.map.DefaultBlockType.*;
 import static graphic.map.GameMap.DEFAULT_TILE_SIZE;
+import graphic.missileLauncher.DefaultMissileLauncher;
 import graphic.tile.*;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
@@ -28,8 +28,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class DefaultSpaceMap extends GameMap {
-
-    public final static Color AMBIENT_COLOR = new Color(0, 0, 0);
 
     private final Map<IsBlockType, HasImage> imgMap = new HashMap<>();
 
@@ -50,12 +48,12 @@ public class DefaultSpaceMap extends GameMap {
 
     @Override
     public Color getAmbientColor() {
-        return AMBIENT_COLOR;
+        return Color.BLACK;
     }
 
     @Override
     protected void loadSprites() {
-        imgMap.put( WALL5, new TileBuilder.Tile( loadStretchedImage( SPRITE+"space/asteroidSmall.png" )));
+        imgMap.put( WALL5, new TileBuilder.Tile( loadStretchedImage( SPRITE+"space/asteroid1.png" )));
         imgMap.put( CORPSE, new TileBuilder.Tile( loadStretchedImage( SPRITE+"space/wreck.png" )));
 
         AnimationData portalAniData = new AnimationData(

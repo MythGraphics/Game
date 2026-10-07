@@ -20,7 +20,7 @@ import static game.resource.Resource.ResourceType.*;
 import game.resource.ResourceChangeListener;
 import game.routine.*;
 import graphic.Direction;
-import graphic.MissileLauncher.HasMissileLauncher;
+import graphic.missileLauncher.HasMissileLauncher;
 import static graphic.io.BinaryIO.AUDIO;
 import graphic.io.ImageUtility;
 import graphic.map.*;

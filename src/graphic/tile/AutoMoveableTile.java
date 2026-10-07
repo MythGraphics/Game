@@ -63,7 +63,6 @@ public class AutoMoveableTile extends MoveableTile implements ActionListener, Au
         imgset.setDirection(initialDirection);
     }
 
-    @Override
     public void moveRandom() {
         int randi = rand.nextInt(4);
         move( Direction.values()[randi] );

@@ -15,12 +15,13 @@ import graphic.map.IsBlock;
 
 public interface Moveable extends IsBlock {
 
-    void move(Direction direction);
+    Direction getCurrentDirection();
     int getStepSize();
+    void move(); // Bewegung in Blickrichtung
+    void move(Direction direction);
     int getMaxX();
     int getMaxY();
     void setX(int x);
     void setY(int y);
-    Direction getCurrentDirection();
 
 }

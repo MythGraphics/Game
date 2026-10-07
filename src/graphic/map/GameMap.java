@@ -48,15 +48,17 @@ import javax.swing.Timer;
 public abstract class GameMap extends JPanel implements ActionListener, IsCollisionHandler {
 
     public final static int DEFAULT_TILE_SIZE = 32;
-    public final static int FPS = 15;
+    public final static IsBlockType[] DEFAULT_EXCLUDE = { PLAYER, ENEMY, NPC };
 
+    public final int tileSize, rowCount, columnCount;
     public final int visibleWidth, visibleHeight, boardWidth, boardHeight;
     public final Dimension board, visibleBoard;
 
     public static boolean prerenderMap = true;
-    public static int defaultMissileSpeed = DEFAULT_TILE_SIZE/4; // Pixel per frame
+    public static int defaultMissileSpeed = DEFAULT_TILE_SIZE/4; // pixel per frame
 
-    public final int tileSize, rowCount, columnCount;
+    public int fps = 15;
+    public IsBlockType[] excludedBlockTypes = DEFAULT_EXCLUDE;
 
     protected final char[][] tileMap;
     protected final Collection<Collidable> collidables          = new HashSet<>(); // Collidable, IsBlock
@@ -67,7 +69,7 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
     protected final Collection<AutoMoveableTile> garbageS       = new HashSet<>(); // AutoMoveables, die entfernt werden sollen
 
     protected IsMoveableTile player;
-    protected Renderable spaceTile;
+    protected Renderable emptyTile;
 
     private final List<CollisionActionListener> collisionListeners = new ArrayList<>();
     private final Point lastPlayerPos = new Point();
@@ -122,9 +124,9 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
         loadSprites();
         initMap();
         if (prerenderMap) {
-            renderMapImage(ENEMY, NPC, PLAYER);
+            renderMapImage(excludedBlockTypes);
         }
-        renderLoop = new Timer(1000/FPS, this);
+        renderLoop = new Timer(1000/fps, this);
         ready = true;
     }
 
@@ -132,10 +134,10 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
         return ready;
     }
 
-    public void renderMapImage(IsBlockType... bTypes) {
+    public void renderMapImage(IsBlockType... excludedTypes) {
         BufferedImage prerenderedMap = new BufferedImage(boardWidth, boardHeight, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2d = prerenderedMap.createGraphics();
-        drawMapImage(g2d, 0, 0, bTypes);
+        draw(g2d, 0, 0, excludedTypes);
         g2d.dispose();
         try {
             File file = new File("currentMap.png");
@@ -159,19 +161,20 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
         return player;
     }
 
-    public BufferedImage loadStretchedImage(String imgPath) {
+    public static BufferedImage loadStretchedImage(String imgPath) {
         return stretch( loadImage( imgPath ), DEFAULT_TILE_SIZE, DEFAULT_TILE_SIZE, false );
     }
 
-    public BufferedImage loadScaledImage(String imgPath) {
+    public static BufferedImage loadScaledImage(String imgPath) {
         return scale( loadImage( imgPath ), DEFAULT_TILE_SIZE, DEFAULT_TILE_SIZE, false );
     }
 
     /**
      * Berechnet den X-Offset für den Scroll-Buffer, um den Spieler zu zentrieren.
      * Stellt sicher, dass das Ansichtsfenster innerhalb der Kartengrenzen bleibt.
+     * @return x-offset
      */
-    private int getOffsetX() {
+    protected int getOffsetX() {
         // Ziel-Offset: Spieler zentrieren
         int targetX = player.getX() - (visibleWidth / 2) + (tileSize / 2);
         // Begrenzungen prüfen:
@@ -187,8 +190,9 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
     /**
      * Berechnet den Y-Offset für den Scroll-Buffer, um den Spieler zu zentrieren.
      * Stellt sicher, dass das Ansichtsfenster innerhalb der Kartengrenzen bleibt.
+     * @return y-offset
      */
-    private int getOffsetY() {
+    protected int getOffsetY() {
         // Ziel-Offset: Spieler zentrieren
         int targetY = player.getY() - (visibleHeight / 2) + (tileSize / 2);
         // Begrenzungen prüfen:
@@ -201,7 +205,7 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
         return offsetY;
     }
 
-    void loadTileMapChar(char tileMapChar, int x, int y, int tileSize) {
+    protected void loadTileMapChar(char tileMapChar, int x, int y, int tileSize) {
         IsBlockType bType = DefaultBlockType.getByChar(tileMapChar);
         IsBlockTile tile  = getBlockTile(x, y, bType);
 
@@ -226,7 +230,7 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
                 lastPlayerPos.y = y;
             }
             case SPACE -> {
-                spaceTile = tile;
+                emptyTile = tile;
             }
             case SPACEHOLDER -> {}
             default -> {
@@ -257,9 +261,13 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
             collidables.add(player);
             renderables.add(player); // MUSS letzter Eintrag sein, damit Player über allen anderen Fliesen liegt
         }
-        if (spaceTile == null) {
-            spaceTile = getBlockTile(0, 0, SPACE);
+        if (emptyTile == null) {
+            emptyTile = getBlockTile(0, 0, SPACE);
         }
+    }
+
+    public boolean isActive() {
+        return active;
     }
 
     public void activate() {
@@ -286,8 +294,8 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
             deactivate();
         }
         System.out.println("Map is closing ...");
-        ready = false;
         renderLoop.stop();
+        ready = false;
     }
 
     @Override
@@ -296,7 +304,7 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
 /*      // DeltaTime berechnen (vergangene Zeit in Sekunden seit dem letzten Frame)
         long currentTime = System.nanoTime();
         double deltaTime = (currentTime - lastFrameTime) / 1_000_000_000.0;
-        lastFrameTime = currentTime;
+        lastFrameTime    = currentTime;
  */
         repaint();
     }
@@ -515,6 +523,13 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
                 a.getY() + a.getHeight() > b.getY();
     }
 
+    private void update(Graphics2D g2d) {
+        setRenderingHints(g2d);
+        draw(g2d);
+        move();
+        clean();
+    }
+
     private void setRenderingHints(Graphics2D g2d) {
         g2d.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -528,18 +543,23 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
-        g2d.setClip(0, 0, visibleWidth, visibleHeight); // nur der sichtbare Bereich, nicht die volle Kartengröße
+        g2d.setClip(0, 0, visibleWidth, visibleHeight); // nur sichtbarer Bereich, nicht die volle Kartengröße
         if (active) {
-            setRenderingHints(g2d);
-            draw(g2d);
+            update(g2d);
         }
     }
 
-    public final void drawMapImage(Graphics2D g2d, int offsetX, int offsetY, IsBlockType... tileExclude) {
+    protected void draw(Graphics2D g2d) {
+        int offsetX = getOffsetX();
+        int offsetY = getOffsetY();
+        draw(g2d, offsetX, offsetY, renderables);
+    }
+
+    public final void draw(Graphics2D g2d, int offsetX, int offsetY, IsBlockType... excludedTiles) {
         Set<IsBlockType> excludedTypes =
-            tileExclude == null ? Set.of() : Arrays.stream(tileExclude)
-                                                   .filter(Objects::nonNull)
-                                                   .collect( Collectors.toSet() );
+            excludedTiles == null ? Set.of() : Arrays.stream(excludedTiles)
+                                                     .filter(Objects::nonNull)
+                                                     .collect( Collectors.toSet() );
         Collection<Renderable> currentBlocks =
             renderables.stream()
                        .filter(r -> {
@@ -549,33 +569,24 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
                            return false; // Renderables, die keine Blöcke sind, ausschließen: nackte Map
                        })
                        .collect( Collectors.toList() );
-        drawMapImage(g2d, offsetX, offsetY, currentBlocks);
+        draw(g2d, offsetX, offsetY, currentBlocks);
     }
 
-    private void drawMapImage(Graphics2D g2d, int offsetX, int offsetY, Collection<Renderable> renderables) {
+    protected void draw(Graphics2D g2d, int offsetX, int offsetY, Collection<Renderable> renderables) {
         drawSpace(g2d, offsetX, offsetY);
         for (Renderable r : renderables) {
             r.draw(g2d, offsetX, offsetY);
         }
     }
 
-    protected void draw(Graphics2D g2d) {
-        int offsetX = getOffsetX();
-        int offsetY = getOffsetY();
-
-        drawSpace(g2d, offsetX, offsetY);
-        for (Renderable r : renderables) {
-            r.draw(g2d, offsetX, offsetY);
-        }
-        for (Renderable r : renderables) {
-            r.drawOverlay(g2d, offsetX, offsetY);
-        }
-
+    protected void move() {
         for (AutoMoveableTile tile : scurryables) {
             tile.move();
             detectCollision(tile);
         }
+    }
 
+    protected void clean() {
         collidables.removeAll(garbageC);
         garbageC.clear();
         renderables.removeAll(garbageR);
@@ -585,8 +596,8 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
     }
 
     protected void drawSpace(Graphics2D g2d, int offsetX, int offsetY) {
-        if (spaceTile != null && spaceTile.getImage() != null) {
-            BufferedImage spaceImage = spaceTile.getImage();
+        if (emptyTile != null && emptyTile.getImage() != null) {
+            BufferedImage spaceImage = emptyTile.getImage();
             for (int r = 0; r < rowCount; r++) {
                 for (int c = 0; c < columnCount; c++) {
                     g2d.drawImage(

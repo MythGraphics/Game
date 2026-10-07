@@ -80,6 +80,14 @@ public class MoveableTile extends BlockTile implements IsMoveableTile {
     }
 
     /**
+     * Bewegt den Spieler in die aktuelle Blickrichtung.
+     */
+    @Override
+    public void move() {
+        step( getCurrentDirection() );
+    }
+
+    /**
      * Dreht den Spieler in die gegebene Richtung.
      * @param direction
      */

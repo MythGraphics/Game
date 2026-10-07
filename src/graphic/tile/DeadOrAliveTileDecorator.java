@@ -12,26 +12,26 @@ package graphic.tile;
  */
 
 import game.resource.Resource;
-import graphic.MissileLauncher.DefaultMissileLauncher;
-import graphic.MissileLauncher.HasMissileLauncher;
-import graphic.MissileLauncher.MissileLauncher;
 import graphic.*;
 import static graphic.map.DefaultBlockType.CORPSE;
 import graphic.map.*;
+import graphic.missileLauncher.DefaultMissileLauncher;
+import graphic.missileLauncher.HasMissileLauncher;
+import graphic.missileLauncher.MissileLauncher;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
 @SuppressWarnings("CloneableImplementsClone")
-public class DeadOrAliveTileDecorator<T extends BlockTile> implements IsDeadOrAliveTile, IsBlockTile, IsMoveableTile,
-                                                                      AutoMoveable, HasMissileLauncher {
+public class DeadOrAliveTileDecorator<T extends BlockTile> implements IsDeadOrAliveTile, IsMoveableTile, AutoMoveable,
+                                                                      HasMissileLauncher {
 
     private final T tile;
 
     private IsBlockType aliveType, deadType;
     private DeadOrAliveImageSet imageSet;
-    private Resource health;
+    private Resource overlayResource;
     private boolean alive = true;
-    private boolean drawOverlay = true;
+    private boolean drawOverlay = false;
     private boolean autoMoveAsCorpse = false;
     private MissileLauncher missileLauncher = new DefaultMissileLauncher(null);
 
@@ -48,7 +48,7 @@ public class DeadOrAliveTileDecorator<T extends BlockTile> implements IsDeadOrAl
         this.tile       = aliveTile;
         this.aliveType  = aliveTile.getBlockType();
         this.deadType   = deadType;
-        this.health     = overlayResource;
+        setOverlayResource(overlayResource);
         if (imageSet == null) {
             this.imageSet = new DeadOrAliveImageSet(tile);
         } else {
@@ -173,9 +173,8 @@ public class DeadOrAliveTileDecorator<T extends BlockTile> implements IsDeadOrAl
         return (tile instanceof Moveable m) ? m.getCurrentDirection() : null;
     }
 
-    @Override
     public void moveRandom() {
-        if (tile instanceof AutoMoveable auto) {
+        if (tile instanceof AutoMoveableTile auto) {
             auto.moveRandom();
         }
     }
@@ -202,11 +201,12 @@ public class DeadOrAliveTileDecorator<T extends BlockTile> implements IsDeadOrAl
 
     @Override
     public Resource getOverlayResource() {
-        return health;
+        return overlayResource;
     }
 
-    public void setOverlayResource(Resource overlayResource) {
-        health = overlayResource;
+    public final void setOverlayResource(Resource overlayResource) {
+        this.overlayResource = overlayResource;
+        drawOverlay = overlayResource != null;
     }
 
     @Override
@@ -242,6 +242,7 @@ public class DeadOrAliveTileDecorator<T extends BlockTile> implements IsDeadOrAl
     @Override
     public void draw(Graphics2D g2d, int offsetX, int offsetY) {
         tile.draw(g2d, offsetX, offsetY);
+        drawOverlay(g2d, offsetX, offsetY);
     }
 
     public void drawOverlay(boolean b) {
@@ -258,7 +259,7 @@ public class DeadOrAliveTileDecorator<T extends BlockTile> implements IsDeadOrAl
     @Override
     public boolean onCollision(GameMap map, Block initiator, IsCollisionHandler handler) {
         boolean b = tile.onCollision(map, initiator, handler);
-        if (health != null && health.getValue() <= 0) {
+        if (overlayResource != null && overlayResource.getValue() <= 0) {
             setDead();
         }
         return b;
