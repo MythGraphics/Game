@@ -1,0 +1,607 @@
+/*
+ *
+ */
+
+package graphic.map;
+
+/**
+ *
+ * @author  Martin Pröhl alias MythGraphics
+ * @version 1.0.0
+ *
+ */
+
+import static graphic.io.BinaryIO.loadImage;
+import static graphic.io.ImageUtility.scale;
+import static graphic.io.ImageUtility.stretch;
+import static graphic.map.DefaultBlockType.*;
+import graphic.tile.AutoMoveableTile;
+import graphic.tile.IsBlockTile;
+import graphic.tile.IsMoveableTile;
+import graphic.tile.Missile;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.RenderingHints;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
+import javax.imageio.ImageIO;
+import javax.swing.JPanel;
+import javax.swing.Timer;
+
+public abstract class GameMap extends JPanel implements ActionListener, IsCollisionHandler {
+
+    public final static int DEFAULT_TILE_SIZE = 32;
+    public final static IsBlockType[] DEFAULT_EXCLUDE = { PLAYER, ENEMY, NPC };
+
+    public final int fps;
+    public final int tileSize, rowCount, columnCount;
+    public final int visibleWidth, visibleHeight, boardWidth, boardHeight;
+    public final Dimension board, visibleBoard;
+
+    public static boolean prerenderMap          = true;
+    public static int defaultMissileSpeed       = DEFAULT_TILE_SIZE/4; // pixel per frame
+
+    protected IsBlockType[] excludedBlockTypes  = DEFAULT_EXCLUDE;
+    protected IsBlockTile emptyTile;
+    protected Collidable lastImpassableCollisionTarget;
+
+    private final Collection<Collidable>        collidables = new HashSet<>(); // Collidable, IsBlock
+    private final Collection<Renderable>        renderables = new ArrayList<>();
+    private final Collection<AutoMoveableTile>  scurryables = new HashSet<>(); // sich selbst bewegende Entitäten
+    private final Collection<Collidable>        garbageC    = new HashSet<>(); // Collidables, die entfernt werden sollen
+    private final Collection<Renderable>        garbageR    = new HashSet<>(); // Renderables, die entfernt werden sollen
+    private final Collection<AutoMoveableTile>  garbageS    = new HashSet<>(); // AutoMoveables, die entfernt werden sollen
+
+    private final char[][] tileMap;
+    private final List<CollisionActionListener> collisionListeners = new ArrayList<>();
+    private final Point lastPlayerPos = new Point();
+
+    private boolean active = false;
+    private boolean ready  = false;
+    private Timer renderLoop;
+
+    public GameMap(char[][] tileMap, MapRecord rec) {
+        this.tileMap    = tileMap;
+        this.fps        = rec.fps();
+        this.tileSize   = rec.tileSize();
+        visibleBoard    = rec.visibleSize();
+        visibleHeight   = visibleBoard.height;
+        visibleWidth    = visibleBoard.width;
+        rowCount        = tileMap.length;
+        columnCount     = tileMap[0].length;
+        boardWidth      = columnCount*tileSize;
+        boardHeight     = rowCount*tileSize;
+        board           = new Dimension(boardWidth, boardHeight);
+    }
+
+    public GameMap(char[][] tileMap, int fps) {
+        this(
+            tileMap,
+            new MapRecord(
+                fps,
+                DEFAULT_TILE_SIZE,
+                new Dimension( // visibleSize auf mapSize, aber max. 800x600
+                    Math.min( tileMap[0].length*DEFAULT_TILE_SIZE, 800 ),
+                    Math.min( tileMap.length*DEFAULT_TILE_SIZE,    600 )
+                )
+            )
+        );
+    }
+
+    protected abstract void loadSprites();
+    protected abstract IsBlockTile getBlockTile(int x, int y, IsBlockType bType);
+
+    public abstract Color getAmbientColor();
+    public abstract void movePlayer(KeyEvent evt);
+    public abstract IsMoveableTile getPlayer();
+
+
+    public static BufferedImage loadStretchedImage(String imgPath) {
+        return stretch( loadImage( imgPath ), DEFAULT_TILE_SIZE, DEFAULT_TILE_SIZE, false );
+    }
+
+    public static BufferedImage loadScaledImage(String imgPath) {
+        return scale( loadImage( imgPath ), DEFAULT_TILE_SIZE, DEFAULT_TILE_SIZE, false );
+    }
+
+    public void init() {
+        if (ready) {
+            System.err.println("Map already initialised.");
+            return;
+        }
+
+        loadSprites();
+        initMap();
+        if (prerenderMap) {
+            renderMapImage(excludedBlockTypes);
+        }
+        renderLoop = new Timer(1000/fps, this);
+        ready = true;
+    }
+
+    public boolean isInitialized() {
+        return ready;
+    }
+
+    public int getFPS() {
+        return fps;
+    }
+
+    public int getTileSize() {
+        return tileSize;
+    }
+
+    @Override
+    public Dimension getPreferredSize() {
+        return visibleBoard;
+    }
+
+    public Point getMaxPoint() {
+        return new Point(boardWidth, boardHeight);
+    }
+
+    public void renderMapImage(IsBlockType... excludedTypes) {
+        BufferedImage prerenderedMap = new BufferedImage(boardWidth, boardHeight, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2d = prerenderedMap.createGraphics();
+        draw(g2d, 0, 0, excludedTypes);
+        g2d.dispose();
+        try {
+            File file = new File("currentMap.png");
+            ImageIO.write(prerenderedMap, "png", file);
+            System.out.println( "Map gespeichert: " + file.getAbsolutePath() );
+        } catch (IOException e) {
+            System.err.println( e.getMessage() );
+        }
+    }
+
+    /**
+     * Berechnet den X-Offset für den Scroll-Buffer, um den Spieler zu zentrieren.
+     * Stellt sicher, dass das Ansichtsfenster innerhalb der Kartengrenzen bleibt.
+     * @return x-offset
+     */
+    protected int getOffsetX() {
+        // Ziel-Offset: Spieler zentrieren
+        int targetX = getPlayer().getX() - (visibleWidth / 2) + (tileSize / 2);
+        // Begrenzungen prüfen:
+        // Linker Rand: Offset kann nicht kleiner als 0 sein.
+        int offsetX = Math.max(0, targetX);
+        // Rechter Rand: Viewport darf nicht über die Gesamtbreite der Karte hinausragen.
+        int maxOffsetX = boardWidth - visibleWidth;
+        if (maxOffsetX < 0) { maxOffsetX = 0; } // Für den Fall, dass die Karte kleiner als der Viewport ist
+        offsetX = Math.min(offsetX, maxOffsetX);
+        return offsetX;
+    }
+
+    /**
+     * Berechnet den Y-Offset für den Scroll-Buffer, um den Spieler zu zentrieren.
+     * Stellt sicher, dass das Ansichtsfenster innerhalb der Kartengrenzen bleibt.
+     * @return y-offset
+     */
+    protected int getOffsetY() {
+        // Ziel-Offset: Spieler zentrieren
+        int targetY = getPlayer().getY() - (visibleHeight / 2) + (tileSize / 2);
+        // Begrenzungen prüfen:
+        // Oberer Rand: Offset kann nicht kleiner als 0 sein.
+        int offsetY = Math.max(0, targetY);
+        // Unterer Rand: Viewport darf nicht über die Gesamthöhe der Karte hinausragen.
+        int maxOffsetY = boardHeight - visibleHeight;
+        if (maxOffsetY < 0) { maxOffsetY = 0; } // Für den Fall, dass die Karte kleiner als der Viewport ist
+        offsetY = Math.min(offsetY, maxOffsetY);
+        return offsetY;
+    }
+
+    protected void loadTileMapChar(char tileMapChar, int x, int y, int tileSize) {
+        IsBlockType bType = DefaultBlockType.getByChar(tileMapChar);
+        IsBlockTile tile  = getBlockTile(x, y, bType);
+
+        switch (bType) {
+            case null -> {
+                System.err.println(
+                    "TileMapChar '" + tileMapChar + "' auf " + x + ", " + y +
+                    " ungültig (BlockType ist null) -> wird ignoriert."
+                );
+            }
+            case SPACE -> {
+                emptyTile = tile;
+            }
+            case SPACEHOLDER -> {}
+            default -> {
+                collidables.add(tile);
+                if ( tile.getImage() != null ) {
+                    renderables.add(tile);
+                }
+            }
+        }
+    }
+
+    private void initMap() {
+        int x, y;
+        char tileMapChar;
+        for (int r = 0; r < rowCount; r++) {
+            for (int c = 0; c < columnCount; c++) {
+                try {
+                    tileMapChar = tileMap[r][c];
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    tileMapChar = ' ';
+                }
+                x = c*tileSize;
+                y = r*tileSize;
+                loadTileMapChar(tileMapChar, x, y, tileSize);
+            }
+        }
+        if (getPlayer() != null) {
+            collidables.add( getPlayer() );
+            renderables.add( getPlayer() ); // MUSS letzter Eintrag sein, damit Player über allen anderen Fliesen liegt
+        }
+        if (emptyTile == null) {
+            emptyTile = getBlockTile(0, 0, SPACE);
+        }
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void activate() {
+        if (!ready) {
+            System.err.println("Map cannot activated - not initialized!");
+            return;
+        }
+        if ( !renderLoop.isRunning() ) {
+            renderLoop.start();
+            active = true;
+            System.out.println("Map rendering active.");
+        }
+    }
+
+    public void deactivate() {
+        active = false;
+        renderLoop.stop();
+        repaint();
+        System.out.println("Map rendering deactivated.");
+    }
+
+    public void dispose() {
+        if (active) {
+            deactivate();
+        }
+        System.out.println("Map is closing ...");
+        renderLoop.stop();
+        ready = false;
+    }
+
+    @Override
+    // wird vom Timer ausgelöst
+    public void actionPerformed(ActionEvent evt) {
+/*      // DeltaTime berechnen (vergangene Zeit in Sekunden seit dem letzten Frame)
+        long currentTime = System.nanoTime();
+        double deltaTime = (currentTime - lastFrameTime) / 1_000_000_000.0;
+        lastFrameTime    = currentTime;
+ */
+        repaint();
+    }
+
+    public void addCollisionActionListener(CollisionActionListener actionListener) {
+        collisionListeners.add(actionListener);
+    }
+
+    @Override
+    public void fireEvent(GameMap map, Collidable source, Collidable target) {
+        // collider/initiator (bewegliches Objekt), obstacle (statisches Hindernis)
+        System.out.println(
+            "Collision of block "   + source.getBlockType() +
+            " with block "          + target.getBlockType() +
+            " at pixel "            + target.getX() + ", " + target.getY() +
+            " (column "             + ( target.getX() / target.getWidth()  + 1 ) + // +1, um keine Indizes auszugeben
+            ", row "                + ( target.getY() / target.getHeight() + 1 ) + // +1, um keine Indizes auszugeben
+            ")."
+        );
+        collisionListeners.forEach( actionListener -> actionListener.collisionPerformed(
+            new CollisionEvent(this, source, target)
+        ));
+
+        // aufräumen
+        if (source instanceof Missile missile) {
+            remove(missile);
+        }
+        if (target instanceof Missile missile) {
+            remove(missile);
+        }
+    }
+
+    public IsBlock getBlock(int col, int row) {
+        // 0 ist ungültig
+        if ( col <= 0 || row <= 0 ) {
+            return null;
+        }
+
+        int x = (col-1)*tileSize;
+        int y = (row-1)*tileSize;
+        for (Collidable c : collidables) {
+            if ( x == c.getX() && y == c.getY() ) {
+                return c;
+            }
+        }
+        return null;
+    }
+
+    public void moveThroughPortal(IsMoveableBlock block, Point targetPos) {
+        block.setX(targetPos.x);
+        block.setY(targetPos.y);
+        block.move();
+    }
+
+    public void movePlayer(int deltaCol, int deltaRow) {
+        int destinationX = getPlayer().getX() + deltaCol*tileSize;
+        int destinationY = getPlayer().getY() + deltaRow*tileSize;
+        setPlayerPositionXY(destinationX, destinationY);
+    }
+
+    /**
+     * Setzt die Spieler-Position auf die angegebene Position.
+     * @param column Spalte (x)
+     * @param row Zeile (y)
+     */
+    public void setPlayerPosition(int column, int row) {
+        // 0 ist ungültig
+        if (column == 0 || row == 0) {
+            return;
+        }
+
+        int targetColumn, targetRow;
+        if (column < 0) {
+            targetColumn = (column + columnCount) % columnCount;
+        } else {
+            targetColumn = (column-1 + columnCount) % columnCount;
+        }
+        if (row < 0) {
+            targetRow = (row + rowCount) % rowCount;
+        } else {
+            targetRow = (row-1 + rowCount) % rowCount;
+        }
+
+        setPlayerPositionXY(targetColumn*tileSize, targetRow*tileSize);
+    }
+
+    /**
+     * Setzt die Spieler-Position auf diese X-Y-Koordinaten.
+     * @param x
+     * @param y
+     */
+    public void setPlayerPositionXY(int x, int y) {
+        if (x < 0 || y < 0 || x > boardWidth-tileSize || y > boardHeight-tileSize) {
+            System.err.println("Koordinaten für Spielerposition " + x + ", " + y + " ungültig -> wird ignoriert.");
+            return;
+        }
+
+        saveCurrentPlayerPosition();
+        getPlayer().setX(x);
+        getPlayer().setY(y);
+        detectCollision( getPlayer() );
+    }
+
+    public void setPlayerPositionXY(Point destination) {
+        setPlayerPosition(destination.x, destination.y);
+    }
+
+    protected void savePlayerPosition(int x, int y) {
+        lastPlayerPos.x = x;
+        lastPlayerPos.y = y;
+    }
+
+    protected void saveCurrentPlayerPosition() {
+        lastPlayerPos.x = getPlayer().getX();
+        lastPlayerPos.y = getPlayer().getY();
+    }
+
+    /**
+     * Setzt die Position des Spielers auf die Position vor dem Bewegungsbefehl zurück.
+     */
+    protected void resetPlayerPosition() {
+        getPlayer().setX(lastPlayerPos.x);
+        getPlayer().setY(lastPlayerPos.y);
+    }
+
+    private boolean detectPanelCollision() {
+        if (getPlayer().getX() < 0) {
+            getPlayer().setX(0);
+            return true;
+        } else if (getPlayer().getX() >= boardWidth) {
+            getPlayer().setX(boardWidth-tileSize);
+            return true;
+        } else if (getPlayer().getY() < 0) {
+            getPlayer().setY(0);
+            return true;
+        } else if (getPlayer().getY() >= boardHeight) {
+            getPlayer().setY(boardHeight-tileSize);
+            return true;
+        }
+        return false;
+    }
+
+    protected void detectCollision(Collidable source) {
+        // IsCollider, IsCollisionHandler aktuell nicht genutzt
+        if ( detectPanelCollision() ) {
+            Block target = new Block(source.getX(), source.getY(), source.getWidth(), source.getHeight(), BOUNDARY);
+            fireEvent(this, source, target);
+            return;
+        }
+
+        for (Collidable target : collidables) {
+            if (source == target) {
+                continue;
+            }
+            if ( collision( source, target )) {
+                fireEvent(this, source, target);
+                boolean passable = target.getBlockType().isPassable();
+                if ( !passable && source == getPlayer() ) {
+                    lastImpassableCollisionTarget = target;
+                    resetPlayerPosition();
+                }
+                break;
+            }
+        }
+    }
+
+    private boolean collision(Collidable a, Collidable b) {
+        if (a == null || b == null || a == b) {
+            return false;
+        }
+        return  a.getX() < b.getX() + b.getWidth()  &&
+                a.getX() + a.getWidth() > b.getX()  &&
+                a.getY() < b.getY() + b.getHeight() &&
+                a.getY() + a.getHeight() > b.getY();
+    }
+
+    private void update(Graphics2D g2d) {
+        setRenderingHints(g2d);
+        draw(g2d);
+        move();
+        clean();
+    }
+
+    private void setRenderingHints(Graphics2D g2d) {
+        g2d.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2d.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
+        g2d.setRenderingHint(RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_ENABLE);
+        g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+        g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        Graphics2D g2d = (Graphics2D) g;
+        g2d.setClip(0, 0, visibleWidth, visibleHeight); // nur sichtbarer Bereich, nicht die volle Kartengröße
+        if (active) {
+            update(g2d);
+        }
+    }
+
+    protected void draw(Graphics2D g2d) {
+        int offsetX = getOffsetX();
+        int offsetY = getOffsetY();
+        draw(g2d, offsetX, offsetY, renderables);
+    }
+
+    public final void draw(Graphics2D g2d, int offsetX, int offsetY, IsBlockType... excludedTiles) {
+        Set<IsBlockType> excludedTypes =
+            excludedTiles == null ? Set.of() : Arrays.stream(excludedTiles)
+                                                     .filter(Objects::nonNull)
+                                                     .collect( Collectors.toSet() );
+        Collection<Renderable> currentBlocks =
+            renderables.stream()
+                       .filter(r -> {
+                           if (r instanceof Block block) {
+                               return !excludedTypes.contains( block.getBlockType() );
+                           }
+                           return false; // Renderables, die keine Blöcke sind, ausschließen: nackte Map
+                       })
+                       .collect( Collectors.toList() );
+        draw(g2d, offsetX, offsetY, currentBlocks);
+    }
+
+    protected void draw(Graphics2D g2d, int offsetX, int offsetY, Collection<Renderable> renderables) {
+        drawSpace(g2d, offsetX, offsetY);
+        for (Renderable r : renderables) {
+            r.draw(g2d, offsetX, offsetY);
+        }
+    }
+
+    protected void move() {
+        for (AutoMoveableTile tile : scurryables) {
+            tile.move();
+            detectCollision(tile);
+        }
+    }
+
+    protected void clean() {
+        collidables.removeAll(garbageC);
+        garbageC.clear();
+        renderables.removeAll(garbageR);
+        garbageR.clear();
+        scurryables.removeAll(garbageS);
+        garbageS.clear();
+    }
+
+    protected void drawSpace(Graphics2D g2d, int offsetX, int offsetY) {
+        if (emptyTile != null && emptyTile.getImage() != null) {
+            BufferedImage spaceImage = emptyTile.getImage();
+            for (int r = 0; r < rowCount; r++) {
+                for (int c = 0; c < columnCount; c++) {
+                    g2d.drawImage(
+                        spaceImage,
+                        tileSize*c - offsetX,
+                        tileSize*r - offsetY,
+                        tileSize,
+                        tileSize,
+                        null
+                    );
+                }
+            }
+        }
+    }
+
+    public int getEnemyCount() {
+        return getBlockCount(ENEMY);
+    }
+
+    public int getBlockCount(IsBlockType bType) {
+        int value = 0;
+        for (Collidable c : collidables) {
+            if ( c.getBlockType() == bType ) {
+                ++value;
+            }
+        }
+        return value;
+    }
+
+    public void add(Object obj) {
+        if (obj == null) {
+            return;
+        }
+
+        if (obj instanceof Collidable c) {
+            collidables.add(c);
+        }
+        if (obj instanceof Renderable r) {
+            renderables.add(r);
+        }
+        if (obj instanceof AutoMoveableTile amt) {
+            scurryables.add(amt);
+        }
+    }
+
+    public void remove(Object obj) {
+        if (obj == null) {
+            return;
+        }
+
+        if (obj instanceof Collidable c) {
+            garbageC.add(c);
+        }
+        if (obj instanceof Renderable r) {
+            garbageR.add(r);
+        }
+        if (obj instanceof AutoMoveableTile amt) {
+            garbageS.add(amt);
+        }
+    }
+
+}
