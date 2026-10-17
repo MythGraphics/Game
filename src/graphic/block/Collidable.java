@@ -2,7 +2,7 @@
  *
  */
 
-package graphic.map;
+package graphic.block;
 
 /**
  *
@@ -10,6 +10,9 @@ package graphic.map;
  * @version 1.0.0
  *
  */
+
+import graphic.map.GameMap;
+import graphic.map.IsCollisionHandler;
 
 public interface Collidable extends IsBlock {
 

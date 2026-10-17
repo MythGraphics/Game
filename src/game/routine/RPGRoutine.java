@@ -16,10 +16,10 @@ import game.Npc;
 import game.item.Item;
 import static game.quest.QuestStatus.INACTIVE;
 import graphic.map.CollisionEvent;
-import static graphic.map.DefaultBlockType.NPC;
+import static graphic.block.DefaultBlockType.NPC;
 import graphic.map.GameMap;
-import graphic.map.InteractionType;
-import graphic.map.IsBlock;
+import graphic.block.InteractionType;
+import graphic.block.IsBlock;
 import java.util.*;
 
 public abstract class RPGRoutine extends CombatGameRoutine {

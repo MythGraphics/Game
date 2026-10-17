@@ -11,6 +11,8 @@ package graphic.map;
  *
  */
 
+import graphic.block.InteractionType;
+import graphic.block.IsBlock;
 import java.util.EventObject;
 
 public class CollisionEvent extends EventObject {

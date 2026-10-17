@@ -12,14 +12,16 @@ package graphic.map;
  */
 
 import static graphic.Direction.*;
-import static graphic.map.DefaultBlockType.PLAYER;
+import graphic.block.DefaultBlockType;
+import static graphic.block.DefaultBlockType.PLAYER;
+import graphic.block.IsBlockType;
 import graphic.tile.IsBlockTile;
-import graphic.tile.IsMoveableTile;
+import graphic.tile.IsManeuverableTile;
 import java.awt.event.KeyEvent;
 
 public abstract class SimpleMap extends GameMap {
 
-    private IsMoveableTile player;
+    private IsManeuverableTile player;
 
     public SimpleMap(char[][] tileMap, MapRecord rec) {
         super(tileMap, rec);
@@ -30,7 +32,7 @@ public abstract class SimpleMap extends GameMap {
     }
 
     @Override
-    public IsMoveableTile getPlayer() {
+    public IsManeuverableTile getPlayer() {
         return player;
     }
 
@@ -41,13 +43,13 @@ public abstract class SimpleMap extends GameMap {
 
         switch (bType) {
             case PLAYER -> {
-                if (tile instanceof IsMoveableTile moveable) {
-                    this.player = moveable;
+                if (tile instanceof IsManeuverableTile maneuverable) {
+                    this.player = maneuverable;
                 } else {
                     System.err.println(
                         "Player vom Typ " +
                         ( tile == null ? "NULL" : tile.getClass().getName() ) +
-                        " inkompatibel: muss IsMoveableTile sein."
+                        " inkompatibel: muss IsManeuverableTile sein."
                     );
                 }
                 savePlayerPosition(x, y);

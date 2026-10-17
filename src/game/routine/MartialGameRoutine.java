@@ -15,7 +15,7 @@ import game.GameFrame;
 import game.resource.Resource;
 import graphic.map.CollisionEvent;
 import graphic.map.GameMap;
-import static graphic.map.InteractionType.PLAYER;
+import static graphic.block.InteractionType.PLAYER;
 import graphic.tile.IsDeadOrAliveTile;
 
 public class MartialGameRoutine extends DefaultGameRoutine {

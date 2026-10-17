@@ -17,7 +17,7 @@ import game.combat.CombatFrame;
 import game.combat.Combatant;
 import graphic.map.CollisionEvent;
 import graphic.map.GameMap;
-import static graphic.map.InteractionType.ENEMY;
+import static graphic.block.InteractionType.ENEMY;
 import graphic.tile.BlockTile;
 import graphic.tile.DeadOrAliveTileDecorator;
 import graphic.tile.IsDeadOrAliveTile;

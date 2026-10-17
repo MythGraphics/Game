@@ -4,6 +4,8 @@
 
 package graphic.map;
 
+import graphic.block.Collidable;
+
 /**
  *
  * @author  Martin Pröhl alias MythGraphics

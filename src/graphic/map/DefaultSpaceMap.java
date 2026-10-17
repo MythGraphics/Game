@@ -14,25 +14,32 @@ package graphic.map;
 import game.resource.Resource;
 import static game.resource.Resource.ResourceType.HEALTH;
 import graphic.*;
+import static graphic.block.DefaultBlockType.*;
+import graphic.block.IsBlockType;
 import static graphic.io.BinaryIO.*;
 import graphic.io.TilesetUtility;
 import static graphic.io.TilesetUtility.getSpriteSet;
 import static graphic.io.TilesetUtility.scaleImageSet;
-import static graphic.map.DefaultBlockType.*;
 import static graphic.map.GameMap.DEFAULT_TILE_SIZE;
 import graphic.missileLauncher.DefaultMissileLauncher;
 import graphic.tile.*;
+import graphic.vectorMap.VectorBlock;
+import graphic.vectorMap.VectorMap;
+import graphic.vectorMap.VectorRecord;
+import graphic.vectorMap.VectorTileRecord;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.Map;
 
-public class DefaultSpaceMap extends SimpleMap {
+public class DefaultSpaceMap extends VectorMap {
 
     private final Map<IsBlockType, HasImage> imgMap = new HashMap<>();
 
     private Resource playerHealth;
-    private DirectionalImage playerShipSet, playerProjectile;
+    private DirectionalImage playerProjectile;
+    private VectorRecord playerVec;
+    private VectorTileRecord playerTile;
 
     public DefaultSpaceMap(char[][] tileMap) {
         super(tileMap);
@@ -80,20 +87,20 @@ public class DefaultSpaceMap extends SimpleMap {
         for (int i = 0; i < ships.length; ++i) {
             ships[i] = TilesetUtility.scaleImageSet(builder.getTileSet(4), tileSize);
         }
-        playerShipSet = new DirectionalImage( DirectionalImage.create( ships[7] ));
         imgMap.put( ENEMY, () -> ships[0][2] );
+
+        playerVec  = new VectorRecord(1.0f, -1.0f, (float) -Math.PI/4.0f, DEFAULT_TILE_SIZE, DEFAULT_TILE_SIZE, true);
+        playerTile = new VectorTileRecord(ships[7][1], PLAYER, false);
     }
 
     @Override
     protected IsBlockTile getBlockTile(int x, int y, IsBlockType bType) {
         switch (bType) {
             case PLAYER:
-                DeadOrAliveTileDecorator<MoveableTile> playerTile = new DeadOrAliveTileDecorator<>(
-                    new MoveableTile(x, y, PLAYER, tileSize, getMaxPoint(), playerShipSet)
-                );
-                playerTile.setMissileLauncher( new DefaultMissileLauncher( playerProjectile ));
-                playerTile.setOverlayResource(playerHealth);
-                return playerTile;
+                VectorBlock player = new VectorBlock(playerVec, playerTile, x, y);
+                player.setMissileLauncher( new DefaultMissileLauncher( playerProjectile ));
+                player.setOverlayResource(playerHealth);
+                return player;
             case ENEMY:
                 DeadOrAliveTileDecorator<BlockTile> enemyTile = new DeadOrAliveTileDecorator<>(
                     new BlockTile(x, y, tileSize, ENEMY, imgMap.get( bType ))

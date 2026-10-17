@@ -17,9 +17,9 @@ import game.resource.Resource;
 import static game.resource.Resource.ResourceType.CREDIT;
 import graphic.map.CollisionEvent;
 import graphic.map.GameMap;
-import static graphic.map.InteractionType.EXIT;
-import static graphic.map.InteractionType.PORTAL;
-import graphic.map.IsMoveableBlock;
+import static graphic.block.InteractionType.EXIT;
+import static graphic.block.InteractionType.PORTAL;
+import graphic.block.IsMoveableBlock;
 import graphic.texter.DialogOutputListener;
 import java.awt.Point;
 

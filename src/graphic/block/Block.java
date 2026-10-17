@@ -2,7 +2,7 @@
  *
  */
 
-package graphic.map;
+package graphic.block;
 
 /**
  *
@@ -11,6 +11,8 @@ package graphic.map;
  *
  */
 
+import graphic.map.GameMap;
+import graphic.map.IsCollisionHandler;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Rectangle;

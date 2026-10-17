@@ -11,6 +11,7 @@ package graphic.map;
  *
  */
 
+import graphic.block.IsBlockType;
 import graphic.AnimationData;
 import graphic.AnimationPlayer;
 import graphic.DirectionalImage;
@@ -19,7 +20,7 @@ import static graphic.io.BinaryIO.*;
 import static graphic.io.ImageUtility.scale;
 import static graphic.io.TilesetUtility.getSpriteSet;
 import static graphic.io.TilesetUtility.getSpriteSetVertical;
-import static graphic.map.DefaultBlockType.*;
+import static graphic.block.DefaultBlockType.*;
 import static graphic.map.GameMap.DEFAULT_TILE_SIZE;
 import graphic.tile.BlockTile;
 import graphic.tile.MoveableTile;

@@ -14,7 +14,7 @@ package graphic.tile;
 import graphic.AutoMoveable;
 import graphic.Direction;
 import graphic.DirectionalImage;
-import graphic.map.IsBlockType;
+import graphic.block.IsBlockType;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.util.Random;

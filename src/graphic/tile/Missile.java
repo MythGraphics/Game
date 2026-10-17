@@ -11,6 +11,9 @@ package graphic.tile;
  *
  */
 
+import graphic.block.Collidable;
+import graphic.block.IsBlockType;
+import graphic.block.IsBlock;
 import graphic.Direction;
 import graphic.DirectionalImage;
 import graphic.map.*;

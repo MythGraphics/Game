@@ -11,6 +11,7 @@ package graphic.map;
  *
  */
 
+import graphic.block.IsBlock;
 import game.HasHealth;
 import game.resource.Resource;
 import graphic.tile.HasOverlayResource;

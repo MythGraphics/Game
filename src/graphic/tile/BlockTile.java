@@ -12,9 +12,9 @@ package graphic.tile;
  */
 
 import graphic.HasImage;
-import graphic.map.Block;
+import graphic.block.Block;
 import graphic.map.GameMap;
-import graphic.map.IsBlockType;
+import graphic.block.IsBlockType;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Point;

@@ -14,7 +14,7 @@ package graphic.tile;
 import graphic.Direction;
 import static graphic.Direction.*;
 import graphic.DirectionalImage;
-import graphic.map.IsBlockType;
+import graphic.block.IsBlockType;
 import java.awt.Dimension;
 import java.awt.Point;
 

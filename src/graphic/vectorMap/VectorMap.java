@@ -11,14 +11,18 @@ package graphic.vectorMap;
  *
  */
 
+import graphic.block.DefaultBlockType;
+import static graphic.block.DefaultBlockType.PLAYER;
+import graphic.block.IsBlockType;
 import graphic.map.GameMap;
 import graphic.map.MapRecord;
-import graphic.tile.IsMoveableTile;
+import graphic.tile.IsBlockTile;
+import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
 public abstract class VectorMap extends GameMap {
 
-    public final static float ROTATION_STEP = (float) (Math.PI/20.0);
+    public final static float ROTATION_STEP = (float) Math.PI/10.0f;
 
     private VectorBlock player;
 
@@ -31,8 +35,30 @@ public abstract class VectorMap extends GameMap {
     }
 
     @Override
-    public IsMoveableTile getPlayer() {
+    public VectorBlock getPlayer() {
         return player;
+    }
+
+    @Override
+    protected void loadTileMapChar(char tileMapChar, int x, int y, int tileSize) {
+        IsBlockType bType = DefaultBlockType.getByChar(tileMapChar);
+        IsBlockTile tile  = getBlockTile(x, y, bType);
+
+        switch (bType) {
+            case PLAYER -> {
+                if (tile instanceof VectorBlock vb) {
+                    this.player = vb;
+                } else {
+                    System.err.println(
+                        "Player vom Typ " +
+                        ( tile == null ? "NULL" : tile.getClass().getName() ) +
+                        " inkompatibel: muss VectorBlock sein."
+                    );
+                }
+                savePlayerPosition(x, y);
+            }
+            default -> super.loadTileMapChar(tileMapChar, x, y, tileSize);
+        }
     }
 
     @Override
@@ -50,6 +76,13 @@ public abstract class VectorMap extends GameMap {
         detectCollision(player);
     }
 
+    public static void printKeyBindings() {
+        System.out.println("w / 8 (numpad) / Arrow-Key UP:    thrust");
+        System.out.println("s / 2 (numpad) / Arrow-Key DOWN:  reverse thrust");
+        System.out.println("a / 4 (numpad) / Arrow-Key LEFT:  rotate left");
+        System.out.println("d / 6 (numpad) / Arrow-Key RIGHT: rotate right");
+    }
+
     @Override
     public void resetPlayerPosition() {
         // Implementierung über Collidable->onCollision möglich
@@ -57,6 +90,12 @@ public abstract class VectorMap extends GameMap {
             VectorBlock.applyWallCollision(player, lastImpassableCollisionTarget);
             lastImpassableCollisionTarget = null;
         }
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent evt) {
+        super.actionPerformed(evt);
+        player.move();
     }
 
 }

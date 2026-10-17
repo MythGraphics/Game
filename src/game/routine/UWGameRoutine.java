@@ -21,7 +21,7 @@ import game.resource.ResourceConsumeListener;
 import static graphic.io.BinaryIO.TILESET;
 import graphic.io.DescriptorLoader;
 import graphic.map.CollisionEvent;
-import static graphic.map.DefaultBlockType.BUBBLE;
+import static graphic.block.DefaultBlockType.BUBBLE;
 import graphic.map.GameMap;
 import graphic.map.UWMap;
 import graphic.tile.BlockTile;

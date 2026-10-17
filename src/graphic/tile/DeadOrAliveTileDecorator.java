@@ -13,7 +13,13 @@ package graphic.tile;
 
 import game.resource.Resource;
 import graphic.*;
-import graphic.map.*;
+import graphic.block.Collidable;
+import graphic.block.IsBlockType;
+import graphic.block.IsMoveableBlock;
+import graphic.map.GameMap;
+import graphic.map.HasMaxPoint;
+import graphic.map.IsCollisionHandler;
+import graphic.map.OverlayUtil;
 import graphic.missileLauncher.DefaultMissileLauncher;
 import graphic.missileLauncher.HasMissileLauncher;
 import graphic.missileLauncher.MissileLauncher;

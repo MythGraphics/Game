@@ -11,7 +11,6 @@ package graphic.tile;
  *
  */
 
-import graphic.Maneuverable;
-import graphic.map.IsMoveableBlock;
+import graphic.block.IsMoveableBlock;
 
-public interface IsMoveableTile extends Maneuverable, IsMoveableBlock, IsBlockTile {}
+public interface IsMoveableTile extends IsMoveableBlock, IsBlockTile {}

@@ -12,7 +12,7 @@ package graphic.tile;
  */
 
 import graphic.HasImage;
-import graphic.map.Collidable;
-import graphic.map.Renderable;
+import graphic.block.Collidable;
+import graphic.block.Renderable;
 
 public interface IsBlockTile extends Renderable, Collidable, HasImage {}

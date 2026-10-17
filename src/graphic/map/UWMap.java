@@ -11,10 +11,11 @@ package graphic.map;
  *
  */
 
+import graphic.block.DefaultBlockType;
 import game.resource.ConsumeResource;
 import game.resource.Resource;
 import static game.resource.Resource.ResourceType.AIR;
-import static graphic.map.DefaultBlockType.WATERLINE;
+import static graphic.block.DefaultBlockType.WATERLINE;
 import java.awt.event.ActionEvent;
 
 public abstract class UWMap extends SimpleMap implements ConsumeResource {

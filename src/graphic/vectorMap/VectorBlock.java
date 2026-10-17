@@ -13,15 +13,24 @@ package graphic.vectorMap;
 
 import game.resource.Resource;
 import graphic.IsDeadOrAlive;
-import static graphic.map.DefaultBlockType.CORPSE;
-import static graphic.map.DefaultBlockType.NONE;
-import graphic.map.*;
+import graphic.block.Block;
+import graphic.block.Collidable;
+import static graphic.block.DefaultBlockType.CORPSE;
+import static graphic.block.DefaultBlockType.NONE;
+import graphic.block.IsBlock;
+import graphic.block.IsBlockType;
+import graphic.map.GameMap;
+import graphic.map.IsCollisionHandler;
+import graphic.map.OverlayUtil;
+import graphic.missileLauncher.HasMissileLauncher;
+import graphic.missileLauncher.MissileLauncher;
 import graphic.tile.HasOverlayResource;
 import graphic.tile.IsMoveableTile;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
-public class VectorBlock extends Block implements IsDeadOrAlive, HasOverlayResource, VectorMoveable, IsMoveableTile {
+public class VectorBlock extends Block implements IsDeadOrAlive, HasOverlayResource, VectorMoveable, IsMoveableTile,
+                                                  HasMissileLauncher {
 
     public static final float TWO_PI    = (float) (2.0 * Math.PI);
 
@@ -37,6 +46,7 @@ public class VectorBlock extends Block implements IsDeadOrAlive, HasOverlayResou
     private VectorTileRecord aliveTile  = new VectorTileRecord(null, NONE,   true);
     private VectorTileRecord deadTile   = new VectorTileRecord(null, CORPSE, true);
     private Resource overlayResource;
+    private MissileLauncher launcher;
 
     public VectorBlock(VectorRecord vec, VectorTileRecord aliveTile, int x, int y) {
         super( x, y, vec.width(), vec.height(), aliveTile.blockType() );
@@ -130,6 +140,15 @@ public class VectorBlock extends Block implements IsDeadOrAlive, HasOverlayResou
 
     public void drawOverlay(boolean b) {
         this.drawOverlay = b;
+    }
+
+    @Override
+    public MissileLauncher getMissileLauncher() {
+        return launcher;
+    }
+
+    public void setMissileLauncher(MissileLauncher launcher) {
+        this.launcher = launcher;
     }
 
     public static void applyImpulseCollision(VectorBlock source, VectorBlock target) {

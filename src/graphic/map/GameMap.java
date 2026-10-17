@@ -11,10 +11,11 @@ package graphic.map;
  *
  */
 
+import graphic.block.*;
+import static graphic.block.DefaultBlockType.*;
 import static graphic.io.BinaryIO.loadImage;
 import static graphic.io.ImageUtility.scale;
 import static graphic.io.ImageUtility.stretch;
-import static graphic.map.DefaultBlockType.*;
 import graphic.tile.AutoMoveableTile;
 import graphic.tile.IsBlockTile;
 import graphic.tile.IsMoveableTile;
@@ -46,7 +47,7 @@ import javax.swing.Timer;
 public abstract class GameMap extends JPanel implements ActionListener, IsCollisionHandler {
 
     public final static int DEFAULT_TILE_SIZE = 32;
-    public final static IsBlockType[] DEFAULT_EXCLUDE = { PLAYER, ENEMY, NPC };
+    public final static DefaultBlockType[] DEFAULT_EXCLUDE = { PLAYER, ENEMY, NPC };
 
     public final int fps;
     public final int tileSize, rowCount, columnCount;

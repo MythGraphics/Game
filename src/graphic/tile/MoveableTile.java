@@ -16,7 +16,7 @@ import graphic.DirectionalImage;
 import graphic.HasDirection;
 import graphic.Maneuverable;
 import graphic.map.HasMaxPoint;
-import graphic.map.IsBlockType;
+import graphic.block.IsBlockType;
 import java.awt.Dimension;
 import java.awt.Point;
 

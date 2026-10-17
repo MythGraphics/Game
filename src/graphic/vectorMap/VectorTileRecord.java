@@ -12,7 +12,7 @@ package graphic.vectorMap;
  */
 
 import graphic.HasImage;
-import graphic.map.IsBlockType;
+import graphic.block.IsBlockType;
 import java.awt.image.BufferedImage;
 
 public record VectorTileRecord(BufferedImage getImage, IsBlockType blockType, boolean isSymmetric) implements HasImage {}

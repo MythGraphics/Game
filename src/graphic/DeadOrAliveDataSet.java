@@ -11,8 +11,8 @@ package graphic;
  *
  */
 
-import static graphic.map.DefaultBlockType.CORPSE;
-import graphic.map.IsBlockType;
+import static graphic.block.DefaultBlockType.CORPSE;
+import graphic.block.IsBlockType;
 import java.awt.image.BufferedImage;
 
 public class DeadOrAliveDataSet implements HasImage, IsDeadOrAlive {

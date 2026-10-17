@@ -30,9 +30,9 @@ public class SpaceGameRoutine extends MartialGameRoutine {
 
     @Override
     protected Player buildPlayer() {
-        Player player = super.buildPlayer();
-        player.setImage( loadImage( SPRITE + "player/man1.png" ));
-        return player;
+        Player p = super.buildPlayer();
+        p.setImage( loadImage( SPRITE + "player/man1.png" ));
+        return p;
     }
 
 }

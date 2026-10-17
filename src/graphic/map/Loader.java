@@ -11,6 +11,10 @@ package graphic.map;
  *
  */
 
+import graphic.block.InteractionType;
+import graphic.block.DefaultBlockType;
+import graphic.block.BlockType;
+import graphic.block.IsBlockType;
 import static graphic.io.BinaryIO.loadImage;
 import graphic.io.TextIO;
 import java.awt.image.BufferedImage;

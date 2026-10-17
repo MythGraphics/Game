@@ -11,6 +11,7 @@ package game;
  *
  */
 
+import graphic.block.IsMoveableBlock;
 import audio.AudioPlayer;
 import game.combat.Combatant;
 import game.item.*;

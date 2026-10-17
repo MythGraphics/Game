@@ -11,7 +11,12 @@ package graphic.vectorMap;
  *
  */
 
-import graphic.map.*;
+import graphic.block.Collidable;
+import graphic.block.IsBlock;
+import graphic.block.IsBlockType;
+import graphic.map.GameMap;
+import graphic.map.IsCollider;
+import graphic.map.IsCollisionHandler;
 import graphic.missileLauncher.MissileLauncher;
 import graphic.tile.BlockTile;
 import graphic.tile.IsMoveableTile;
