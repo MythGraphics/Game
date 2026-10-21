@@ -70,6 +70,11 @@ public class Block implements Collidable {
         this.y = y;
     }
 
+    public void setPos(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
+
     @Override
     public int getWidth() {
         return width;
@@ -105,7 +110,7 @@ public class Block implements Collidable {
 
     @Override
     public String toString() {
-        return "block " + getBlockType() + " at pixel " + x + ", " + y + " with width/height " + width + "/" + height + ".";
+        return "Block " + getBlockType() + " at pixel " + x + ", " + y + " with width/height " + width + "/" + height;
     }
 
 }

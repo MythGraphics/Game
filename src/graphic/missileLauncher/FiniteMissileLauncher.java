@@ -11,15 +11,16 @@ package graphic.missileLauncher;
  *
  */
 
-import graphic.DirectionalImage;
+import graphic.HasImage;
+import graphic.block.IsBlock;
 
 public class FiniteMissileLauncher extends MissileLauncher {
 
     private final int max;
     private int quantity = 0;
 
-    public FiniteMissileLauncher(DirectionalImage missileImage, int quantity, int max) {
-        super(missileImage);
+    public FiniteMissileLauncher(IsBlock owner, HasImage missileImage, int quantity, int max) {
+        super(owner, missileImage);
         this.quantity = quantity;
         this.max      = max;
     }

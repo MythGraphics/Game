@@ -13,4 +13,4 @@ package graphic.tile;
 
 import graphic.block.IsMoveableBlock;
 
-public interface IsMoveableTile extends IsMoveableBlock, IsBlockTile {}
+public interface IsMoveableTile extends IsMoveableBlock, IsTile {}

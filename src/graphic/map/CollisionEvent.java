@@ -18,13 +18,19 @@ import java.util.EventObject;
 public class CollisionEvent extends EventObject {
 
     public final IsBlock initiator, target;
+    public final GameMap map;
 
     public CollisionEvent(GameMap source, IsBlock initiator, IsBlock target) {
         super(source);
         this.initiator  = initiator;
         this.target     = target;
+        this.map        = source;
     }
 
+    /**
+     * Gibt den Interaktions-Typ des Ziels zurück.
+     * @return Ziel-Interaktionstyp
+     */
     public InteractionType getType() {
         return target.getBlockType().getInteractionType();
     }
@@ -37,13 +43,22 @@ public class CollisionEvent extends EventObject {
         return target;
     }
 
+    /**
+     * Gibt die verursachende GameMap zurück.
+     * @see getSource()
+     * @return GameMap
+     */
+    public GameMap getMap() {
+        return map;
+    }
+
     @Override
     public String toString() {
         return  getClass().getName() +
                 " from source "  + source +
                 " by initiator " + initiator +
                 " with target "  + target +
-                ", type "        + getType() +
+                " as type "      + getType() +
                 "."
         ;
     }

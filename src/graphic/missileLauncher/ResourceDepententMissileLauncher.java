@@ -12,15 +12,16 @@ package graphic.missileLauncher;
  */
 
 import game.resource.Resource;
-import graphic.DirectionalImage;
+import graphic.HasImage;
+import graphic.block.IsBlock;
 
 public class ResourceDepententMissileLauncher extends MissileLauncher {
 
     private final Resource resource;
     private final int cost;
 
-    public ResourceDepententMissileLauncher(DirectionalImage missileImage, Resource resource, int cost) {
-        super(missileImage);
+    public ResourceDepententMissileLauncher(IsBlock owner, HasImage missileImage, Resource resource, int cost) {
+        super(owner, missileImage);
         this.resource = resource;
         this.cost     = cost;
     }

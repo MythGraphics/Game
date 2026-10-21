@@ -4,14 +4,14 @@
 
 package graphic.map;
 
-import graphic.block.Collidable;
-
 /**
  *
  * @author  Martin Pröhl alias MythGraphics
  * @version 1.0.0
  *
  */
+
+import graphic.block.Collidable;
 
 @FunctionalInterface
 public interface IsCollisionHandler {

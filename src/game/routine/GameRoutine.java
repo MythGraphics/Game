@@ -14,22 +14,19 @@ package game.routine;
 import game.GameObjectLoader;
 import game.Player;
 import game.TextBox;
+import graphic.block.DefaultBlockType;
+import graphic.block.IsBlockType;
 import graphic.io.TextIO;
 import graphic.map.CollisionActionListener;
 import graphic.map.CollisionEvent;
-import graphic.block.DefaultBlockType;
-import graphic.block.IsBlockType;
 import graphic.texter.DialogOutputListener;
-import java.awt.Point;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import util.CycleList;
 
 public abstract class GameRoutine implements CollisionActionListener {
 
-    final CycleList<Point> portals = new CycleList<>();
     final Map<IsBlockType, TextBox> dialogMap = new HashMap<>();
     final Random rand = new Random();
     final GameObjectLoader loader;

@@ -13,7 +13,10 @@ package graphic.map;
 
 import game.resource.Resource;
 import static game.resource.Resource.ResourceType.HEALTH;
-import graphic.*;
+import graphic.AnimationData;
+import graphic.AnimationPlayer;
+import graphic.Direction;
+import graphic.HasImage;
 import static graphic.block.DefaultBlockType.*;
 import graphic.block.IsBlockType;
 import static graphic.io.BinaryIO.*;
@@ -37,7 +40,6 @@ public class DefaultSpaceMap extends VectorMap {
     private final Map<IsBlockType, HasImage> imgMap = new HashMap<>();
 
     private Resource playerHealth;
-    private DirectionalImage playerProjectile;
     private VectorRecord playerVec;
     private VectorTileRecord playerTile;
 
@@ -60,7 +62,7 @@ public class DefaultSpaceMap extends VectorMap {
 
     @Override
     protected void loadSprites() {
-        imgMap.put( WALL5, new TileBuilder.Tile( loadStretchedImage( SPRITE+"space/asteroid1.png" )));
+        imgMap.put( WALL5,  new TileBuilder.Tile( loadStretchedImage( SPRITE+"space/asteroid1.png" )));
         imgMap.put( CORPSE, new TileBuilder.Tile( loadStretchedImage( SPRITE+"space/wreck.png" )));
 
         AnimationData portalAniData = new AnimationData(
@@ -79,7 +81,8 @@ public class DefaultSpaceMap extends VectorMap {
                 ), DEFAULT_TILE_SIZE
             )
         );
-        playerProjectile = DirectionalImage.createSingleAnimation(missileAniData);
+        HasImage playerProjectile = new AnimationPlayer(missileAniData);
+        imgMap.put(MISSILE, playerProjectile);
 
         TilesetBuilder builder = new TilesetBuilder( loadImage( TILESET+"space/ships.png" ), 36, 36 );
         builder.setDirection(Direction.DOWN);
@@ -89,7 +92,9 @@ public class DefaultSpaceMap extends VectorMap {
         }
         imgMap.put( ENEMY, () -> ships[0][2] );
 
-        playerVec  = new VectorRecord(1.0f, -1.0f, (float) -Math.PI/4.0f, DEFAULT_TILE_SIZE, DEFAULT_TILE_SIZE, true);
+        playerVec  = new VectorRecord(
+            1.0f, -1.0f, 10.0f, (float) -Math.PI/4.0f, DEFAULT_TILE_SIZE, DEFAULT_TILE_SIZE, true
+        );
         playerTile = new VectorTileRecord(ships[7][1], PLAYER, false);
     }
 
@@ -98,7 +103,7 @@ public class DefaultSpaceMap extends VectorMap {
         switch (bType) {
             case PLAYER:
                 VectorBlock player = new VectorBlock(playerVec, playerTile, x, y);
-                player.setMissileLauncher( new DefaultMissileLauncher( playerProjectile ));
+                player.setMissileLauncher( new DefaultMissileLauncher( player, imgMap.get( MISSILE )));
                 player.setOverlayResource(playerHealth);
                 return player;
             case ENEMY:

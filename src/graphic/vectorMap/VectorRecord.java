@@ -11,4 +11,4 @@ package graphic.vectorMap;
  *
  */
 
-public record VectorRecord(float vx, float vy, float rotAngle, int width, int height, boolean heavy) {}
+public record VectorRecord(float vx, float vy, float vmax, float rotAngle, int width, int height, boolean heavy) {}

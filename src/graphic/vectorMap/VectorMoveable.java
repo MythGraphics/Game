@@ -11,9 +11,9 @@ package graphic.vectorMap;
  *
  */
 
-import graphic.Moveable;
+import graphic.AutoMoveable;
 
-public interface VectorMoveable extends Moveable, HasDirectionAngle {
+public interface VectorMoveable extends AutoMoveable, HasDirectionAngle {
 
     void rotate(float phi);
     void accelerate(float vx, float vy);

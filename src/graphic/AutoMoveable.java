@@ -11,7 +11,7 @@ package graphic;
  *
  */
 
-public interface AutoMoveable extends Maneuverable {
+public interface AutoMoveable extends Moveable {
 
     void startMovement();
     void stopMovement();

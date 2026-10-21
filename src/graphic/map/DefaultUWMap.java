@@ -23,7 +23,7 @@ import static graphic.io.TilesetUtility.getSpriteSetVertical;
 import static graphic.block.DefaultBlockType.*;
 import static graphic.map.GameMap.DEFAULT_TILE_SIZE;
 import graphic.tile.BlockTile;
-import graphic.tile.MoveableTile;
+import graphic.tile.ManeuverableTile;
 import graphic.tile.TileBuilder;
 import java.awt.Color;
 import java.awt.Point;
@@ -70,7 +70,7 @@ public class DefaultUWMap extends UWMap {
     protected BlockTile getBlockTile(int x, int y, IsBlockType bType) {
         switch (bType) {
             case PLAYER:
-                return new MoveableTile(x, y, PLAYER, tileSize, getMaxPoint(), playerAniSet);
+                return new ManeuverableTile(x, y, PLAYER, tileSize, getMaxPoint(), playerAniSet);
             default:
                 return new BlockTile( x, y, tileSize, bType, imgMap.get( bType ));
         }

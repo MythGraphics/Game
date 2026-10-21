@@ -11,12 +11,13 @@ package graphic.missileLauncher;
  *
  */
 
-import graphic.DirectionalImage;
+import graphic.HasImage;
+import graphic.block.IsBlock;
 
 public class DefaultMissileLauncher extends MissileLauncher {
 
-    public DefaultMissileLauncher(DirectionalImage missileImage) {
-        super(missileImage);
+    public DefaultMissileLauncher(IsBlock owner, HasImage missileImage) {
+        super(owner, missileImage);
     }
 
     @Override

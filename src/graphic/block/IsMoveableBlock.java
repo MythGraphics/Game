@@ -13,9 +13,10 @@ package graphic.block;
 
 import graphic.Moveable;
 
-public interface IsMoveableBlock extends IsBlock, Moveable {
+public interface IsMoveableBlock extends Collidable, Moveable {
 
     void setX(int x);
     void setY(int y);
+    void setPos(int x, int y);
 
 }

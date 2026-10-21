@@ -27,8 +27,9 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
 @SuppressWarnings("CloneableImplementsClone")
-public class DeadOrAliveTileDecorator<T extends BlockTile> implements IsDeadOrAliveTile, IsMoveableTile, AutoMoveable,
-                                                                      HasDirection, HasMaxPoint, HasMissileLauncher {
+public class DeadOrAliveTileDecorator<T extends BlockTile> implements IsDeadOrAliveTile, IsMoveableBlock, AutoMoveable,
+                                                                      Maneuverable, HasDirection, HasMaxPoint,
+                                                                      HasMissileLauncher {
 
     private final T tile;
 
@@ -36,7 +37,7 @@ public class DeadOrAliveTileDecorator<T extends BlockTile> implements IsDeadOrAl
     private Resource overlayResource;
     private boolean drawOverlay = false;
     private boolean autoMoveAsCorpse = false;
-    private MissileLauncher missileLauncher = new DefaultMissileLauncher(null);
+    private MissileLauncher missileLauncher = new DefaultMissileLauncher(this, null);
 
     public DeadOrAliveTileDecorator(T aliveTile) {
         this(aliveTile, null);
@@ -157,6 +158,13 @@ public class DeadOrAliveTileDecorator<T extends BlockTile> implements IsDeadOrAl
     public void setY(int y) {
         if (tile instanceof IsMoveableBlock m) {
             m.setY(y);
+        }
+    }
+
+    @Override
+    public void setPos(int x, int y) {
+        if (tile instanceof IsMoveableBlock m) {
+            m.setPos(x, y);
         }
     }
 

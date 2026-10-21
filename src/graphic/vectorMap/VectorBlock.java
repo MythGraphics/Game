@@ -12,7 +12,6 @@ package graphic.vectorMap;
  */
 
 import game.resource.Resource;
-import graphic.IsDeadOrAlive;
 import graphic.block.Block;
 import graphic.block.Collidable;
 import static graphic.block.DefaultBlockType.CORPSE;
@@ -24,13 +23,12 @@ import graphic.map.IsCollisionHandler;
 import graphic.map.OverlayUtil;
 import graphic.missileLauncher.HasMissileLauncher;
 import graphic.missileLauncher.MissileLauncher;
-import graphic.tile.HasOverlayResource;
+import graphic.tile.IsDeadOrAliveTile;
 import graphic.tile.IsMoveableTile;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
-public class VectorBlock extends Block implements IsDeadOrAlive, HasOverlayResource, VectorMoveable, IsMoveableTile,
-                                                  HasMissileLauncher {
+public class VectorBlock extends Block implements IsDeadOrAliveTile, VectorMoveable, IsMoveableTile, HasMissileLauncher {
 
     public static final float TWO_PI    = (float) (2.0 * Math.PI);
 
@@ -38,11 +36,13 @@ public class VectorBlock extends Block implements IsDeadOrAlive, HasOverlayResou
     protected float py                  = 0;
     protected float vx                  = 0;
     protected float vy                  = 0;
+    protected float vmax                = 0;
     protected float rotAngle            = 0; // rotationAngle, Radiant, 0.0f: RIGHT
-    protected boolean heavy             = false; // "schwere" Blöcke übertragen Impuls, leichte nicht
+    protected boolean heavy             = false; // "schwere" Blöcke übertragen Impuls, "leichte" nicht
 
     private boolean alive               = true;
     private boolean drawOverlay         = false;
+    private boolean moveable            = true;
     private VectorTileRecord aliveTile  = new VectorTileRecord(null, NONE,   true);
     private VectorTileRecord deadTile   = new VectorTileRecord(null, CORPSE, true);
     private Resource overlayResource;
@@ -76,6 +76,7 @@ public class VectorBlock extends Block implements IsDeadOrAlive, HasOverlayResou
         this.py         = y;
         this.vx         = vec.vx();
         this.vy         = vec.vy();
+        this.vmax       = vec.vmax();
         this.rotAngle   = vec.rotAngle();
         this.heavy      = vec.heavy();
         this.aliveTile  = aliveTile;
@@ -95,6 +96,35 @@ public class VectorBlock extends Block implements IsDeadOrAlive, HasOverlayResou
     }
 
     @Override
+    public void stopMovement() {
+        // vx = 0; vy = 0;
+        moveable = false;
+    }
+
+    @Override
+    public void startMovement() {
+        moveable = true;
+    }
+
+    @Override
+    public void setX(int x) {
+        super.x = x;
+        this.px = x;
+    }
+
+    @Override
+    public void setY(int y) {
+        super.y = y;
+        this.py = y;
+    }
+
+    @Override
+    public void setPos(int x, int y) {
+        setX(x);
+        setY(y);
+    }
+
+    @Override
     public void rotate(float phi) {
         rotAngle += phi;
         rotAngle  = normalize(rotAngle);
@@ -111,19 +141,27 @@ public class VectorBlock extends Block implements IsDeadOrAlive, HasOverlayResou
     }
 
     @Override
-    public void accelerate(float vx, float vy) {
-        this.vx += vx;
-        this.vy += vy;
+    public void accelerate(float dvx, float dvy) {
+//      this.vx = Math.clamp(vx + dvx, -vmax, vmax);
+//      this.vy = Math.clamp(vy + dvy, -vmax, vmax);
+        this.vx += dvx;
+        this.vy += dvy;
+        float speedSquare = vx*vx + vy*vy;
+        if (speedSquare > vmax*vmax) {
+            float speed = (float) Math.sqrt(speedSquare);
+            this.vx = (vx / speed) * vmax;
+            this.vy = (vy / speed) * vmax;
+        }
     }
 
     /**
-     * Accelerates in view direction.
-     * @param dv
+     * Beschleunigt in Sicht-Richtung.
+     * @param dv delta-v
      */
     @Override
     public void accelerate(float dv) {
-        vx += Math.cos(rotAngle) * dv;
-        vy += Math.sin(rotAngle) * dv;
+        this.vx = Math.clamp((float) (vx + Math.cos(rotAngle) * dv), -vmax, vmax);
+        this.vy = Math.clamp((float) (vy + Math.sin(rotAngle) * dv), -vmax, vmax);
     }
 
     public float getSpeedX() {
@@ -136,6 +174,10 @@ public class VectorBlock extends Block implements IsDeadOrAlive, HasOverlayResou
 
     public float getSpeed() {
         return (float) Math.sqrt(vx*vx + vy*vy);
+    }
+
+    public float getMaxSpeed() {
+        return vmax;
     }
 
     public void drawOverlay(boolean b) {
@@ -174,7 +216,7 @@ public class VectorBlock extends Block implements IsDeadOrAlive, HasOverlayResou
             float velocityAlongNormal = dvx*nx + dvy*ny;
             // nur wenn sich die Objekte auf einander zu bewegen, weiter machen, andernfals ist die Kollision bereits passiert
             if (velocityAlongNormal <= 0) {
-                float restitution = 0.95f; // Elastizitätskoeffizient (<1 für etwas Dämpfung/Energieverlust)
+                float restitution = 0.9f; // Elastizitätskoeffizient (<1 für etwas Dämpfung/Energieverlust)
 
                 // Impulsübertragung
                 float impulseScalar = -(1 + restitution) * velocityAlongNormal / 2.0f;
@@ -211,8 +253,8 @@ public class VectorBlock extends Block implements IsDeadOrAlive, HasOverlayResou
             } else {
                 // beide gleich (beide heavy oder beide !heavy): 50:50 aufteilen
                 float halfOverlap = 0.5f * overlap;
-                source.px  -= nx * halfOverlap;
-                source.py  -= ny * halfOverlap;
+                source.px -= nx * halfOverlap;
+                source.py -= ny * halfOverlap;
                 target.px += nx * halfOverlap;
                 target.py += ny * halfOverlap;
             }
@@ -220,19 +262,19 @@ public class VectorBlock extends Block implements IsDeadOrAlive, HasOverlayResou
     }
 
     public static void applyWallCollision(VectorBlock source, IsBlock target) {
-        float restitution = 0.95f; // Elastizitätskoeffizient
+        float restitution = 0.9f; // Elastizitätskoeffizient (<1 für etwas Dämpfung/Energieverlust)
 
         // Mittelpunkte berechnen, um die Kollisionsseite (horizontal oder vertikal) zu bestimmen
-        float thisCenterX = source.px + source.width / 2.0f;
-        float thisCenterY = source.py + source.height / 2.0f;
-        float wallCenterX = target.getX() + target.getWidth() / 2.0f;
-        float wallCenterY = target.getY() + target.getHeight() / 2.0f;
+        float sourceCenterX = source.px + source.width / 2.0f;
+        float sourceCenterY = source.py + source.height / 2.0f;
+        float wallCenterX   = target.getX() + target.getWidth() / 2.0f;
+        float wallCenterY   = target.getY() + target.getHeight() / 2.0f;
 
         // Differenzen auf der Achse
-        float dx = thisCenterX - wallCenterX;
-        float dy = thisCenterY - wallCenterY;
+        float dx = sourceCenterX - wallCenterX;
+        float dy = sourceCenterY - wallCenterY;
 
-        // Erlaubte minimale Abstände (halbe Breiten/Höhen addiert)
+        // Erlaubte Minimal-Abstände (halbe Ausdehnung addiert)
         float minDistX = ( source.width  + target.getWidth()  ) / 2.0f;
         float minDistY = ( source.height + target.getHeight() ) / 2.0f;
 
@@ -240,7 +282,7 @@ public class VectorBlock extends Block implements IsDeadOrAlive, HasOverlayResou
         float overlapX = minDistX - Math.abs(dx);
         float overlapY = minDistY - Math.abs(dy);
 
-        // prüfen, ob die Kollision eher von der Seite oder von oben/unten kam
+        // prüfen, ob Kollision von der Seite oder von oben/unten
         if (overlapX < overlapY) {
             // horizontale Kollision (links oder rechts) -> X-Geschwindigkeit umkehren
             source.vx = -source.vx * restitution;
@@ -261,8 +303,7 @@ public class VectorBlock extends Block implements IsDeadOrAlive, HasOverlayResou
             }
         }
 
-        source.x = Math.round(source.px);
-        source.y = Math.round(source.py);
+        source.setPos( Math.round( source.px ), Math.round( source.py ));
     }
 
     @Override
@@ -279,13 +320,15 @@ public class VectorBlock extends Block implements IsDeadOrAlive, HasOverlayResou
 
     @Override
     public void setDead() {
-        alive = false;
+        alive    = false;
+        moveable = false;
 //      super.setBlockType( deadTile.blockType() );
     }
 
     @Override
     public void setAlive() {
-        alive = true;
+        alive    = true;
+        moveable = false;
 //      super.setBlockType( aliveTile.blockType() );
     }
 
@@ -312,6 +355,9 @@ public class VectorBlock extends Block implements IsDeadOrAlive, HasOverlayResou
 
     @Override
     public void move() {
+        if (!moveable) {
+            return;
+        }
         px += vx;
         py += vy;
         super.x = Math.round(px);

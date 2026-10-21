@@ -11,17 +11,17 @@ package graphic.map;
  *
  */
 
-import graphic.block.IsBlockType;
 import graphic.AnimationData;
 import graphic.AnimationPlayer;
 import graphic.DirectionalImage;
+import static graphic.block.DefaultBlockType.*;
+import graphic.block.IsBlockType;
 import static graphic.io.BinaryIO.*;
 import static graphic.io.TilesetUtility.*;
-import static graphic.block.DefaultBlockType.*;
 import graphic.tile.BlockTile;
 import graphic.tile.DeadOrAliveTileDecorator;
 import graphic.tile.IsBlockTile;
-import graphic.tile.MoveableTile;
+import graphic.tile.ManeuverableTile;
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
@@ -90,7 +90,7 @@ public class DefaultSpaceshipMap extends SimpleMap {
     protected IsBlockTile getBlockTile(int x, int y, IsBlockType bType) {
         switch (bType) {
             case PLAYER:
-                return new MoveableTile( x, y, PLAYER, tileSize, getMaxPoint(), new DirectionalImage( playerAni ));
+                return new ManeuverableTile( x, y, PLAYER, tileSize, getMaxPoint(), new DirectionalImage( playerAni ));
             case ENEMY:
                 // für jeden Gegner einen eigenen AnimationPlayer erstellen
                 DeadOrAliveTileDecorator<BlockTile> tile = new DeadOrAliveTileDecorator<>(

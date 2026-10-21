@@ -13,13 +13,14 @@ package graphic.missileLauncher;
 
 import graphic.Direction;
 import static graphic.Direction.UP;
-import graphic.DirectionalImage;
 import graphic.HasDirection;
+import graphic.HasImage;
 import static graphic.block.DefaultBlockType.MISSILE;
-import graphic.map.GameMap;
 import graphic.block.IsBlock;
+import graphic.map.GameMap;
 import graphic.tile.Missile;
 import graphic.vectorMap.HasDirectionAngle;
+import graphic.vectorMap.VectorBlock;
 import graphic.vectorMap.VectorMissile;
 
 @SuppressWarnings("CloneableImplementsClone")
@@ -27,17 +28,24 @@ public abstract class MissileLauncher {
 
     private final static String NOAMMO = "Feuern nicht möglich: Nicht geladen.";
 
-    protected final DirectionalImage missileImage;
+    protected final HasImage missileImage;
+    protected final IsBlock owner;
 
-    public MissileLauncher(DirectionalImage missileImage) {
+    public MissileLauncher(IsBlock owner, HasImage missileImage) {
+        this.owner        = owner;
         this.missileImage = missileImage;
     }
 
     abstract boolean hasMissile();
 
-    public DirectionalImage getMissileImage() {
-        // Kopieren (Copy-Contructor), damit jede Missile ihr eigenes DirectionalImage nutzt
-        return new DirectionalImage(missileImage);
+    public IsBlock getOwner() {
+        return owner;
+    }
+
+    public HasImage getMissileImage() {
+        // Kopieren, damit jede Missile ihr eigenes HasImage nutzt
+//      return () -> missileImage.getImage();
+        return missileImage::getImage;
     }
 
     // --- Welt 1: rasterbasiert ---
@@ -65,11 +73,11 @@ public abstract class MissileLauncher {
 
     // --- Welt 2: vektorbasiert ---
 
-    public void fireMissile(GameMap map, IsBlock source, HasDirectionAngle launcher) {
+    public void fireMissile(GameMap map, VectorBlock source, HasDirectionAngle launcher) {
         fireMissile( map, source, launcher.getViewAngle() );
     }
 
-    public void fireMissile(GameMap map, IsBlock source, float angle) {
+    public void fireMissile(GameMap map, VectorBlock source, float angle) {
         if ( !hasMissile() ) {
             System.out.println(NOAMMO);
             return;
@@ -80,7 +88,9 @@ public abstract class MissileLauncher {
         int missileX = (int) Math.ceil(source.getX() + Math.cos(angle) * spawnDistance);
         int missileY = (int) Math.ceil(source.getY() + Math.sin(angle) * spawnDistance);
 
-        map.add( new VectorMissile( angle, missileX, missileY, MISSILE, GameMap.defaultMissileSpeed, this ));
+        float missileSpeed = source.getSpeed() + 4.0f;
+
+        map.add( new VectorMissile( angle, missileX, missileY, MISSILE, missileSpeed, this ));
     }
 
 }

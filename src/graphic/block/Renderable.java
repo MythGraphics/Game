@@ -13,6 +13,7 @@ package graphic.block;
 
 import java.awt.Graphics2D;
 
+@FunctionalInterface
 public interface Renderable {
 
     void draw(Graphics2D g2d, int offsetX, int offsetY);

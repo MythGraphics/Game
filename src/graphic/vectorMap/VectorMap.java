@@ -11,18 +11,18 @@ package graphic.vectorMap;
  *
  */
 
+import graphic.block.Collidable;
 import graphic.block.DefaultBlockType;
 import static graphic.block.DefaultBlockType.PLAYER;
 import graphic.block.IsBlockType;
 import graphic.map.GameMap;
 import graphic.map.MapRecord;
 import graphic.tile.IsBlockTile;
-import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
 public abstract class VectorMap extends GameMap {
 
-    public final static float ROTATION_STEP = (float) Math.PI/10.0f;
+    public final static float ROTATION_STEP = (float) Math.PI/12.0f;
 
     private VectorBlock player;
 
@@ -46,19 +46,29 @@ public abstract class VectorMap extends GameMap {
 
         switch (bType) {
             case PLAYER -> {
-                if (tile instanceof VectorBlock vb) {
-                    this.player = vb;
-                } else {
-                    System.err.println(
-                        "Player vom Typ " +
-                        ( tile == null ? "NULL" : tile.getClass().getName() ) +
-                        " inkompatibel: muss VectorBlock sein."
-                    );
-                }
-                savePlayerPosition(x, y);
+                try {
+                    if (tile instanceof VectorBlock vb) {
+                        this.player = vb;
+                    } else {
+                        System.err.println(
+                            "Player vom Typ " +
+                            ( tile == null ? "NULL" : tile.getClass().getName() ) +
+                            " inkompatibel: muss " +
+                            getClass().getDeclaredField("player").getType().getName() +
+                            " sein."
+                        );
+                    }
+                } catch (NoSuchFieldException ignore) {}
             }
             default -> super.loadTileMapChar(tileMapChar, x, y, tileSize);
         }
+    }
+
+    @Override
+    protected void move() {
+        super.move();
+        player.move();
+        detectCollision(player);
     }
 
     @Override
@@ -66,14 +76,26 @@ public abstract class VectorMap extends GameMap {
         if ( !isActive() ) {
             return;
         }
-
         switch ( evt.getKeyCode() ) {
             case KeyEvent.VK_UP,    KeyEvent.VK_W, KeyEvent.VK_NUMPAD8 -> player.accelerate( 0.5f);
             case KeyEvent.VK_DOWN,  KeyEvent.VK_S, KeyEvent.VK_NUMPAD2 -> player.accelerate(-0.5f);
             case KeyEvent.VK_RIGHT, KeyEvent.VK_D, KeyEvent.VK_NUMPAD6 -> player.rotate( ROTATION_STEP);
             case KeyEvent.VK_LEFT,  KeyEvent.VK_A, KeyEvent.VK_NUMPAD4 -> player.rotate(-ROTATION_STEP);
         }
-        detectCollision(player);
+    }
+
+    @Override
+    public boolean isOutOfMap(Collidable collider) {
+        boolean collision = super.isOutOfMap(collider);
+        if (collision) {
+            if (collider instanceof VectorBlock vb) {
+                System.err.println(collider + " is out of map: stopping movement and resetting position ...");
+                vb.stopMovement();
+                vb.px = Math.clamp(vb.px, DEFAULT_TILE_SIZE, boardWidth  - DEFAULT_TILE_SIZE);
+                vb.py = Math.clamp(vb.py, DEFAULT_TILE_SIZE, boardHeight - DEFAULT_TILE_SIZE);
+            }
+        }
+        return collision;
     }
 
     public static void printKeyBindings() {
@@ -90,12 +112,6 @@ public abstract class VectorMap extends GameMap {
             VectorBlock.applyWallCollision(player, lastImpassableCollisionTarget);
             lastImpassableCollisionTarget = null;
         }
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent evt) {
-        super.actionPerformed(evt);
-        player.move();
     }
 
 }

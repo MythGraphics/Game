@@ -11,9 +11,9 @@ package graphic.map;
  *
  */
 
-import graphic.block.IsBlock;
 import game.HasHealth;
 import game.resource.Resource;
+import graphic.block.IsBlock;
 import graphic.tile.HasOverlayResource;
 import java.awt.Color;
 import java.awt.Graphics2D;

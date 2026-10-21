@@ -11,6 +11,7 @@ package graphic;
  *
  */
 
+@FunctionalInterface
 public interface Moveable {
 
     void move();

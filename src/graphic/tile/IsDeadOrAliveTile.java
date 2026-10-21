@@ -13,4 +13,4 @@ package graphic.tile;
 
 import graphic.IsDeadOrAlive;
 
-public interface IsDeadOrAliveTile extends IsBlockTile, HasOverlayResource, IsDeadOrAlive {}
+public interface IsDeadOrAliveTile extends IsDeadOrAlive, HasOverlayResource, IsBlockTile {}

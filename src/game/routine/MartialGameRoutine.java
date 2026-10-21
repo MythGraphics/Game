@@ -13,9 +13,10 @@ package game.routine;
 
 import game.GameFrame;
 import game.resource.Resource;
+import graphic.AutoMoveable;
+import static graphic.block.InteractionType.PLAYER;
 import graphic.map.CollisionEvent;
 import graphic.map.GameMap;
-import static graphic.block.InteractionType.PLAYER;
 import graphic.tile.IsDeadOrAliveTile;
 
 public class MartialGameRoutine extends DefaultGameRoutine {
@@ -24,34 +25,38 @@ public class MartialGameRoutine extends DefaultGameRoutine {
         super(gameFrame, map);
     }
 
-    public void attack(IsDeadOrAliveTile doa, int quantity) {
-        Resource r = doa.getOverlayResource();
+    public void attack(IsDeadOrAliveTile doat, int quantity) {
+        Resource r = doat.getOverlayResource();
         r.forceConsume(quantity);
         if ( r.getValue() <= 0 ) {
-            System.out.println( doa.getBlockType() + " destroyed.");
-            doa.setDead();
+            System.out.println( doat.getBlockType() + " destroyed.");
+            doat.setDead();
+            if (doat instanceof AutoMoveable auto) {
+                auto.stopMovement();
+            }
         }
     }
 
     @Override
     public void collisionPerformed(CollisionEvent e) {
+        if ( e.initiator instanceof IsDeadOrAliveTile doat ) {
+            if ( !doat.isAlive() ) {
+                return;
+            }
+            System.out.println( e.getInitiator().getBlockType() + " hit by " + e.getTarget().getBlockType() );
+            attack(doat, 10);
+        }
         switch( e.getType() ) {
             case PLAYER -> {
-                if ( e.getTarget() instanceof IsDeadOrAliveTile doa ) {
+                if ( e.target instanceof IsDeadOrAliveTile doat ) {
                     System.out.println( "Player hit by " + e.getInitiator().getBlockType() );
-                    attack(doa, 10);
-                    if ( e.getInitiator() instanceof IsDeadOrAliveTile doa2 ) {
-                        attack(doa2, 10);
-                    }
+                    attack(doat, 10);
                 }
             }
             case ENEMY -> {
-                if ( e.getTarget() instanceof IsDeadOrAliveTile doa ) {
+                if ( e.target instanceof IsDeadOrAliveTile doat ) {
                     System.out.println( "Enemy hit by " + e.getInitiator().getBlockType() );
-                    attack(doa, 10);
-                    if ( e.getInitiator() instanceof IsDeadOrAliveTile doa2 ) {
-                        attack(doa2, 10);
-                    }
+                    attack(doat, 10);
                 }
             }
             default -> super.collisionPerformed(e);

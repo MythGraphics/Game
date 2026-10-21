@@ -11,7 +11,6 @@ package game;
  *
  */
 
-import graphic.block.IsMoveableBlock;
 import audio.AudioPlayer;
 import game.combat.Combatant;
 import game.item.*;
@@ -23,11 +22,14 @@ import game.routine.*;
 import graphic.Direction;
 import graphic.HasDirection;
 import graphic.Maneuverable;
+import graphic.block.IsMoveableBlock;
 import static graphic.io.BinaryIO.AUDIO;
 import graphic.io.ImageUtility;
 import graphic.map.*;
 import graphic.missileLauncher.HasMissileLauncher;
 import graphic.texter.TextFrame;
+import graphic.vectorMap.HasDirectionAngle;
+import graphic.vectorMap.VectorBlock;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
@@ -741,8 +743,13 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
             case KeyEvent.VK_MINUS, KeyEvent.VK_SUBTRACT    -> audioPlayer.changeVolume(-10);
             case KeyEvent.VK_SPACE, KeyEvent.VK_NUMPAD0     -> {
                 IsMoveableBlock p = map.getPlayer();
-                if (p instanceof HasDirection d && p instanceof HasMissileLauncher launcher) {
-                    launcher.getMissileLauncher().fireMissile( map, p, d.getViewDirection() ); // cast spell/missile
+                if (p instanceof HasMissileLauncher launcher) {
+                    if (launcher instanceof HasDirection d) {
+                        launcher.getMissileLauncher().fireMissile( map, p, d.getViewDirection() ); // cast spell/missile
+                    }
+                    if (launcher instanceof VectorBlock vb) {
+                        launcher.getMissileLauncher().fireMissile( map, vb, vb.getViewAngle() ); // cast spell/missile
+                    }
                 }
             }
 

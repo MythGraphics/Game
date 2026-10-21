@@ -20,11 +20,11 @@ import java.awt.Point;
 import java.util.Random;
 
 @SuppressWarnings("CloneableImplementsClone")
-public class AutoMoveableTile extends MoveableTile implements AutoMoveable {
+public class AutoMoveableTile extends ManeuverableTile implements AutoMoveable {
 
-    final Point start;
-    final Random rand = new Random();
-    final Direction initialDirection;
+    public final Point start;
+    public final Random rand = new Random();
+    public final Direction initialDirection;
 
     private boolean autoMove = true;
     private int ticksPerStep = 1;
@@ -86,17 +86,18 @@ public class AutoMoveableTile extends MoveableTile implements AutoMoveable {
 
     @Override
     public void move() {
-        if (autoMove) {
-            // Verzögerungslogik
-            tickCounter++;
-            if (tickCounter >= ticksPerStep) {
-                if ( getX() > getMaxX() || getY() > getMaxY() || getX() < 0 || getY() < 0 ) {
-                    move( Direction.invert( getViewDirection() ));
-                } else {
-                    move( getViewDirection() );
-                }
-                tickCounter = 0;
+        if (!autoMove) {
+            return;
+        }
+        // Verzögerungslogik
+        tickCounter++;
+        if (tickCounter >= ticksPerStep) {
+            if ( getX() > getMaxX() || getY() > getMaxY() || getX() < 0 || getY() < 0 ) {
+                move( Direction.invert( getViewDirection() ));
+            } else {
+                move( getViewDirection() );
             }
+            tickCounter = 0;
         }
     }
 

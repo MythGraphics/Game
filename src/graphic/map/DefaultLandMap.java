@@ -20,7 +20,7 @@ import static graphic.io.BinaryIO.*;
 import static graphic.io.TilesetUtility.*;
 import static graphic.block.DefaultBlockType.*;
 import graphic.tile.BlockTile;
-import graphic.tile.MoveableTile;
+import graphic.tile.ManeuverableTile;
 import graphic.tile.TileBuilder;
 import graphic.tile.TileBuilder.Tile;
 import java.awt.Color;
@@ -88,7 +88,7 @@ public class DefaultLandMap extends SimpleMap {
         switch (bType) {
             case PLAYER:
                 DirectionalImage playerAni = new DirectionalImage( AnimationPlayer.createSet( playerAniData ));
-                return new MoveableTile(
+                return new ManeuverableTile(
                     x, y, PLAYER, tileSize, getMaxPoint(), playerAni
                 );
             case NPC:

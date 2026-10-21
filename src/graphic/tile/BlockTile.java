@@ -13,14 +13,14 @@ package graphic.tile;
 
 import graphic.HasImage;
 import graphic.block.Block;
-import graphic.map.GameMap;
 import graphic.block.IsBlockType;
+import graphic.map.GameMap;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
 
-// is a sprite
+// Sprite
 public class BlockTile extends Block implements IsBlockTile, Cloneable {
 
     private HasImage image;

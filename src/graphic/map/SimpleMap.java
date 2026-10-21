@@ -43,16 +43,20 @@ public abstract class SimpleMap extends GameMap {
 
         switch (bType) {
             case PLAYER -> {
-                if (tile instanceof IsManeuverableTile maneuverable) {
-                    this.player = maneuverable;
-                } else {
-                    System.err.println(
-                        "Player vom Typ " +
-                        ( tile == null ? "NULL" : tile.getClass().getName() ) +
-                        " inkompatibel: muss IsManeuverableTile sein."
-                    );
-                }
-                savePlayerPosition(x, y);
+                try {
+                    if (tile instanceof IsManeuverableTile maneuverable) {
+                        this.player = maneuverable;
+                    } else {
+                        System.err.println(
+                            "Player vom Typ " +
+                            ( tile == null ? "NULL" : tile.getClass().getName() ) +
+                            " inkompatibel: muss " +
+                            getClass().getDeclaredField("player").getType().getName() +
+                            " sein."
+                        );
+                    }
+                    savePlayerPosition(x, y);
+                } catch (NoSuchFieldException ignore) {}
             }
             default -> super.loadTileMapChar(tileMapChar, x, y, tileSize);
         }
@@ -63,7 +67,6 @@ public abstract class SimpleMap extends GameMap {
         if ( !isActive() ) {
             return;
         }
-
         saveCurrentPlayerPosition();
         switch ( evt.getKeyCode() ) {
             case KeyEvent.VK_W, KeyEvent.VK_NUMPAD8 -> player.move(UP);

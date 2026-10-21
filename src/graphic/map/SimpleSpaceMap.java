@@ -13,6 +13,7 @@ package graphic.map;
 
 import game.resource.Resource;
 import static game.resource.Resource.ResourceType.HEALTH;
+import static graphic.Direction.UP;
 import graphic.*;
 import static graphic.block.DefaultBlockType.*;
 import graphic.block.IsBlockType;
@@ -21,21 +22,22 @@ import graphic.io.TilesetUtility;
 import static graphic.io.TilesetUtility.getSpriteSet;
 import static graphic.io.TilesetUtility.scaleImageSet;
 import static graphic.map.GameMap.DEFAULT_TILE_SIZE;
+import static graphic.map.GameMap.loadStretchedImage;
 import graphic.missileLauncher.DefaultMissileLauncher;
 import graphic.tile.*;
 import java.awt.Color;
+import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.Map;
 
-public class DefaultSpaceMap extends SimpleMap {
+public class SimpleSpaceMap extends SimpleMap {
 
     private final Map<IsBlockType, HasImage> imgMap = new HashMap<>();
 
     private Resource playerHealth;
-    private DirectionalImage playerShipSet, playerProjectile;
 
-    public DefaultSpaceMap(char[][] tileMap) {
+    public SimpleSpaceMap(char[][] tileMap) {
         super(tileMap);
     }
 
@@ -54,7 +56,7 @@ public class DefaultSpaceMap extends SimpleMap {
 
     @Override
     protected void loadSprites() {
-        imgMap.put( WALL5, new TileBuilder.Tile( loadStretchedImage( SPRITE+"space/asteroid1.png" )));
+        imgMap.put( WALL5,  new TileBuilder.Tile( loadStretchedImage( SPRITE+"space/asteroid1.png" )));
         imgMap.put( CORPSE, new TileBuilder.Tile( loadStretchedImage( SPRITE+"space/wreck.png" )));
 
         AnimationData portalAniData = new AnimationData(
@@ -73,7 +75,8 @@ public class DefaultSpaceMap extends SimpleMap {
                 ), DEFAULT_TILE_SIZE
             )
         );
-        playerProjectile = DirectionalImage.createSingleAnimation(missileAniData);
+        HasImage playerProjectile = new AnimationPlayer(missileAniData);
+        imgMap.put(MISSILE, playerProjectile);
 
         TilesetBuilder builder = new TilesetBuilder( loadImage( TILESET+"space/ships.png" ), 36, 36 );
         builder.setDirection(Direction.DOWN);
@@ -81,20 +84,24 @@ public class DefaultSpaceMap extends SimpleMap {
         for (int i = 0; i < ships.length; ++i) {
             ships[i] = TilesetUtility.scaleImageSet(builder.getTileSet(4), tileSize);
         }
-        playerShipSet = new DirectionalImage( DirectionalImage.create( ships[7] ));
         imgMap.put( ENEMY, () -> ships[0][2] );
+
+        DirectionalImage playerTile = new DirectionalImage( UP, DirectionalImage.create( ships[7] ));
+        imgMap.put(PLAYER, playerTile);
     }
 
     @Override
     protected IsBlockTile getBlockTile(int x, int y, IsBlockType bType) {
         switch (bType) {
             case PLAYER:
-                DeadOrAliveTileDecorator<MoveableTile> playerTile = new DeadOrAliveTileDecorator<>(
-                    new MoveableTile(x, y, PLAYER, tileSize, getMaxPoint(), playerShipSet)
+                DeadOrAliveTileDecorator<ManeuverableTile> player = new DeadOrAliveTileDecorator<>(
+                    new ManeuverableTile(x, y, PLAYER, GameMap.DEFAULT_TILE_SIZE, new Point(
+                        Integer.MAX_VALUE, Integer.MAX_VALUE
+                    ), (DirectionalImage) imgMap.get( PLAYER ))
                 );
-                playerTile.setMissileLauncher( new DefaultMissileLauncher( playerProjectile ));
-                playerTile.setOverlayResource(playerHealth);
-                return playerTile;
+                player.setMissileLauncher( new DefaultMissileLauncher( player, imgMap.get( MISSILE )));
+                player.setOverlayResource(playerHealth);
+                return player;
             case ENEMY:
                 DeadOrAliveTileDecorator<BlockTile> enemyTile = new DeadOrAliveTileDecorator<>(
                     new BlockTile(x, y, tileSize, ENEMY, imgMap.get( bType ))

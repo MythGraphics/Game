@@ -11,8 +11,6 @@ package graphic.tile;
  *
  */
 
-import graphic.HasImage;
 import graphic.block.Collidable;
-import graphic.block.Renderable;
 
-public interface IsBlockTile extends Renderable, Collidable, HasImage {}
+public interface IsBlockTile extends IsTile, Collidable {}

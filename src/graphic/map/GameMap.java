@@ -11,15 +11,22 @@ package graphic.map;
  *
  */
 
-import graphic.block.*;
+import graphic.HasImage;
+import graphic.Moveable;
+import graphic.block.Block;
+import graphic.block.Collidable;
+import graphic.block.DefaultBlockType;
+import graphic.block.IsBlock;
+import graphic.block.IsBlockType;
+import graphic.block.IsMoveableBlock;
+import graphic.block.Renderable;
+import graphic.missileLauncher.IsMissile;
 import static graphic.block.DefaultBlockType.*;
 import static graphic.io.BinaryIO.loadImage;
 import static graphic.io.ImageUtility.scale;
 import static graphic.io.ImageUtility.stretch;
-import graphic.tile.AutoMoveableTile;
 import graphic.tile.IsBlockTile;
 import graphic.tile.IsMoveableTile;
-import graphic.tile.Missile;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -39,10 +46,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.random.RandomGenerator;
 import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 import javax.swing.Timer;
+import util.CycleList;
 
 public abstract class GameMap extends JPanel implements ActionListener, IsCollisionHandler {
 
@@ -53,27 +62,31 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
     public final int tileSize, rowCount, columnCount;
     public final int visibleWidth, visibleHeight, boardWidth, boardHeight;
     public final Dimension board, visibleBoard;
+    public final Point lastPlayerPos = new Point();
 
-    public static boolean prerenderMap          = true;
-    public static int defaultMissileSpeed       = DEFAULT_TILE_SIZE/4; // pixel per frame
+    public static boolean prerenderMap = true;
+    public static int defaultMissileSpeed = DEFAULT_TILE_SIZE/4; // pixel per frame
 
-    protected IsBlockType[] excludedBlockTypes  = DEFAULT_EXCLUDE;
+    protected final Collection<Collidable>      staticCollidables   = new HashSet<>(); // statische Collidables
+    protected final Collection<IsMoveableTile>  scurryables         = new HashSet<>(); // sich selbstständig bewegende Entitäten
+    protected final Collection<IsMissile>       missiles            = new HashSet<>();
+    protected final Collection<Renderable>      renderables         = new ArrayList<>();
+    protected final Collection<Collidable>      garbageC            = new HashSet<>(); // statische Collidables, die entfernt werden sollen
+    protected final Collection<IsMoveableTile>  garbageS            = new HashSet<>(); // MoveableTiles, die entfernt werden sollen
+    protected final Collection<IsMissile>       garbageM            = new HashSet<>(); // Missiles, die entfernt werden sollen
+    protected final Collection<Renderable>      garbageR            = new HashSet<>(); // Renderables, die entfernt werden sollen
+    protected final CycleList<Point>            portals             = new CycleList<>();
+
+    protected IsBlockType[] excludedBlockTypes = DEFAULT_EXCLUDE;
     protected IsBlockTile emptyTile;
     protected Collidable lastImpassableCollisionTarget;
 
-    private final Collection<Collidable>        collidables = new HashSet<>(); // Collidable, IsBlock
-    private final Collection<Renderable>        renderables = new ArrayList<>();
-    private final Collection<AutoMoveableTile>  scurryables = new HashSet<>(); // sich selbst bewegende Entitäten
-    private final Collection<Collidable>        garbageC    = new HashSet<>(); // Collidables, die entfernt werden sollen
-    private final Collection<Renderable>        garbageR    = new HashSet<>(); // Renderables, die entfernt werden sollen
-    private final Collection<AutoMoveableTile>  garbageS    = new HashSet<>(); // AutoMoveables, die entfernt werden sollen
-
     private final char[][] tileMap;
     private final List<CollisionActionListener> collisionListeners = new ArrayList<>();
-    private final Point lastPlayerPos = new Point();
+    private final RandomGenerator rangen = RandomGenerator.getDefault();
 
-    private boolean active = false;
-    private boolean ready  = false;
+    private boolean active  = false;
+    private boolean ready   = false;
     private Timer renderLoop;
 
     public GameMap(char[][] tileMap, MapRecord rec) {
@@ -99,9 +112,7 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
                 new Dimension( // visibleSize auf mapSize, aber max. 800x600
                     Math.min( tileMap[0].length*DEFAULT_TILE_SIZE, 800 ),
                     Math.min( tileMap.length*DEFAULT_TILE_SIZE,    600 )
-                )
-            )
-        );
+        )));
     }
 
     protected abstract void loadSprites();
@@ -110,7 +121,6 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
     public abstract Color getAmbientColor();
     public abstract void movePlayer(KeyEvent evt);
     public abstract IsMoveableTile getPlayer();
-
 
     public static BufferedImage loadStretchedImage(String imgPath) {
         return stretch( loadImage( imgPath ), DEFAULT_TILE_SIZE, DEFAULT_TILE_SIZE, false );
@@ -139,12 +149,12 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
         return ready;
     }
 
-    public int getFPS() {
-        return fps;
-    }
-
     public int getTileSize() {
         return tileSize;
+    }
+
+    public int getFPS() {
+        return fps;
     }
 
     @Override
@@ -209,7 +219,6 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
     protected void loadTileMapChar(char tileMapChar, int x, int y, int tileSize) {
         IsBlockType bType = DefaultBlockType.getByChar(tileMapChar);
         IsBlockTile tile  = getBlockTile(x, y, bType);
-
         switch (bType) {
             case null -> {
                 System.err.println(
@@ -217,16 +226,14 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
                     " ungültig (BlockType ist null) -> wird ignoriert."
                 );
             }
-            case SPACE -> {
-                emptyTile = tile;
+            case SPACE          -> emptyTile = tile;
+            case SPACEHOLDER    -> {}
+            case PORTAL         ->
+            {
+                portals.add( new Point( x, y ));
+                add(tile);
             }
-            case SPACEHOLDER -> {}
-            default -> {
-                collidables.add(tile);
-                if ( tile.getImage() != null ) {
-                    renderables.add(tile);
-                }
-            }
+            default             -> add(tile);
         }
     }
 
@@ -246,8 +253,9 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
             }
         }
         if (getPlayer() != null) {
-            collidables.add( getPlayer() );
-            renderables.add( getPlayer() ); // MUSS letzter Eintrag sein, damit Player über allen anderen Fliesen liegt
+            IsMoveableTile player = getPlayer();
+            saveCurrentPlayerPosition();
+            renderables.add(player); // sollte letzter Eintrag sein, damit Player über allen anderen Fliesen liegt
         }
         if (emptyTile == null) {
             emptyTile = getBlockTile(0, 0, SPACE);
@@ -260,7 +268,11 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
 
     public void activate() {
         if (!ready) {
-            System.err.println("Map cannot activated - not initialized!");
+            System.err.println("Map cannot be activated - not initialized.");
+            return;
+        }
+        if (getPlayer() == null) {
+            System.err.println("Map cannot be activated - player not set.");
             return;
         }
         if ( !renderLoop.isRunning() ) {
@@ -289,8 +301,8 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
     @Override
     // wird vom Timer ausgelöst
     public void actionPerformed(ActionEvent evt) {
-/*      // DeltaTime berechnen (vergangene Zeit in Sekunden seit dem letzten Frame)
-        long currentTime = System.nanoTime();
+        // DeltaTime berechnen (vergangene Zeit in Sekunden seit dem letzten Frame)
+/*      long currentTime = System.nanoTime();
         double deltaTime = (currentTime - lastFrameTime) / 1_000_000_000.0;
         lastFrameTime    = currentTime;
  */
@@ -301,39 +313,21 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
         collisionListeners.add(actionListener);
     }
 
-    @Override
-    public void fireEvent(GameMap map, Collidable source, Collidable target) {
-        // collider/initiator (bewegliches Objekt), obstacle (statisches Hindernis)
-        System.out.println(
-            "Collision of block "   + source.getBlockType() +
-            " with block "          + target.getBlockType() +
-            " at pixel "            + target.getX() + ", " + target.getY() +
-            " (column "             + ( target.getX() / target.getWidth()  + 1 ) + // +1, um keine Indizes auszugeben
-            ", row "                + ( target.getY() / target.getHeight() + 1 ) + // +1, um keine Indizes auszugeben
-            ")."
-        );
-        collisionListeners.forEach( actionListener -> actionListener.collisionPerformed(
-            new CollisionEvent(this, source, target)
-        ));
-
-        // aufräumen
-        if (source instanceof Missile missile) {
-            remove(missile);
-        }
-        if (target instanceof Missile missile) {
-            remove(missile);
-        }
-    }
-
+    /**
+     * Holt den Block an gegebener Position aus den staticCollidables und nur von dort.
+     * @param col   Spalte
+     * @param row   Zeile
+     * @return      Block oder NULL, wenn keiner gefunden wurde
+     */
     public IsBlock getBlock(int col, int row) {
         // 0 ist ungültig
-        if ( col <= 0 || row <= 0 ) {
+        if (col <= 0 || row <= 0 || col > boardWidth/tileSize || row > boardHeight/tileSize) {
             return null;
         }
 
         int x = (col-1)*tileSize;
         int y = (row-1)*tileSize;
-        for (Collidable c : collidables) {
+        for (Collidable c : staticCollidables) {
             if ( x == c.getX() && y == c.getY() ) {
                 return c;
             }
@@ -341,10 +335,74 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
         return null;
     }
 
+    /**
+     * Holt den Block an gegebener Position aus den staticCollidables und nur von dort.
+     * @param p     Punkt der x-y-Koordinate
+     * @return      Block oder NULL, wenn keiner gefunden wurde
+     */
+    public IsBlock getBlockByPosition(Point p) {
+        return getBlockByXY(p.x, p.y);
+    }
+
+    /**
+     * Holt den Block an gegebener Position aus den staticCollidables und nur von dort.
+     * @param x     x-Koordinate
+     * @param y     y-Koordinate
+     * @return      Block oder NULL, wenn keiner gefunden wurde
+     */
+    public IsBlock getBlockByXY(int x, int y) {
+        if (x < 0 || y < 0 || x > boardWidth || y > boardHeight) {
+            return null;
+        }
+
+        Point pa = new Point(x, y);
+        Point pb = new Point();
+        Dimension d = new Dimension(tileSize, tileSize);
+        for (Collidable c : staticCollidables) {
+            pb.x = c.getX();
+            pb.y = c.getY();
+            if ( collision( pa, d, pb, d )) {
+                return c;
+            }
+        }
+        return null;
+    }
+
+    public List<Point> getPortalList() {
+        return portals;
+    }
+
+    public void moveThroughPortal(IsMoveableBlock block) {
+/*
+        if (portals.size() >= 2) {
+            // nur sinnvoll für min. 2 Portale
+            moveThroughPortal( block, portals.getNext() );
+        }
+ */
+        Point pa = new Point();
+        Point pb = new Point();
+        boolean occupied;
+        Dimension d = new Dimension(tileSize, tileSize);
+        do {
+            occupied = false;
+            pa.x = rangen.nextInt(1, boardWidth/tileSize)  * tileSize;
+            pa.y = rangen.nextInt(1, boardHeight/tileSize) * tileSize;
+            for (Collidable c : staticCollidables) {
+                pb.x = c.getX();
+                pb.y = c.getY();
+                if ( collision( pa, d, pb, d )) {
+                    occupied = true;
+                    break;
+                }
+            }
+        } while (occupied);
+        block.setPos(pa.x, pa.y);
+    }
+
     public void moveThroughPortal(IsMoveableBlock block, Point targetPos) {
-        block.setX(targetPos.x);
-        block.setY(targetPos.y);
-        block.move();
+        block.setPos(targetPos.x, targetPos.y);
+//      block.move();
+//      detectCollision(block);
     }
 
     public void movePlayer(int deltaCol, int deltaRow) {
@@ -393,7 +451,7 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
         saveCurrentPlayerPosition();
         getPlayer().setX(x);
         getPlayer().setY(y);
-        detectCollision( getPlayer() );
+//      detectCollision( getPlayer() );
     }
 
     public void setPlayerPositionXY(Point destination) {
@@ -416,50 +474,107 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
     protected void resetPlayerPosition() {
         getPlayer().setX(lastPlayerPos.x);
         getPlayer().setY(lastPlayerPos.y);
+//      detectCollision( getPlayer() );
     }
 
-    private boolean detectPanelCollision() {
-        if (getPlayer().getX() < 0) {
-            getPlayer().setX(0);
+    protected boolean isOutOfMap(Collidable collider) {
+        if (collider.getX() < 0) {
             return true;
-        } else if (getPlayer().getX() >= boardWidth) {
-            getPlayer().setX(boardWidth-tileSize);
+        } else if (collider.getX() >= boardWidth) {
             return true;
-        } else if (getPlayer().getY() < 0) {
-            getPlayer().setY(0);
+        } else if (collider.getY() < 0) {
             return true;
-        } else if (getPlayer().getY() >= boardHeight) {
-            getPlayer().setY(boardHeight-tileSize);
+        } else if (collider.getY() >= boardHeight) {
             return true;
         }
         return false;
     }
 
     protected void detectCollision(Collidable source) {
-        // IsCollider, IsCollisionHandler aktuell nicht genutzt
-        if ( detectPanelCollision() ) {
-            Block target = new Block(source.getX(), source.getY(), source.getWidth(), source.getHeight(), BOUNDARY);
-            fireEvent(this, source, target);
+        if (!(source instanceof Moveable)) {
+            // ist die Quelle nicht beweglich, keine Kollisionsprüfung
             return;
         }
 
-        for (Collidable target : collidables) {
-            if (source == target) {
-                continue;
+        if ( isOutOfMap( source )) {
+            if ( source != getPlayer() ) {
+                // Objekte (außer Spieler) außerhalb der Map entfernen
+                System.err.println(source + " is out of map: removing from map ...");
+                remove(source);
+            } else {
+                Block target = new Block(source.getX(), source.getY(), source.getWidth(), source.getHeight(), BOUNDARY);
+    //          fireEvent(this, source, target); // über IsCollisionHandler (Block) ausgelöst
+                lastImpassableCollisionTarget = target;
+                resetPlayerPosition();
             }
+            return;
+        }
+/*      Eine Rakete ist normalerweise Quelle, nicht Ziel, einer Kollision: Wir ignorieren sie vorerst:
+        Da Raketen keine Ziele von Kollisionen sind, kollidieren sie daher auch nicht miteinander.
+        // Kollisionsprüfung der Missiles
+        for (Collidable target : missiles) {
             if ( collision( source, target )) {
-                fireEvent(this, source, target);
-                boolean passable = target.getBlockType().isPassable();
-                if ( !passable && source == getPlayer() ) {
-                    lastImpassableCollisionTarget = target;
-                    resetPlayerPosition();
-                }
-                break;
+                processCollision(source, target);
+                return;
+            }
+        }
+ */
+        // Kollisionsprüfung der umherwandernden Collidables
+        for (Collidable target : scurryables) {
+            if ( collision( source, target )) {
+                processCollision(source, target);
+                return;
+            }
+        }
+
+        // Kollisionsprüfung der statischen Collidables
+        for (Collidable target : staticCollidables) {
+            if ( collision( source, target )) {
+                processCollision(source, target);
+                return;
             }
         }
     }
 
-    private boolean collision(Collidable a, Collidable b) {
+    protected void processCollision(Collidable source, Collidable target) {
+        // fireEvent(this, source, target); // wird über IsCollisionHander von Collidable.onCollision ausgelöst
+        boolean passable = target.onCollision(source, this, this); // löst das Collision-Ereignis am Ziel aus
+        source.collidesWith(target, this); // Kollisions-Ereignis an die Quelle übergeben (kann optional abgefangen werden)
+        if ( !passable && source == getPlayer() ) {
+            lastImpassableCollisionTarget = target;
+            resetPlayerPosition();
+        }
+    }
+
+    @Override
+    public void fireEvent(GameMap map, Collidable source, Collidable target) {
+        // collider/initiator (bewegliches Objekt), obstacle (statisches Hindernis)
+        System.out.println(
+            "Collision of block "   + source.getBlockType() +
+            " with block "          + target.getBlockType() +
+            " at pixel "            + target.getX() + ", " + target.getY() +
+            " (column "             + ( target.getX() / target.getWidth()  + 1 ) + // +1, um keine Indizes auszugeben
+            ", row "                + ( target.getY() / target.getHeight() + 1 ) + // +1, um keine Indizes auszugeben
+            ")."
+        );
+        CollisionEvent event = new CollisionEvent(this, source, target);
+        collisionListeners.forEach( actionListener -> actionListener.collisionPerformed( event ));
+    }
+
+    public final boolean collision(Point pa, Dimension da, Point pb, Dimension db) {
+        if (pa == pb) {
+            return false;
+        }
+        if ( pa.getX() == pb.getX() && pa.getY() == pb.getY() ) {
+            return false;
+        }
+        return  pa.getX() < pb.getX() + db.getWidth()  &&
+                pa.getX() + da.getWidth() > pb.getX()  &&
+                pa.getY() < pb.getY() + db.getHeight() &&
+                pa.getY() + da.getHeight() > pb.getY();
+    }
+
+    public final boolean collision(Collidable a, Collidable b) {
         if (a == null || b == null || a == b) {
             return false;
         }
@@ -476,7 +591,7 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
         clean();
     }
 
-    private void setRenderingHints(Graphics2D g2d) {
+    protected void setRenderingHints(Graphics2D g2d) {
         g2d.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2d.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
@@ -526,19 +641,25 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
     }
 
     protected void move() {
-        for (AutoMoveableTile tile : scurryables) {
+        for (IsMissile missile : missiles) {
+            missile.move();
+            detectCollision(missile);
+        }
+        for (IsMoveableTile tile : scurryables) {
             tile.move();
             detectCollision(tile);
         }
     }
 
     protected void clean() {
-        collidables.removeAll(garbageC);
-        garbageC.clear();
         renderables.removeAll(garbageR);
         garbageR.clear();
+        missiles.removeAll(garbageM);
+        garbageM.clear();
         scurryables.removeAll(garbageS);
         garbageS.clear();
+        staticCollidables.removeAll(garbageC);
+        garbageC.clear();
     }
 
     protected void drawSpace(Graphics2D g2d, int offsetX, int offsetY) {
@@ -563,9 +684,21 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
         return getBlockCount(ENEMY);
     }
 
+    /**
+     * Gibt die Anzahl der Collidables des angegebenen Typs zurück.
+     * Es werden nur statische und umherwandernde Collidables (staticCollidables, scurryables) gezählt,
+     * keine Raketen (missiles).
+     * @param bType BlockType
+     * @return      aktuelle Anzahl der Collidables auf der Map
+     */
     public int getBlockCount(IsBlockType bType) {
         int value = 0;
-        for (Collidable c : collidables) {
+        for (Collidable c : staticCollidables) {
+            if ( c.getBlockType() == bType ) {
+                ++value;
+            }
+        }
+        for (Collidable c : scurryables) {
             if ( c.getBlockType() == bType ) {
                 ++value;
             }
@@ -578,14 +711,17 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
             return;
         }
 
-        if (obj instanceof Collidable c) {
-            collidables.add(c);
+        if (obj instanceof HasImage img && obj instanceof Renderable r) {
+            if (img.getImage() != null) {
+                renderables.add(r);
+            }
         }
-        if (obj instanceof Renderable r) {
-            renderables.add(r);
-        }
-        if (obj instanceof AutoMoveableTile amt) {
-            scurryables.add(amt);
+        switch (obj) {
+            // CAVE: Reihenfolge nicht ändern!
+            case IsMissile missile       -> missiles.add(missile);
+            case IsMoveableTile moveable -> scurryables.add(moveable);
+            case Collidable collidable   -> staticCollidables.add(collidable);
+            default                      -> {}
         }
     }
 
@@ -594,14 +730,17 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
             return;
         }
 
-        if (obj instanceof Collidable c) {
-            garbageC.add(c);
+        if (obj instanceof Renderable renderable) {
+            garbageR.add(renderable);
         }
-        if (obj instanceof Renderable r) {
-            garbageR.add(r);
+        if (obj instanceof IsMissile missile) {
+            garbageM.add(missile);
         }
-        if (obj instanceof AutoMoveableTile amt) {
-            garbageS.add(amt);
+        if (obj instanceof IsMoveableTile moveable) {
+            garbageS.add(moveable);
+        }
+        if (obj instanceof Collidable collidable) {
+            garbageC.add(collidable);
         }
     }
 

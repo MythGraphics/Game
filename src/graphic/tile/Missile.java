@@ -11,17 +11,18 @@ package graphic.tile;
  *
  */
 
-import graphic.block.Collidable;
-import graphic.block.IsBlockType;
-import graphic.block.IsBlock;
 import graphic.Direction;
 import graphic.DirectionalImage;
-import graphic.map.*;
+import graphic.block.Collidable;
+import graphic.block.IsBlockType;
+import graphic.map.GameMap;
+import graphic.map.IsCollisionHandler;
+import graphic.missileLauncher.IsMissile;
 import graphic.missileLauncher.MissileLauncher;
 import java.awt.Point;
 
 @SuppressWarnings("CloneableImplementsClone")
-public class Missile extends AutoMoveableTile implements IsCollider {
+public class Missile extends AutoMoveableTile implements IsMissile {
 
 /*
     Methode(int startX, int startY, int targetX, int targetY, int speed) {
@@ -43,27 +44,31 @@ public class Missile extends AutoMoveableTile implements IsCollider {
 
     public final static Point MAX = new Point(Integer.MAX_VALUE, Integer.MAX_VALUE);
 
-    public Missile(Direction initialDirection,
-                   int x, int y, IsBlockType bType,
-                   int stepSize, MissileLauncher source) {
-        this( initialDirection, x, y, bType, stepSize, source.getMissileImage() );
-    }
+    private final MissileLauncher source;
 
     public Missile(Direction initialDirection,
                    int x, int y, IsBlockType bType,
-                   int stepSize, DirectionalImage imgset) {
-        super(initialDirection, x, y, bType, stepSize, MAX, imgset);
+                   int stepSize, MissileLauncher source) {
+        super( initialDirection, x, y, bType, stepSize, MAX, new DirectionalImage( source.getMissileImage() ));
+        this.source = source;
+    }
+
+    @Override
+    public MissileLauncher getSource() {
+        return source;
+    }
+
+    @Override
+    public void collidesWith(Collidable target, GameMap map) {
+        map.remove(this);
+        super.onCollision(target, map, map); // CAVE: Inversion der Kollisions-Kausalität: initiator <-> target
     }
 
     @Override
     public boolean onCollision(Collidable initiator, GameMap map, IsCollisionHandler handler) {
+        // würde aufgerufen werden, wenn eine Rakete Ziel einer Kollision ist
         map.remove(this);
-        return super.onCollision(initiator, map, handler);
-    }
-
-    @Override
-    public void collidesWith(IsBlock target, GameMap map, IsCollisionHandler handler) {
-        map.remove(this);
+        return true;
     }
 
 }

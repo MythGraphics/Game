@@ -13,6 +13,7 @@ package graphic.map;
 
 import java.util.EventListener;
 
+@FunctionalInterface
 public interface CollisionActionListener extends EventListener {
 
     void collisionPerformed(CollisionEvent e);

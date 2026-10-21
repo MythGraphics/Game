@@ -13,21 +13,19 @@ package graphic.tile;
 
 import graphic.Direction;
 import graphic.DirectionalImage;
-import graphic.HasDirection;
-import graphic.Maneuverable;
-import graphic.map.HasMaxPoint;
 import graphic.block.IsBlockType;
+import graphic.map.HasMaxPoint;
 import java.awt.Dimension;
 import java.awt.Point;
 
 @SuppressWarnings("CloneableImplementsClone")
-public class MoveableTile extends BlockTile implements Maneuverable, IsMoveableTile, HasDirection, HasMaxPoint {
+public class ManeuverableTile extends BlockTile implements IsManeuverableTile, HasMaxPoint {
 
     final DirectionalImage imgset;
     final Point maxPoint;
     final int stepSize;
 
-    public MoveableTile(int x, int y, IsBlockType bType,
+    public ManeuverableTile(int x, int y, IsBlockType bType,
                         int stepSize, Point maxPoint, DirectionalImage imgset) {
         super( x, y, bType, () -> imgset.getImage() );
         this.imgset   = imgset;
@@ -35,7 +33,7 @@ public class MoveableTile extends BlockTile implements Maneuverable, IsMoveableT
         this.stepSize = stepSize;
     }
 
-    public MoveableTile(int x, int y, int width, int height, IsBlockType bType,
+    public ManeuverableTile(int x, int y, int width, int height, IsBlockType bType,
                         int stepSize, Point maxPoint, DirectionalImage imgset) {
         super( x, y, width, height, bType, () -> imgset.getImage() );
         this.imgset   = imgset;
@@ -43,7 +41,7 @@ public class MoveableTile extends BlockTile implements Maneuverable, IsMoveableT
         this.stepSize = stepSize;
     }
 
-    public MoveableTile(Point pos, Dimension dim, IsBlockType bType,
+    public ManeuverableTile(Point pos, Dimension dim, IsBlockType bType,
                         int stepSize, Point maxPoint, DirectionalImage imgset) {
         this(pos.x, pos.y, dim.width, dim.height, bType, stepSize, maxPoint, imgset);
     }

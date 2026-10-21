@@ -11,10 +11,10 @@ package graphic.map;
  *
  */
 
-import graphic.block.DefaultBlockType;
 import game.resource.ConsumeResource;
 import game.resource.Resource;
 import static game.resource.Resource.ResourceType.AIR;
+import graphic.block.DefaultBlockType;
 import static graphic.block.DefaultBlockType.WATERLINE;
 import java.awt.event.ActionEvent;
 
