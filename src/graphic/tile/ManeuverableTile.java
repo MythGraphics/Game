@@ -18,12 +18,13 @@ import graphic.map.HasMaxPoint;
 import java.awt.Dimension;
 import java.awt.Point;
 
+// Player
 @SuppressWarnings("CloneableImplementsClone")
 public class ManeuverableTile extends BlockTile implements IsManeuverableTile, HasMaxPoint {
 
-    final DirectionalImage imgset;
-    final Point maxPoint;
-    final int stepSize;
+    public final DirectionalImage imgset;
+    public final Point maxPoint;
+    public final int stepSize;
 
     public ManeuverableTile(int x, int y, IsBlockType bType,
                         int stepSize, Point maxPoint, DirectionalImage imgset) {

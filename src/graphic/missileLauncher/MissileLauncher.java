@@ -68,7 +68,7 @@ public abstract class MissileLauncher {
             case DOWN  -> missileY += map.tileSize;
             case UP    -> missileY -= map.tileSize;
         }
-        map.add( new Missile( d, missileX, missileY, MISSILE, GameMap.defaultMissileSpeed, this ));
+        map.add( new Missile( d, missileX, missileY, MISSILE, GameMap.defaultMissileSpeed, map.getMaxPoint(), this ));
     }
 
     // --- Welt 2: vektorbasiert ---

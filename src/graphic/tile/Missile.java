@@ -24,32 +24,12 @@ import java.awt.Point;
 @SuppressWarnings("CloneableImplementsClone")
 public class Missile extends AutoMoveableTile implements IsMissile {
 
-/*
-    Methode(int startX, int startY, int targetX, int targetY, int speed) {
-        int vx = 0, vy = 0;
-        int x = startX;
-        int y = startY;
-
-        // Richtungsvektor berechnen und normalisieren
-        int dx = targetX - startX;
-        int dy = targetY - startY;
-        double distance = Math.sqrt(dx*dx + dy*dy);
-
-        if (distance != 0) {
-            vx = (int) (dx / distance) * speed;
-            vy = (int) (dy / distance) * speed;
-        }
-    }
- */
-
-    public final static Point MAX = new Point(Integer.MAX_VALUE, Integer.MAX_VALUE);
-
-    private final MissileLauncher source;
+    public final MissileLauncher source;
 
     public Missile(Direction initialDirection,
                    int x, int y, IsBlockType bType,
-                   int stepSize, MissileLauncher source) {
-        super( initialDirection, x, y, bType, stepSize, MAX, new DirectionalImage( source.getMissileImage() ));
+                   int stepSize, Point maxPoint, MissileLauncher source) {
+        super( initialDirection, x, y, bType, stepSize, maxPoint, new DirectionalImage( source.getMissileImage() ));
         this.source = source;
     }
 

@@ -11,14 +11,14 @@ package graphic.map;
  *
  */
 
-import graphic.block.IsBlockType;
 import graphic.AnimationData;
 import graphic.AnimationPlayer;
 import graphic.DirectionalImage;
 import graphic.HasImage;
+import static graphic.block.DefaultBlockType.*;
+import graphic.block.IsBlockType;
 import static graphic.io.BinaryIO.*;
 import static graphic.io.TilesetUtility.*;
-import static graphic.block.DefaultBlockType.*;
 import graphic.tile.BlockTile;
 import graphic.tile.ManeuverableTile;
 import graphic.tile.TileBuilder;

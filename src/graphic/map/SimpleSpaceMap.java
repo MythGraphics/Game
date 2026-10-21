@@ -95,9 +95,9 @@ public class SimpleSpaceMap extends SimpleMap {
         switch (bType) {
             case PLAYER:
                 DeadOrAliveTileDecorator<ManeuverableTile> player = new DeadOrAliveTileDecorator<>(
-                    new ManeuverableTile(x, y, PLAYER, GameMap.DEFAULT_TILE_SIZE, new Point(
-                        Integer.MAX_VALUE, Integer.MAX_VALUE
-                    ), (DirectionalImage) imgMap.get( PLAYER ))
+                    new ManeuverableTile(
+                        x, y, PLAYER, GameMap.DEFAULT_TILE_SIZE, getMaxPoint(), (DirectionalImage) imgMap.get(PLAYER)
+                    )
                 );
                 player.setMissileLauncher( new DefaultMissileLauncher( player, imgMap.get( MISSILE )));
                 player.setOverlayResource(playerHealth);
