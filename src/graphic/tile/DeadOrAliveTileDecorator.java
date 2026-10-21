@@ -245,8 +245,8 @@ public class DeadOrAliveTileDecorator<T extends BlockTile> implements IsDeadOrAl
         drawOverlay(g2d, offsetX, offsetY);
     }
 
-    public void drawOverlay(boolean b) {
-        this.drawOverlay = b;
+    public void drawOverlay(boolean drawOverlay) {
+        this.drawOverlay = drawOverlay;
     }
 
     @Override
@@ -258,11 +258,14 @@ public class DeadOrAliveTileDecorator<T extends BlockTile> implements IsDeadOrAl
 
     @Override
     public boolean onCollision(Collidable initiator, GameMap map, IsCollisionHandler handler) {
-        boolean b = tile.onCollision(initiator, map, handler);
-        if (overlayResource != null && overlayResource.getValue() <= 0) {
+        /* CAVE: tile.onCollision(initiator, map, handler) kann nicht verwendet werden, da THIS in tile nur die Referenz
+         * auf sich selbt übergibt, benötigen aber die Referenz auf diesen Decorator.
+         */
+        handler.fireEvent(map, initiator, this);
+        if (drawOverlay && overlayResource.getValue() <= 0) {
             setDead();
         }
-        return b;
+        return getBlockType().isPassable();
     }
 
     @Override

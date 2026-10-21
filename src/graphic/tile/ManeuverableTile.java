@@ -12,6 +12,7 @@ package graphic.tile;
  */
 
 import graphic.Direction;
+import static graphic.Direction.*;
 import graphic.DirectionalImage;
 import graphic.block.IsBlockType;
 import graphic.map.HasMaxPoint;
