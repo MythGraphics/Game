@@ -17,18 +17,19 @@ import graphic.block.Collidable;
 import graphic.block.IsBlockType;
 import graphic.block.IsMoveableBlock;
 import graphic.map.GameMap;
-import graphic.map.HasMaxPoint;
+import graphic.map.HasMinMaxPoint;
 import graphic.map.IsCollisionHandler;
 import graphic.map.OverlayUtil;
 import graphic.missileLauncher.DefaultMissileLauncher;
 import graphic.missileLauncher.HasMissileLauncher;
 import graphic.missileLauncher.MissileLauncher;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.image.BufferedImage;
 
 @SuppressWarnings("CloneableImplementsClone")
 public class DeadOrAliveTileDecorator<T extends BlockTile> implements IsDeadOrAliveTile, IsMoveableBlock, AutoMoveable,
-                                                                      Maneuverable, HasDirection, HasMaxPoint,
+                                                                      Maneuverable, HasDirection, HasMinMaxPoint,
                                                                       HasMissileLauncher {
 
     private final T tile;
@@ -63,7 +64,11 @@ public class DeadOrAliveTileDecorator<T extends BlockTile> implements IsDeadOrAl
 
     @Override
     public MissileLauncher getMissileLauncher() {
-        return missileLauncher;
+        if ( isAlive() ) {
+            return missileLauncher;
+        } else {
+            return null;
+        }
     }
 
     public final void setDeadTile(IsBlockType bType, HasImage image) {
@@ -138,13 +143,33 @@ public class DeadOrAliveTileDecorator<T extends BlockTile> implements IsDeadOrAl
     }
 
     @Override
+    public int getMinX() {
+        return (tile instanceof HasMinMaxPoint mmp) ? mmp.getMinX() : 0;
+    }
+
+    @Override
+    public int getMinY() {
+        return (tile instanceof HasMinMaxPoint mmp) ? mmp.getMinY() : 0;
+    }
+
+    @Override
     public int getMaxX() {
-        return (tile instanceof HasMaxPoint m) ? m.getMaxX() : 0;
+        return (tile instanceof HasMinMaxPoint mmp) ? mmp.getMaxX() : Integer.MAX_VALUE;
     }
 
     @Override
     public int getMaxY() {
-        return (tile instanceof HasMaxPoint m) ? m.getMaxY() : 0;
+        return (tile instanceof HasMinMaxPoint mmp) ? mmp.getMaxY() : Integer.MAX_VALUE;
+    }
+
+    @Override
+    public Point getMinPoint() {
+        return (tile instanceof HasMinMaxPoint mmp) ? mmp.getMinPoint() : new Point( getMinX(), getMinY() );
+    }
+
+    @Override
+    public Point getMaxPoint() {
+        return (tile instanceof HasMinMaxPoint mmp) ? mmp.getMaxPoint() : new Point( getMaxX(), getMaxY() );
     }
 
     @Override

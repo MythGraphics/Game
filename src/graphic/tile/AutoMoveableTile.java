@@ -20,11 +20,9 @@ import java.awt.Point;
 import java.util.Random;
 
 @SuppressWarnings("CloneableImplementsClone")
-public class AutoMoveableTile extends ManeuverableTile implements AutoMoveable {
+public class AutoMoveableTile extends ShuttleTile implements AutoMoveable {
 
-    public final Point start;
     public final Random rand = new Random();
-    public final Direction initialDirection;
 
     private boolean autoMove = true;
     private int ticksPerStep = 1;
@@ -32,31 +30,25 @@ public class AutoMoveableTile extends ManeuverableTile implements AutoMoveable {
 
     public AutoMoveableTile(Direction initialDirection,
                             int x, int y, IsBlockType bType,
-                            int stepSize, Point maxPoint, DirectionalImage imgset) {
-        super(x, y, bType, stepSize, maxPoint, imgset);
-        this.initialDirection = initialDirection;
-        this.start = new Point(x, y);
-        setDirection(initialDirection);
+                            int stepSize, Point max, DirectionalImage imgset) {
+        super(initialDirection, x, y, bType, stepSize, max, imgset);
     }
 
     public AutoMoveableTile(Direction initialDirection,
                             int x, int y, int width, int height, IsBlockType bType,
-                            int stepSize, Point maxPoint, DirectionalImage imgset) {
-        super(x, y, width, height, bType, stepSize, maxPoint, imgset);
-        this.initialDirection = initialDirection;
-        this.start = new Point(x, y);
-        setDirection(initialDirection);
+                            int stepSize, Point max, DirectionalImage imgset) {
+        super(initialDirection, x, y, width, height, bType, stepSize, max, imgset);
     }
 
     public AutoMoveableTile(Direction initialDirection,
                             Point pos, Dimension dim, IsBlockType bType,
-                            int stepSize, Point maxPoint, DirectionalImage imgset) {
-        this(initialDirection, pos.x, pos.y, dim.width, dim.height, bType, stepSize, maxPoint, imgset);
+                            int stepSize, Point max, DirectionalImage imgset) {
+        super(initialDirection, pos, dim, bType, stepSize, max, imgset);
     }
 
     public void reset() {
-        super.x = start.x;
-        super.y = start.y;
+        super.x = min.x;
+        super.y = min.y;
         tickCounter = 0;
         imgset.setDirection(initialDirection);
     }
@@ -78,10 +70,6 @@ public class AutoMoveableTile extends ManeuverableTile implements AutoMoveable {
 
     public void setTicksPerStep(int ticks) {
         this.ticksPerStep = Math.max(1, ticks);
-    }
-
-    public final void setDirection(Direction direction) {
-        imgset.setDirection(direction);
     }
 
     @Override

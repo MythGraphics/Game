@@ -26,7 +26,7 @@ import graphic.vectorMap.VectorMissile;
 @SuppressWarnings("CloneableImplementsClone")
 public abstract class MissileLauncher {
 
-    private final static String NOAMMO = "Feuern nicht möglich: Nicht geladen.";
+    public final static String NOAMMO = "Feuern nicht möglich: Nicht geladen.";
 
     protected final HasImage missileImage;
     protected final IsBlock owner;
@@ -50,14 +50,14 @@ public abstract class MissileLauncher {
 
     // --- Welt 1: rasterbasiert ---
 
-    public void fireMissile(GameMap map, IsBlock source, HasDirection d) {
-        fireMissile( map, source, d.getViewDirection() );
+    public boolean fireMissile(GameMap map, IsBlock source, HasDirection d) {
+        return fireMissile( map, source, d.getViewDirection() );
     }
 
-    public void fireMissile(GameMap map, IsBlock source, Direction d) {
+    public boolean fireMissile(GameMap map, IsBlock source, Direction d) {
         if ( !hasMissile() ) {
             System.out.println(NOAMMO);
-            return;
+            return false;
         }
 
         int missileX = source.getX();
@@ -69,18 +69,19 @@ public abstract class MissileLauncher {
             case UP    -> missileY -= map.tileSize;
         }
         map.add( new Missile( d, missileX, missileY, MISSILE, GameMap.defaultMissileSpeed, map.getMaxPoint(), this ));
+        return true;
     }
 
     // --- Welt 2: vektorbasiert ---
 
-    public void fireMissile(GameMap map, VectorBlock source, HasDirectionAngle launcher) {
-        fireMissile( map, source, launcher.getViewAngle() );
+    public boolean fireMissile(GameMap map, VectorBlock source, HasDirectionAngle launcher) {
+        return fireMissile( map, source, launcher.getViewAngle() );
     }
 
-    public void fireMissile(GameMap map, VectorBlock source, float angle) {
+    public boolean  fireMissile(GameMap map, VectorBlock source, float angle) {
         if ( !hasMissile() ) {
             System.out.println(NOAMMO);
-            return;
+            return false;
         }
 
         // Position vor der Quelle berechnen
@@ -91,6 +92,7 @@ public abstract class MissileLauncher {
         float missileSpeed = source.getSpeed() + 4.0f;
 
         map.add( new VectorMissile( angle, missileX, missileY, MISSILE, missileSpeed, this ));
+        return true;
     }
 
 }

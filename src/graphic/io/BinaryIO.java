@@ -7,14 +7,12 @@ package graphic.io;
 /**
  *
  * @author  Martin Pröhl alias MythGraphics
- * @version 1.0.1
+ * @version 1.0.2
  *
  */
 
 import io.ReaderFactory;
-import java.awt.GraphicsConfiguration;
-import java.awt.GraphicsEnvironment;
-import java.awt.Transparency;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -134,7 +132,12 @@ public class BinaryIO {
             sourceImage.getHeight(),
             transparency
         );
-        optimizedImage.createGraphics().drawImage(sourceImage, 0, 0, null); // Original in das optimierte Bild zeichnen
+
+        // Grafikkontext holen und Alpha-Kanal explizit schützen
+        Graphics2D g2d = optimizedImage.createGraphics();
+        g2d.setComposite(AlphaComposite.Src); // überschreibt die Pixel 1:1 inklusive Alpha
+        g2d.drawImage(sourceImage, 0, 0, null);
+        g2d.dispose();
 
         return optimizedImage;
     }

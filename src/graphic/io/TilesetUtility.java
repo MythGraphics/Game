@@ -7,13 +7,14 @@ package graphic.io;
 /**
  *
  * @author  Martin Pröhl alias MythGraphics
- * @version 1.0.3
+ * @version 1.0.4
  *
  */
 
 import graphic.Alignment;
 import static graphic.Alignment.HORIZONTAL;
 import static graphic.Alignment.VERTICAL;
+import java.awt.AlphaComposite;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
@@ -194,7 +195,7 @@ public class TilesetUtility {
      * @return AnimationSet
      */
     public static BufferedImage[][] getAnimationSet(BufferedImage image, int tileSize, int number) {
-        return getAnimationSet( image, new Point(0, 0), 0, 0, tileSize, tileSize, number );
+        return getAnimationSet(image, new Point(), 0, 0, tileSize, tileSize, number);
     }
 
     /**
@@ -300,10 +301,14 @@ public class TilesetUtility {
             return image;
         }
 
-        int imgType = image.getType() == BufferedImage.TYPE_CUSTOM ? BufferedImage.TYPE_INT_ARGB : image.getType();
-
-        BufferedImage newImage = new BufferedImage(tileSize, tileSize, imgType);
+        BufferedImage newImage = new BufferedImage(tileSize, tileSize, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2d = newImage.createGraphics();
+
+        // Rendering-Hints für saubere Kanten bei Transparenz/Skalierung
+        g2d.setRenderingHint(java.awt.RenderingHints.KEY_INTERPOLATION, java.awt.RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+        g2d.setRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING, java.awt.RenderingHints.VALUE_ANTIALIAS_ON);
+
+        g2d.setComposite(AlphaComposite.Src);
         g2d.drawImage(image, 0, 0, tileSize, tileSize, null); // Bild an Position 0,0 zeichnen
         g2d.dispose();
 

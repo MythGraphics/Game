@@ -24,7 +24,7 @@ import graphic.io.TilesetUtility;
 import static graphic.io.TilesetUtility.getSpriteSet;
 import static graphic.io.TilesetUtility.scaleImageSet;
 import static graphic.map.GameMap.DEFAULT_TILE_SIZE;
-import graphic.missileLauncher.DefaultMissileLauncher;
+import graphic.missileLauncher.ResourceDependentMissileLauncher;
 import graphic.tile.*;
 import graphic.vectorMap.VectorBlock;
 import graphic.vectorMap.VectorMap;
@@ -40,15 +40,18 @@ public class DefaultSpaceMap extends VectorMap {
     private final Map<IsBlockType, HasImage> imgMap = new HashMap<>();
 
     private Resource playerHealth;
+    private Resource missileResource;
     private VectorRecord playerVec;
     private VectorTileRecord playerTile;
+    private AnimationPlayer portalAni;
 
     public DefaultSpaceMap(char[][] tileMap) {
         super(tileMap);
     }
 
-    public void init(Resource playerHealth) {
-        this.playerHealth = playerHealth;
+    public void init(game.Player player) {
+        this.playerHealth = player.getHealth();
+        this.missileResource = player.getResource(Resource.ResourceType.MANA);
         super.init();
     }
 
@@ -67,10 +70,10 @@ public class DefaultSpaceMap extends VectorMap {
 
         AnimationData portalAniData = new AnimationData(
             getSpriteSet(
-                loadImage(TILESET+"space/portal.png"), 80, -1
+                loadImage(TILESET+"space/portal2.png"), 80, -1
             )
         );
-        AnimationPlayer portalAni = new AnimationPlayer(portalAniData);
+        portalAni = new AnimationPlayer(portalAniData);
         portalAni.slowDown();
         imgMap.put(PORTAL, portalAni);
 
@@ -84,7 +87,7 @@ public class DefaultSpaceMap extends VectorMap {
         HasImage playerProjectile = new AnimationPlayer(missileAniData);
         imgMap.put(MISSILE, playerProjectile);
 
-        TilesetBuilder builder = new TilesetBuilder( loadImage( TILESET+"space/ships.png" ), 36, 36 );
+        TilesetBuilder builder = new TilesetBuilder( loadImage( TILESET+"space/ships2.png" ), 36, 36 );
         builder.setDirection(Direction.DOWN);
         BufferedImage[][] ships = new BufferedImage[8][];
         for (int i = 0; i < ships.length; ++i) {
@@ -95,7 +98,7 @@ public class DefaultSpaceMap extends VectorMap {
         playerVec  = new VectorRecord(
             1.0f, -1.0f, 10.0f, (float) -Math.PI/4.0f, DEFAULT_TILE_SIZE, DEFAULT_TILE_SIZE, true
         );
-        playerTile = new VectorTileRecord(ships[7][1], PLAYER, false);
+        playerTile = new VectorTileRecord(PLAYER, ships[7][1], false);
     }
 
     @Override
@@ -103,8 +106,11 @@ public class DefaultSpaceMap extends VectorMap {
         switch (bType) {
             case PLAYER:
                 VectorBlock player = new VectorBlock(playerVec, playerTile, x, y);
-                player.setMissileLauncher( new DefaultMissileLauncher( player, imgMap.get( MISSILE )));
+                player.setMissileLauncher( new ResourceDependentMissileLauncher(
+                    player, imgMap.get(MISSILE), missileResource, 10
+                ));
                 player.setOverlayResource(playerHealth);
+                player.setDeadTile( VectorTileRecord.build( CORPSE, imgMap.get( CORPSE )));
                 return player;
             case ENEMY:
                 DeadOrAliveTileDecorator<BlockTile> enemyTile = new DeadOrAliveTileDecorator<>(
@@ -113,6 +119,8 @@ public class DefaultSpaceMap extends VectorMap {
                 enemyTile.setOverlayResource( new Resource( "HP", HEALTH, 25, 25 ));
                 enemyTile.setDeadTile( CORPSE, imgMap.get( CORPSE ));
                 return enemyTile;
+            case PORTAL:
+                return new BlockTile( x, y, tileSize, bType, new AnimationPlayer( portalAni ));
             default:
                 return new BlockTile( x, y, tileSize, bType, imgMap.get( bType ));
         }

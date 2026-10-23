@@ -21,6 +21,7 @@ import graphic.block.IsMoveableBlock;
 import graphic.map.CollisionEvent;
 import graphic.map.GameMap;
 import graphic.texter.DialogOutputListener;
+import graphic.tile.Portal;
 
 public class DefaultGameRoutine extends GameRoutine {
 
@@ -75,9 +76,8 @@ public class DefaultGameRoutine extends GameRoutine {
     public void collisionPerformed(CollisionEvent e) {
         switch( e.getType() ) {
             case EXIT   -> (( GameMap ) e.getSource() ).deactivate();
-            case PORTAL -> e.map.moveThroughPortal((IsMoveableBlock) e.initiator);
 
-            default -> super.collisionPerformed(e);
+            default     -> super.collisionPerformed(e);
         }
     }
 

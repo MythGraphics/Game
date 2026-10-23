@@ -14,7 +14,7 @@ package graphic.vectorMap;
 import game.resource.Resource;
 import graphic.block.Block;
 import graphic.block.Collidable;
-import static graphic.block.DefaultBlockType.CORPSE;
+import static graphic.block.DefaultBlockType.CORPSE_PLAYER;
 import static graphic.block.DefaultBlockType.NONE;
 import graphic.block.IsBlock;
 import graphic.block.IsBlockType;
@@ -26,6 +26,7 @@ import graphic.missileLauncher.MissileLauncher;
 import graphic.tile.IsDeadOrAliveTile;
 import graphic.tile.IsMoveableTile;
 import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 
 public class VectorBlock extends Block implements IsDeadOrAliveTile, VectorMoveable, IsMoveableTile, HasMissileLauncher {
@@ -43,8 +44,8 @@ public class VectorBlock extends Block implements IsDeadOrAliveTile, VectorMovea
     private boolean alive               = true;
     private boolean drawOverlay         = false;
     private boolean moveable            = true;
-    private VectorTileRecord aliveTile  = new VectorTileRecord(null, NONE,   true);
-    private VectorTileRecord deadTile   = new VectorTileRecord(null, CORPSE, true);
+    private VectorTileRecord aliveTile  = new VectorTileRecord(NONE,          null, true);
+    private VectorTileRecord deadTile   = new VectorTileRecord(CORPSE_PLAYER, null, true);
     private Resource overlayResource;
     private MissileLauncher launcher;
 
@@ -328,7 +329,7 @@ public class VectorBlock extends Block implements IsDeadOrAliveTile, VectorMovea
     @Override
     public void setAlive() {
         alive    = true;
-        moveable = false;
+        moveable = true;
 //      super.setBlockType( aliveTile.blockType() );
     }
 
@@ -344,8 +345,8 @@ public class VectorBlock extends Block implements IsDeadOrAliveTile, VectorMovea
 
     @Override
     public boolean onCollision(Collidable initiator, GameMap map, IsCollisionHandler handler) {
-        if (initiator instanceof VectorBlock otherBlock) {
-            applyImpulseCollision(this, otherBlock);
+        if (initiator instanceof VectorBlock block) {
+            applyImpulseCollision(this, block);
         }
         if (overlayResource != null && overlayResource.getValue() <= 0) {
             setDead();
@@ -388,13 +389,11 @@ public class VectorBlock extends Block implements IsDeadOrAliveTile, VectorMovea
             float centerX = drawX + width/2.0f;
             float centerY = drawY + height/2.0f;
 
-//          AffineTransform old = g2d.getTransform(); // speichert den Zustand
-
+            AffineTransform old = g2d.getTransform(); // speichert den Zustand
             g2d.rotate(rotAngle, centerX, centerY);
             g2d.drawImage(img, drawX, drawY, width, height, null);
-            g2d.rotate(-rotAngle, centerX, centerY); // zurück drehen, damit nachfolgende Renderings nicht verdreht werden
-
-//          g2d.setTransform(old); // stellt den alten Zustand wieder her
+//          g2d.rotate(-rotAngle, centerX, centerY); // zurück drehen, damit nachfolgende Renderings nicht verdreht werden
+            g2d.setTransform(old); // stellt den alten Zustand wieder her
         }
 
         drawOverlay(g2d, offsetX, offsetY);

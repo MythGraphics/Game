@@ -26,6 +26,12 @@ public class AnimationPlayer implements HasImage {
         this.data = data;
     }
 
+    public AnimationPlayer(AnimationPlayer other) {
+        this.data           = other.getData();
+        this.ticksPerFrame  = other.ticksPerFrame;
+        this.step           = other.step;
+    }
+
     public void setSpeed(int ticks) {
         this.ticksPerFrame = Math.max(1, ticks);
     }

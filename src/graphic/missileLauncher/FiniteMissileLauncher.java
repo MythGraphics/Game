@@ -11,8 +11,11 @@ package graphic.missileLauncher;
  *
  */
 
+import graphic.Direction;
 import graphic.HasImage;
 import graphic.block.IsBlock;
+import graphic.map.GameMap;
+import graphic.vectorMap.VectorBlock;
 
 public class FiniteMissileLauncher extends MissileLauncher {
 
@@ -44,6 +47,26 @@ public class FiniteMissileLauncher extends MissileLauncher {
     @Override
     public boolean hasMissile() {
         return quantity > 0;
+    }
+
+    @Override
+    public boolean fireMissile(GameMap map, IsBlock source, Direction d) {
+        if ( super.fireMissile( map, source, d )) {
+            --quantity;
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public boolean fireMissile(GameMap map, VectorBlock source, float angle) {
+        if ( super.fireMissile( map, source, angle )) {
+            --quantity;
+            return true;
+        } else {
+            return false;
+        }
     }
 
 }

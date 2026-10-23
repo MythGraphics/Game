@@ -27,6 +27,8 @@ import static graphic.io.ImageUtility.scale;
 import static graphic.io.ImageUtility.stretch;
 import graphic.tile.IsBlockTile;
 import graphic.tile.IsMoveableTile;
+import graphic.tile.Portal;
+import graphic.tile.PortalList;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -51,7 +53,6 @@ import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 import javax.swing.Timer;
-import util.CycleList;
 
 public abstract class GameMap extends JPanel implements ActionListener, IsCollisionHandler {
 
@@ -75,7 +76,7 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
     protected final Collection<IsMoveableTile>  garbageS            = new HashSet<>(); // MoveableTiles, die entfernt werden sollen
     protected final Collection<IsMissile>       garbageM            = new HashSet<>(); // Missiles, die entfernt werden sollen
     protected final Collection<Renderable>      garbageR            = new HashSet<>(); // Renderables, die entfernt werden sollen
-    protected final CycleList<Point>            portals             = new CycleList<>();
+    protected final PortalList                  portals             = new PortalList();
 
     protected IsBlockType[] excludedBlockTypes = DEFAULT_EXCLUDE;
     protected IsBlockTile emptyTile;
@@ -228,11 +229,7 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
             }
             case SPACE          -> emptyTile = tile;
             case SPACEHOLDER    -> {}
-            case PORTAL         ->
-            {
-                portals.add( new Point( x, y ));
-                add(tile);
-            }
+            case PORTAL         -> add( new Portal( getRandomSpace(), tile ));
             default             -> add(tile);
         }
     }
@@ -313,6 +310,10 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
         collisionListeners.add(actionListener);
     }
 
+    public List<Portal> getPortalList() {
+        return portals;
+    }
+
     /**
      * Holt den Block an gegebener Position aus den staticCollidables und nur von dort.
      * @param col   Spalte
@@ -368,17 +369,7 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
         return null;
     }
 
-    public List<Point> getPortalList() {
-        return portals;
-    }
-
-    public void moveThroughPortal(IsMoveableBlock block) {
-/*
-        if (portals.size() >= 2) {
-            // nur sinnvoll für min. 2 Portale
-            moveThroughPortal( block, portals.getNext() );
-        }
- */
+    public Point getRandomSpace() {
         Point pa = new Point();
         Point pb = new Point();
         boolean occupied;
@@ -396,7 +387,7 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
                 }
             }
         } while (occupied);
-        block.setPos(pa.x, pa.y);
+        return pa;
     }
 
     public void moveThroughPortal(IsMoveableBlock block, Point targetPos) {
@@ -716,8 +707,11 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
                 renderables.add(r);
             }
         }
+        if (obj instanceof Portal portal) {
+            portals.add(portal);
+        }
         switch (obj) {
-            // CAVE: Reihenfolge nicht ändern!
+            // CAVE: Reihenfolge ist essentiell - nicht ändern!
             case IsMissile missile       -> missiles.add(missile);
             case IsMoveableTile moveable -> scurryables.add(moveable);
             case Collidable collidable   -> staticCollidables.add(collidable);
@@ -741,6 +735,9 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
         }
         if (obj instanceof Collidable collidable) {
             garbageC.add(collidable);
+        }
+        if (obj instanceof Portal portal) {
+            portals.remove(portal);
         }
     }
 

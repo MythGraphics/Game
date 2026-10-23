@@ -22,22 +22,31 @@ import java.awt.image.BufferedImage;
 
 public class Portal implements IsBlockTile {
 
+    public final int DEFAULT_COLLISION_DELAY = 30;
+
     private final IsBlockTile tile;
 
-    private Point target = new Point(0,0);
+    private Point target = new Point();
     private Portal other;
     private boolean targetIsOtherPortal;
     private boolean active = true;
+    private int collisionDelay = 0;
 
-    public Portal(IsBlockTile tile, Point target) {
+    public Portal(Point target, IsBlockTile tile) {
         this.tile           = tile;
         this.target         = target;
         targetIsOtherPortal = false;
     }
 
+    public Portal(int x, int y, IsBlockTile tile) {
+        this.tile           = tile;
+        this.target.x       = x;
+        this.target.y       = y;
+        targetIsOtherPortal = false;
+    }
+
     public Portal(IsBlockTile tile, Portal other) {
-        this.tile  = tile;
-        this.other = other;
+        this.tile = tile;
         setTarget(other);
     }
 
@@ -49,23 +58,30 @@ public class Portal implements IsBlockTile {
         return active;
     }
 
-    public final void setTarget(Portal other) {
-        this.other          = other;
-        targetIsOtherPortal = true;
-        active              = true;
-        other.active        = true;
+    public void setCollisionDelay(int delay) {
+        this.collisionDelay = delay;
     }
 
-    public void setTarget(Point p) {
-        target.x = p.x;
-        target.y = p.y;
-        targetIsOtherPortal = false;
+    public final void setTarget(Portal other) {
+        targetIsOtherPortal     = true;
+        if (other != null) {
+            this.other          = other;
+            active              = true;
+            other.active        = true;
+        } else {
+            this.other          = this;
+            active              = false;
+        }
     }
 
     public void setTarget(int x, int y) {
+        targetIsOtherPortal = false;
         target.x = x;
         target.y = y;
-        targetIsOtherPortal = false;
+    }
+
+    public IsBlockTile getTile() {
+        return tile;
     }
 
     public Point getTargetAsPoint() {
@@ -73,7 +89,7 @@ public class Portal implements IsBlockTile {
     }
 
     public Portal getTargetAsPortal() {
-        return targetIsOtherPortal ? other : new Portal(tile, target);
+        return targetIsOtherPortal ? other : new Portal(target, tile);
     }
 
     @Override
@@ -81,18 +97,34 @@ public class Portal implements IsBlockTile {
         tile.draw(g2d, offsetX, offsetY);
     }
 
+    public void moveThrough(IsMoveableBlock block) {
+        if (targetIsOtherPortal) {
+            Portal destination = getTargetAsPortal();
+            destination.setCollisionDelay(DEFAULT_COLLISION_DELAY);
+            block.setPos( destination.getX(), destination.getY() );
+        } else {
+            Point destination = getTargetAsPoint();
+            block.setPos(destination.x, destination.y);
+        }
+    }
+
     @Override
     public boolean onCollision(Collidable initiator, GameMap map, IsCollisionHandler handler) {
-        if (initiator instanceof IsMoveableBlock m) {
+        if (!active) {
+            return tile.onCollision(initiator, map, handler);
+        }
+
+        if (collisionDelay > 0) {
+            --collisionDelay;
+            return true;
+        }
+
+        if (initiator instanceof IsMoveableBlock block) {
             if (targetIsOtherPortal) {
-                if (active) {
-                    other.setActive(false);
-                    m.setPos( other.getX(), other.getY() );
-                } else {
-                    return true;
-                }
+                other.setCollisionDelay(DEFAULT_COLLISION_DELAY);
+                block.setPos( other.getX(), other.getY() );
             } else {
-                m.setPos(target.x, target.y);
+                block.setPos(target.x, target.y);
             }
         }
         return tile.onCollision(initiator, map, handler);

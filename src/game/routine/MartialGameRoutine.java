@@ -14,8 +14,7 @@ package game.routine;
 import game.GameFrame;
 import game.resource.Resource;
 import graphic.AutoMoveable;
-import static graphic.block.InteractionType.ENEMY;
-import static graphic.block.InteractionType.PLAYER;
+import static graphic.block.InteractionType.*;
 import graphic.map.CollisionEvent;
 import graphic.map.GameMap;
 import graphic.tile.IsDeadOrAliveTile;
@@ -40,28 +39,30 @@ public class MartialGameRoutine extends DefaultGameRoutine {
 
     @Override
     public void collisionPerformed(CollisionEvent e) {
-        if ( e.initiator instanceof IsDeadOrAliveTile doat ) {
-            if ( !doat.isAlive() ) {
-                return;
-            }
-            System.out.println( e.initiator.getBlockType() + " hit " + e.target.getBlockType() );
-            attack(doat, 10);
-        }
 //      System.out.println( e.initiator.getClass().getName() + " --> " + e.target.getClass().getName() ); // debug
         switch( e.getType() ) {
+            case CORPSE -> { return; }
+            case PORTAL -> { return; }
             case PLAYER -> {
-                if ( e.target instanceof IsDeadOrAliveTile doat ) {
+                if (e.target instanceof IsDeadOrAliveTile doat) {
                     System.out.println( "Player hit by " + e.getInitiator().getBlockType() );
                     attack(doat, 10);
                 }
             }
             case ENEMY -> {
-                if ( e.target instanceof IsDeadOrAliveTile doat ) {
+                if (e.target instanceof IsDeadOrAliveTile doat) {
                     System.out.println( "Enemy hit by " + e.getInitiator().getBlockType() );
                     attack(doat, 10);
                 }
             }
             default -> super.collisionPerformed(e);
+        }
+        if (e.initiator instanceof IsDeadOrAliveTile doat) {
+            if ( !doat.isAlive() ) {
+                return;
+            }
+            System.out.println( e.initiator.getBlockType() + " hit " + e.target.getBlockType() );
+            attack(doat, 10);
         }
     }
 

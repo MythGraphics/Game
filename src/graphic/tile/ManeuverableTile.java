@@ -15,55 +15,78 @@ import graphic.Direction;
 import static graphic.Direction.*;
 import graphic.DirectionalImage;
 import graphic.block.IsBlockType;
-import graphic.map.HasMaxPoint;
+import graphic.map.HasMinMaxPoint;
 import java.awt.Dimension;
 import java.awt.Point;
 
 // Player
 @SuppressWarnings("CloneableImplementsClone")
-public class ManeuverableTile extends BlockTile implements IsManeuverableTile, HasMaxPoint {
+public class ManeuverableTile extends BlockTile implements IsManeuverableTile, HasMinMaxPoint {
 
     public final DirectionalImage imgset;
-    public final Point maxPoint;
+    public final Point min; // start
+    public final Point max;
     public final int stepSize;
 
     public ManeuverableTile(int x, int y, IsBlockType bType,
-                        int stepSize, Point maxPoint, DirectionalImage imgset) {
+                            int stepSize, Point max, DirectionalImage imgset) {
         super( x, y, bType, () -> imgset.getImage() );
-        this.imgset   = imgset;
-        this.maxPoint = maxPoint;
-        this.stepSize = stepSize;
+        this.imgset     = imgset;
+        this.min        = new Point(x, y);
+        this.max        = max;
+        this.stepSize   = stepSize;
     }
 
     public ManeuverableTile(int x, int y, int width, int height, IsBlockType bType,
-                        int stepSize, Point maxPoint, DirectionalImage imgset) {
+                            int stepSize, Point max, DirectionalImage imgset) {
         super( x, y, width, height, bType, () -> imgset.getImage() );
-        this.imgset   = imgset;
-        this.maxPoint = maxPoint;
-        this.stepSize = stepSize;
+        this.imgset     = imgset;
+        this.min        = new Point(x, y);
+        this.max        = max;
+        this.stepSize   = stepSize;
     }
 
-    public ManeuverableTile(Point pos, Dimension dim, IsBlockType bType,
-                        int stepSize, Point maxPoint, DirectionalImage imgset) {
-        this(pos.x, pos.y, dim.width, dim.height, bType, stepSize, maxPoint, imgset);
+    public ManeuverableTile(Point start, Dimension dim, IsBlockType bType,
+                            int stepSize, Point max, DirectionalImage imgset) {
+        super( start.x, start.y, dim.width, dim.height, bType, () -> imgset.getImage() );
+        this.imgset     = imgset;
+        this.min        = start;
+        this.max        = max;
+        this.stepSize   = stepSize;
     }
 
     public int getStepSize() {
         return stepSize;
     }
 
+    @Override
+    public int getMinX() {
+        return min.x;
+    }
+
+    @Override
+    public int getMinY() {
+        return min.y;
+    }
+
+    @Override
+    public Point getMinPoint() {
+        return min;
+    }
+
+    @Override
     public Point getMaxPoint() {
-        return maxPoint;
+        return max;
     }
 
     @Override
     public int getMaxX() {
-        return maxPoint.x;
+        return max.x;
     }
 
     @Override
     public int getMaxY() {
-        return maxPoint.y;
+        return max.y;
     }
 
     @Override
@@ -98,7 +121,6 @@ public class ManeuverableTile extends BlockTile implements IsManeuverableTile, H
         if (direction == null) {
             return;
         }
-
         imgset.setDirection(direction);
     }
 
@@ -114,10 +136,10 @@ public class ManeuverableTile extends BlockTile implements IsManeuverableTile, H
 
         // Bewegungslogik
         switch (direction) {
-            case UP    -> { if (y - stepSize >= 0)          { y -= stepSize; }}
-            case DOWN  -> { if (y + stepSize <= maxPoint.y) { y += stepSize; }}
-            case LEFT  -> { if (x - stepSize >= 0)          { x -= stepSize; }}
-            case RIGHT -> { if (x + stepSize <= maxPoint.x) { x += stepSize; }}
+            case UP    -> { if (y - stepSize >= min.y)  { y -= stepSize; }}
+            case DOWN  -> { if (y + stepSize <= max.y)  { y += stepSize; }}
+            case LEFT  -> { if (x - stepSize >= min.x)  { x -= stepSize; }}
+            case RIGHT -> { if (x + stepSize <= max.x)  { x += stepSize; }}
         }
     }
 

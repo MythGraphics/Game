@@ -12,10 +12,15 @@ package graphic.map;
  */
 
 import graphic.Moveable;
+import java.awt.Point;
 
-public interface HasMaxPoint extends Moveable {
+public interface HasMinMaxPoint extends Moveable {
 
     int getMaxX();
     int getMaxY();
+    int getMinX();
+    int getMinY();
+    Point getMinPoint();
+    Point getMaxPoint();
 
 }
