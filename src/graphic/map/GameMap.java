@@ -443,7 +443,7 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
     }
 
     /**
-     * Setzt den Block an die angegebene x-y-Koordinate.
+     * Setzt den Block auf die angegebene x-y-Koordinate.
      * Die Kollisionserkennung wird sofort nach dem Umsetzen ausgeführt.
      * @param moveableBlock zu versetzender, beweglicher Block
      * @param x             x-Koordinate

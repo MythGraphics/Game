@@ -62,6 +62,10 @@ public class Portal implements IsBlockTile {
         this.collisionDelay = delay;
     }
 
+    public void setRandomTarget(GameMap map) {
+        target = map.getRandomSpace();
+    }
+
     public final void setTarget(Portal other) {
         targetIsOtherPortal     = true;
         if (other != null) {
