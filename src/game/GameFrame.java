@@ -580,7 +580,9 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
                 System.err.println(CMD_ARGS_ERROR);
                 return;
             }
-            map.setPlayerPosition( Integer.parseInt( tokenizer.nextToken() ), Integer.parseInt( tokenizer.nextToken() ));
+            map.setPlayerPositionColRow(
+                Integer.parseInt( tokenizer.nextToken() ), Integer.parseInt( tokenizer.nextToken() )
+            );
         });
         remote.addCommand("textframe", args -> {
             StringTokenizer tokenizer = new StringTokenizer(args, " ", false);

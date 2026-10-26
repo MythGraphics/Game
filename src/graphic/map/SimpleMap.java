@@ -55,7 +55,6 @@ public abstract class SimpleMap extends GameMap {
                             " sein."
                         );
                     }
-                    savePlayerPosition(x, y);
                 } catch (NoSuchFieldException ignore) {}
             }
             default -> super.loadTileMapChar(tileMapChar, x, y, tileSize);

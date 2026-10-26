@@ -19,6 +19,7 @@ import graphic.missileLauncher.IsMissile;
 import graphic.missileLauncher.MissileLauncher;
 import graphic.tile.BlockTile;
 import graphic.tile.IsMoveableTile;
+import util.vector.Vector2f;
 
 @SuppressWarnings("CloneableImplementsClone")
 public class VectorMissile extends BlockTile implements HasDirectionAngle, IsMoveableTile, IsMissile {
@@ -26,7 +27,7 @@ public class VectorMissile extends BlockTile implements HasDirectionAngle, IsMov
     private final VectorRecord vec;
     private final MissileLauncher source;
 
-    private int armingDelayFrames = 10;
+    private int armingDelay = 10;
 
     public VectorMissile(float angle, int x, int y, IsBlockType bType, float missileSpeed, MissileLauncher source) {
 //      super( x, y, vec.width(), vec.height(), bType, source.getMissileImage() );
@@ -47,7 +48,7 @@ public class VectorMissile extends BlockTile implements HasDirectionAngle, IsMov
 
     @Override
     public float getMoveAngle() {
-        return VectorBlock.getAngleFromVelocity( vec.vx(), vec.vy() );
+        return Vector2f.getAngle( vec.vx(), vec.vy() );
     }
 
     @Override
@@ -57,8 +58,8 @@ public class VectorMissile extends BlockTile implements HasDirectionAngle, IsMov
 
     @Override
     public void move() {
-        if (armingDelayFrames > 0) {
-            --armingDelayFrames;
+        if (armingDelay > 0) {
+            --armingDelay;
         }
         super.x += vec.vx();
         super.y += vec.vy();
@@ -71,7 +72,7 @@ public class VectorMissile extends BlockTile implements HasDirectionAngle, IsMov
 
     @Override
     public void collidesWith(Collidable target, GameMap map) {
-        if (armingDelayFrames > 0) {
+        if (armingDelay > 0) {
             return;
         }
         map.remove(this);

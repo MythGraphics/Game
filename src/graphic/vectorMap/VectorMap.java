@@ -15,9 +15,11 @@ import graphic.block.Collidable;
 import graphic.block.DefaultBlockType;
 import static graphic.block.DefaultBlockType.PLAYER;
 import graphic.block.IsBlockType;
+import graphic.block.IsMoveableBlock;
 import graphic.map.GameMap;
 import graphic.map.MapRecord;
 import graphic.tile.IsBlockTile;
+import java.awt.Point;
 import java.awt.event.KeyEvent;
 
 public abstract class VectorMap extends GameMap {
@@ -72,6 +74,11 @@ public abstract class VectorMap extends GameMap {
     }
 
     @Override
+    public void moveThroughPortal(IsMoveableBlock moveableBlock, int x, int y) {
+        moveableBlock.setPos(x, y);
+    }
+
+    @Override
     public void movePlayer(KeyEvent evt) {
         if ( !isActive() ) {
             return;
@@ -109,7 +116,7 @@ public abstract class VectorMap extends GameMap {
     public void resetPlayerPosition() {
         // Implementierung über Collidable->onCollision möglich
         if (lastImpassableCollisionTarget != null) {
-            VectorBlock.applyWallCollision(player, lastImpassableCollisionTarget);
+            IsVectorBlock.applyWallCollision(player, lastImpassableCollisionTarget);
             lastImpassableCollisionTarget = null;
         }
     }
