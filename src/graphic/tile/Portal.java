@@ -67,14 +67,14 @@ public class Portal implements IsBlockTile {
     }
 
     public final void setTarget(Portal other) {
-        targetIsOtherPortal     = true;
+        targetIsOtherPortal = true;
         if (other != null) {
-            this.other          = other;
-            active              = true;
-            other.active        = true;
+            this.other      = other;
+            active          = true;
+            other.active    = true;
         } else {
-            this.other          = this;
-            active              = false;
+            this.other      = this;
+            active          = false;
         }
     }
 

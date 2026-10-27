@@ -26,7 +26,6 @@ import static graphic.map.GameMap.loadStretchedImage;
 import graphic.missileLauncher.DefaultMissileLauncher;
 import graphic.tile.*;
 import java.awt.Color;
-import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.Map;

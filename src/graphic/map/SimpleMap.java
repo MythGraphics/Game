@@ -90,7 +90,7 @@ public abstract class SimpleMap extends GameMap {
         System.out.println("wsad / 8246 (numpad): move player");
         System.out.println("qe / 79 (numpad): move player sideways without changing view direction");
         System.out.println("rf / 31 (numpad): move player up/down without changing view direction");
-        System.out.println("arrow keys: tilt player: change players view direction without moving");
+        System.out.println("arrow keys: tilt player: change players view direction only");
     }
 
 }

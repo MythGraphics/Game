@@ -19,7 +19,6 @@ import graphic.block.IsMoveableBlock;
 import graphic.map.GameMap;
 import graphic.map.MapRecord;
 import graphic.tile.IsBlockTile;
-import java.awt.Point;
 import java.awt.event.KeyEvent;
 
 public abstract class VectorMap extends GameMap {
@@ -91,6 +90,13 @@ public abstract class VectorMap extends GameMap {
         }
     }
 
+    public static void printKeyBindings() {
+        System.out.println("w / 8 (numpad) / Arrow-Key UP:    thrust");
+        System.out.println("s / 2 (numpad) / Arrow-Key DOWN:  reverse thrust");
+        System.out.println("a / 4 (numpad) / Arrow-Key LEFT:  rotate left");
+        System.out.println("d / 6 (numpad) / Arrow-Key RIGHT: rotate right");
+    }
+
     @Override
     public boolean isOutOfMap(Collidable collider) {
         boolean collision = super.isOutOfMap(collider);
@@ -103,13 +109,6 @@ public abstract class VectorMap extends GameMap {
             }
         }
         return collision;
-    }
-
-    public static void printKeyBindings() {
-        System.out.println("w / 8 (numpad) / Arrow-Key UP:    thrust");
-        System.out.println("s / 2 (numpad) / Arrow-Key DOWN:  reverse thrust");
-        System.out.println("a / 4 (numpad) / Arrow-Key LEFT:  rotate left");
-        System.out.println("d / 6 (numpad) / Arrow-Key RIGHT: rotate right");
     }
 
     @Override
