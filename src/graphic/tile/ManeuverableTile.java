@@ -14,8 +14,8 @@ package graphic.tile;
 import graphic.Direction;
 import static graphic.Direction.*;
 import graphic.DirectionalImage;
+import graphic.block.HasMinMaxPoint;
 import graphic.block.IsBlockType;
-import graphic.map.HasMinMaxPoint;
 import java.awt.Dimension;
 import java.awt.Point;
 

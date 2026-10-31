@@ -4,14 +4,14 @@
 
 package graphic.vectorMap;
 
-import graphic.block.IsBlock;
-
 /**
  *
  * @author  Martin Pröhl alias MythGraphics
  * @version 1.0.0
  *
  */
+
+import graphic.block.IsBlock;
 
 public interface IsVectorBlock {
 

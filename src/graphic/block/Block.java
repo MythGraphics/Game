@@ -16,12 +16,16 @@ import graphic.map.IsCollisionHandler;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Block implements Collidable {
 
     protected int x, y;
     protected int width, height;
     protected IsBlockType bType;
+
+    private final Map<Class<?>, Object> components = new HashMap<>();
 
     public Block(int x, int y, int width, int height, IsBlockType bType) {
         this.x = x;
@@ -33,6 +37,18 @@ public class Block implements Collidable {
 
     public Block(int x, int y, int blockSize, IsBlockType bType) {
         this(x, y, blockSize, blockSize, bType);
+    }
+
+    public <T> void addComponent(T component) {
+        components.put(component.getClass(), component);
+    }
+
+    public <T> T getComponent(Class<T> type) {
+        return type.cast( components.get( type ));
+    }
+
+    public <T> boolean hasComponent(Class<T> type) {
+        return components.containsKey(type);
     }
 
     public Rectangle getBounds() {

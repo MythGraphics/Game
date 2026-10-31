@@ -112,6 +112,10 @@ public class VectorBlock extends Block implements IsDeadOrAliveTile, VectorMovea
         this.vy = vy;
     }
 
+    public float getVmax() {
+        return vmax;
+    }
+
     @Override
     public boolean isHeavy() {
         return heavy;
@@ -187,7 +191,7 @@ public class VectorBlock extends Block implements IsDeadOrAliveTile, VectorMovea
 
     /**
      * Beschleunigt in Sicht-Richtung.
-     * @param dv delta-v
+     * @param dv delta-velocity
      */
     @Override
     public void accelerate(float dv) {
@@ -195,20 +199,8 @@ public class VectorBlock extends Block implements IsDeadOrAliveTile, VectorMovea
         this.vy = Math.clamp((float) (vy + Math.sin(rotAngle) * dv), -vmax, vmax);
     }
 
-    public float getSpeedX() {
-        return vx;
-    }
-
-    public float getSpeedY() {
-        return vy;
-    }
-
     public float getSpeed() {
         return (float) Math.sqrt(vx*vx + vy*vy);
-    }
-
-    public float getMaxSpeed() {
-        return vmax;
     }
 
     public void drawOverlay(boolean b) {
