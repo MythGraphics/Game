@@ -15,10 +15,11 @@ import graphic.HasImage;
 import graphic.block.IsBlockType;
 import java.awt.image.BufferedImage;
 
-public record VectorTileRecord(IsBlockType blockType, BufferedImage getImage, boolean isSymmetric) implements HasImage {
+public record VectorTileRecord(IsBlockType blockType, HasImage image, boolean isSymmetric) implements HasImage {
 
-    public static VectorTileRecord build(IsBlockType bType, HasImage image) {
-        return new VectorTileRecord(bType, image.getImage(), true);
+    @Override
+    public BufferedImage getImage() {
+        return image.getImage();
     }
 
 }

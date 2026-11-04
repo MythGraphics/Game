@@ -21,10 +21,16 @@ public class VectorMovementComponent implements Moveable {
     protected float vx      = 0;
     protected float vy      = 0;
     protected float vmax    = 0;
+    protected float rota    = 0; // rotationAngle, radiant, 0.0f: RIGHT
     protected boolean heavy = false; // "schwere" Blöcke übertragen Impuls, "leichte" nicht
 
     public VectorMovementComponent(float vmax, boolean heavy) {
+        this(vmax, 0, heavy);
+    }
+
+    public VectorMovementComponent(float vmax, float rotAngle, boolean heavy) {
         this.vmax   = vmax;
+        this.rota   = rotAngle;
         this.heavy  = heavy;
     }
 
@@ -62,6 +68,15 @@ public class VectorMovementComponent implements Moveable {
 
     public float getVmax() {
         return vmax;
+    }
+
+    public void rotate(float phi) {
+        rota += phi;
+        rota  = Vector2f.normalizeAngle(rota);
+    }
+
+    public float getViewAngle() {
+        return rota;
     }
 
     public float getMoveAngle() {

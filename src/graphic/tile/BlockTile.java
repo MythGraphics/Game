@@ -29,9 +29,13 @@ public class BlockTile extends Block implements IsBlockTile, Cloneable {
         this(blockTile.x, blockTile.y, blockTile.width, blockTile.height, blockTile.bType, blockTile);
     }
 
+    public BlockTile(TileRecord rec) {
+        this(rec.x(), rec.y(), rec.width(), rec.height(), rec.bType(), rec);
+    }
+
     public BlockTile(int x, int y, IsBlockType bType, HasImage image) {
         this(x, y, 0, bType, image);
-        updateDimension();
+        updateDimensionFromImage();
     }
 
     public BlockTile(int x, int y, int tileSize, IsBlockType bType, HasImage image) {
@@ -47,6 +51,10 @@ public class BlockTile extends Block implements IsBlockTile, Cloneable {
         this(pos.x, pos.y, dim.width, dim.height, bType, image);
     }
 
+    public BlockTile(Point pos, IsBlockType bType, HasImage image) {
+        this(pos.x, pos.y, bType, image);
+    }
+
     @Override
     public BufferedImage getImage() {
         return image.getImage();
@@ -60,7 +68,7 @@ public class BlockTile extends Block implements IsBlockTile, Cloneable {
         }
     }
 
-    public final void updateDimension() {
+    public final void updateDimensionFromImage() {
         BufferedImage img = getImage();
         if (img != null) {
             setWidth(  img.getWidth()  );

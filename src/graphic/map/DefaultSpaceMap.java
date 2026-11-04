@@ -93,12 +93,12 @@ public class DefaultSpaceMap extends VectorMap {
         for (int i = 0; i < ships.length; ++i) {
             ships[i] = TilesetUtility.scaleImageSet(builder.getTileSet(4), tileSize);
         }
-        imgMap.put( ENEMY, () -> ships[0][2] );
+        imgMap.put(ENEMY, () -> ships[0][2]);
 
-        playerVec  = new VectorRecord(
+        playerVec = new VectorRecord(
             1.0f, -1.0f, 10.0f, (float) -Math.PI/4.0f, DEFAULT_TILE_SIZE, DEFAULT_TILE_SIZE, true
         );
-        playerTile = new VectorTileRecord(PLAYER, ships[7][1], false);
+        playerTile = new VectorTileRecord(PLAYER, () -> ships[7][1], false);
     }
 
     @Override
@@ -110,7 +110,7 @@ public class DefaultSpaceMap extends VectorMap {
                     player, imgMap.get(MISSILE), missileResource, 10
                 ));
                 player.setOverlayResource(playerHealth);
-                player.setDeadTile( VectorTileRecord.build( CORPSE, imgMap.get( CORPSE )));
+                player.setDeadTile( new VectorTileRecord( CORPSE, imgMap.get( CORPSE ), true ));
                 return player;
             case ENEMY:
                 DeadOrAliveTileDecorator<BlockTile> enemyTile = new DeadOrAliveTileDecorator<>(

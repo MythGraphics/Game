@@ -14,7 +14,7 @@ package graphic.vectorMap;
 import game.resource.Resource;
 import graphic.block.Block;
 import graphic.block.Collidable;
-import static graphic.block.DefaultBlockType.CORPSE_PLAYER;
+import static graphic.block.DefaultBlockType.CORPSE;
 import static graphic.block.DefaultBlockType.NONE;
 import graphic.block.IsBlockType;
 import graphic.map.GameMap;
@@ -43,8 +43,8 @@ public class VectorBlock extends Block implements IsDeadOrAliveTile, VectorMovea
     private boolean alive               = true;
     private boolean drawOverlay         = false;
     private boolean moveable            = true;
-    private VectorTileRecord aliveTile  = new VectorTileRecord(NONE,          null, true);
-    private VectorTileRecord deadTile   = new VectorTileRecord(CORPSE_PLAYER, null, true);
+    private VectorTileRecord aliveTile  = new VectorTileRecord(NONE,   null, true);
+    private VectorTileRecord deadTile   = new VectorTileRecord(CORPSE, null, true);
     private Resource overlayResource;
     private MissileLauncher launcher;
 

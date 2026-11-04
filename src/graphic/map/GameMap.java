@@ -122,6 +122,7 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
     public abstract Color getAmbientColor();
     public abstract void movePlayer(KeyEvent evt);
     public abstract IsMoveableTile getPlayer();
+    public abstract void printKeyBindings();
 
     public static BufferedImage loadStretchedImage(String imgPath) {
         return stretch( loadImage( imgPath ), DEFAULT_TILE_SIZE, DEFAULT_TILE_SIZE, false );

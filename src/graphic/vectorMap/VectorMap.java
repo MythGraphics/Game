@@ -90,7 +90,8 @@ public abstract class VectorMap extends GameMap {
         }
     }
 
-    public static void printKeyBindings() {
+    @Override
+    public void printKeyBindings() {
         System.out.println("w / 8 (numpad) / Arrow-Key UP:    thrust");
         System.out.println("s / 2 (numpad) / Arrow-Key DOWN:  reverse thrust");
         System.out.println("a / 4 (numpad) / Arrow-Key LEFT:  rotate left");

@@ -13,9 +13,9 @@ package graphic.component;
 
 import graphic.block.Block;
 
-@FunctionalInterface
-public interface Updateable_unused {
+public interface IsBlockComponent {
 
-    void update(Block owner);
+    default void updateOnEvent(Block owner) {}
+    default void updateOnFrame(Block owner) {}
 
 }

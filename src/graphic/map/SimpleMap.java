@@ -86,7 +86,8 @@ public abstract class SimpleMap extends GameMap {
         detectCollision(player);
     }
 
-    public static void printKeyBindings() {
+    @Override
+    public void printKeyBindings() {
         System.out.println("wsad / 8246 (numpad): move player");
         System.out.println("qe / 79 (numpad): move player sideways without changing view direction");
         System.out.println("rf / 31 (numpad): move player up/down without changing view direction");

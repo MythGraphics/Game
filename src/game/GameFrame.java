@@ -28,7 +28,6 @@ import graphic.io.ImageUtility;
 import graphic.map.*;
 import graphic.missileLauncher.HasMissileLauncher;
 import graphic.texter.TextFrame;
-import graphic.vectorMap.HasDirectionAngle;
 import graphic.vectorMap.VectorBlock;
 import java.awt.Color;
 import java.awt.Graphics;
@@ -483,7 +482,7 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
         if (loadCmdInput) {
             // Fernsteuerung aktiv
             routine = new DefaultGameRoutine(this, map);
-            // kein CollisionActionListener erforderlich
+            // keine ActionListener registrieren, keine Ausgabe der KeyBindings
             return true;
         }
 
@@ -498,7 +497,16 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
             return false;
         }
 
+        // print key bindings
+        System.out.println();
+        printKeyBindings();
+        System.out.println("Map:");
+        map.printKeyBindings();
+        System.out.println();
+
+        // ActionListener registrieren
         map.addCollisionActionListener(routine);
+
         return true;
     }
 
@@ -768,7 +776,6 @@ public class GameFrame extends JFrame implements ItemEffectListener, ItemActionL
         System.out.println("-: decrease audio volume");
         System.out.println("0/space: fire missile");
         System.out.println();
-        SimpleMap.printKeyBindings();
     }
 
     private void addItem(UsableItem item) {

@@ -11,10 +11,9 @@ package graphic.block;
  *
  */
 
-import graphic.Moveable;
 import java.awt.Point;
 
-public interface HasMinMaxPoint extends Moveable {
+public interface HasMinMaxPoint {
 
     int getMaxX();
     int getMaxY();

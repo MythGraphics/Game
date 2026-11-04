@@ -16,12 +16,9 @@ import game.Player;
 import game.resource.Resource;
 import static game.resource.Resource.ResourceType.CREDIT;
 import static graphic.block.InteractionType.EXIT;
-import static graphic.block.InteractionType.PORTAL;
-import graphic.block.IsMoveableBlock;
 import graphic.map.CollisionEvent;
 import graphic.map.GameMap;
 import graphic.texter.DialogOutputListener;
-import graphic.tile.Portal;
 
 public class DefaultGameRoutine extends GameRoutine {
 
@@ -76,7 +73,6 @@ public class DefaultGameRoutine extends GameRoutine {
     public void collisionPerformed(CollisionEvent e) {
         switch( e.getType() ) {
             case EXIT   -> (( GameMap ) e.getSource() ).deactivate();
-
             default     -> super.collisionPerformed(e);
         }
     }

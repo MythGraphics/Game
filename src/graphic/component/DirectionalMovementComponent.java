@@ -39,7 +39,14 @@ public class DirectionalMovementComponent implements Moveable {
     public void move(Block owner) {
         int x = owner.getX();
         int y = owner.getY();
-        if (owner instanceof HasMinMaxPoint minmax) {
+        HasMinMaxPoint minmax = null;
+        if (this instanceof HasMinMaxPoint hasMinMaxPoint) {
+            minmax = hasMinMaxPoint;
+        }
+        else if (owner instanceof HasMinMaxPoint hasMinMaxPoint) {
+            minmax = hasMinMaxPoint;
+        }
+        if (minmax != null) {
             int minX = minmax.getMinX();
             int minY = minmax.getMinY();
             int maxX = minmax.getMaxX();
