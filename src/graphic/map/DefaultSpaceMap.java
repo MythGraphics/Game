@@ -26,10 +26,7 @@ import static graphic.io.TilesetUtility.scaleImageSet;
 import static graphic.map.GameMap.DEFAULT_TILE_SIZE;
 import graphic.missileLauncher.ResourceDependentMissileLauncher;
 import graphic.tile.*;
-import graphic.vectorMap.VectorBlock;
-import graphic.vectorMap.VectorMap;
-import graphic.vectorMap.VectorRecord;
-import graphic.vectorMap.VectorTileRecord;
+import graphic.vectorMap.*;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
@@ -75,7 +72,6 @@ public class DefaultSpaceMap extends VectorMap {
         );
         portalAni = new AnimationPlayer(portalAniData);
         portalAni.slowDown();
-        imgMap.put(PORTAL, portalAni);
 
         AnimationData missileAniData = new AnimationData(
             scaleImageSet(
@@ -120,7 +116,7 @@ public class DefaultSpaceMap extends VectorMap {
                 enemyTile.setDeadTile( CORPSE, imgMap.get( CORPSE ));
                 return enemyTile;
             case PORTAL:
-                return new BlockTile( x, y, tileSize, bType, new AnimationPlayer( portalAni ));
+                return new VectorPortal( new BlockTile( x, y, tileSize, bType, new AnimationPlayer( portalAni )));
             default:
                 return new BlockTile( x, y, tileSize, bType, imgMap.get( bType ));
         }

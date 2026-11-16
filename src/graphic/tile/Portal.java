@@ -22,7 +22,7 @@ import java.awt.image.BufferedImage;
 
 public class Portal implements IsBlockTile {
 
-    public final int DEFAULT_COLLISION_DELAY = 30;
+    public final static int DEFAULT_COLLISION_DELAY = 30;
 
     private final IsBlockTile tile;
 
@@ -30,15 +30,19 @@ public class Portal implements IsBlockTile {
     private Portal other;
     private boolean targetIsOtherPortal;
     private boolean active = true;
-    private int collisionDelay = 0;
 
-    public Portal(Point target, IsBlockTile tile) {
+    public Portal(IsBlockTile tile) {
+        this.tile   = tile;
+        this.active = false;
+    }
+
+    public Portal(IsBlockTile tile, Point target) {
         this.tile           = tile;
         this.target         = target;
         targetIsOtherPortal = false;
     }
 
-    public Portal(int x, int y, IsBlockTile tile) {
+    public Portal(IsBlockTile tile, int x, int y) {
         this.tile           = tile;
         this.target.x       = x;
         this.target.y       = y;
@@ -58,10 +62,6 @@ public class Portal implements IsBlockTile {
         return active;
     }
 
-    public void setCollisionDelay(int delay) {
-        this.collisionDelay = delay;
-    }
-
     public void setRandomTarget(GameMap map) {
         target = map.getRandomSpace();
     }
@@ -78,10 +78,15 @@ public class Portal implements IsBlockTile {
         }
     }
 
+    public void setTarget(Point target) {
+        setTarget(target.x, target.y);
+    }
+
     public void setTarget(int x, int y) {
         targetIsOtherPortal = false;
-        target.x = x;
-        target.y = y;
+        target.x            = x;
+        target.y            = y;
+        active              = true;
     }
 
     public IsBlockTile getTile() {
@@ -93,7 +98,7 @@ public class Portal implements IsBlockTile {
     }
 
     public Portal getTargetAsPortal() {
-        return targetIsOtherPortal ? other : new Portal(target, tile);
+        return targetIsOtherPortal ? other : new Portal(tile, target);
     }
 
     @Override
@@ -104,7 +109,6 @@ public class Portal implements IsBlockTile {
     public void moveThrough(IsMoveableBlock block) {
         if (targetIsOtherPortal) {
             Portal destination = getTargetAsPortal();
-            destination.setCollisionDelay(DEFAULT_COLLISION_DELAY);
             block.setPos( destination.getX(), destination.getY() );
         } else {
             Point destination = getTargetAsPoint();
@@ -114,18 +118,8 @@ public class Portal implements IsBlockTile {
 
     @Override
     public boolean onCollision(Collidable initiator, GameMap map, IsCollisionHandler handler) {
-        if (!active) {
-            return tile.onCollision(initiator, map, handler);
-        }
-
-        if (collisionDelay > 0) {
-            --collisionDelay;
-            return true;
-        }
-
-        if (initiator instanceof IsMoveableBlock block) {
+        if (isActive() && initiator instanceof IsMoveableBlock block) {
             if (targetIsOtherPortal) {
-                other.setCollisionDelay(DEFAULT_COLLISION_DELAY);
                 block.setPos( other.getX(), other.getY() );
             } else {
                 block.setPos(target.x, target.y);

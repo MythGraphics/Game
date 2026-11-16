@@ -12,9 +12,10 @@ package graphic.component;
  */
 
 import graphic.block.Block;
+import graphic.vectorMap.HasDirectionAngle;
 import util.vector.Vector2f;
 
-public class VectorMovementComponent implements Moveable {
+public class VectorMovementComponent implements HasDirectionAngle, Moveable {
 
     protected float px      = 0;
     protected float py      = 0;
@@ -75,10 +76,12 @@ public class VectorMovementComponent implements Moveable {
         rota  = Vector2f.normalizeAngle(rota);
     }
 
+    @Override
     public float getViewAngle() {
         return rota;
     }
 
+    @Override
     public float getMoveAngle() {
         return Vector2f.getAngle(vx, vy);
     }

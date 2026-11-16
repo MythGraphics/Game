@@ -24,6 +24,7 @@ import graphic.missileLauncher.HasMissileLauncher;
 import graphic.missileLauncher.MissileLauncher;
 import graphic.tile.IsDeadOrAliveTile;
 import graphic.tile.IsMoveableTile;
+import graphic.tile.Portal;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
@@ -45,6 +46,7 @@ public class VectorBlock extends Block implements IsDeadOrAliveTile, VectorMovea
     private boolean moveable            = true;
     private VectorTileRecord aliveTile  = new VectorTileRecord(NONE,   null, true);
     private VectorTileRecord deadTile   = new VectorTileRecord(CORPSE, null, true);
+    private int portalCooldown          = 0;
     private Resource overlayResource;
     private MissileLauncher launcher;
 
@@ -203,10 +205,6 @@ public class VectorBlock extends Block implements IsDeadOrAliveTile, VectorMovea
         return (float) Math.sqrt(vx*vx + vy*vy);
     }
 
-    public void drawOverlay(boolean b) {
-        this.drawOverlay = b;
-    }
-
     @Override
     public MissileLauncher getMissileLauncher() {
         return launcher;
@@ -214,13 +212,6 @@ public class VectorBlock extends Block implements IsDeadOrAliveTile, VectorMovea
 
     public void setMissileLauncher(MissileLauncher launcher) {
         this.launcher = launcher;
-    }
-
-    @Override
-    public void drawOverlay(Graphics2D g2d, int offsetX, int offsetY) {
-        if (alive && drawOverlay) {
-            OverlayUtil.drawResourceBar(g2d, offsetX, offsetY, this, this);
-        }
     }
 
     @Override
@@ -250,6 +241,34 @@ public class VectorBlock extends Block implements IsDeadOrAliveTile, VectorMovea
     public void setOverlayResource(Resource overlayResource) {
         this.overlayResource = overlayResource;
         drawOverlay = overlayResource != null;
+    }
+
+    public void drawOverlay(boolean b) {
+        this.drawOverlay = b;
+    }
+
+    @Override
+    public void drawOverlay(Graphics2D g2d, int offsetX, int offsetY) {
+        if (alive && drawOverlay) {
+            OverlayUtil.drawResourceBar(g2d, offsetX, offsetY, this, this);
+        }
+    }
+
+    @Override
+    public void update() {
+        if (portalCooldown > 0) {
+            portalCooldown--;
+        }
+    }
+
+    @Override
+    public boolean isPortable() {
+        return portalCooldown <= 0;
+    }
+
+    @Override
+    public void resetPortalCooldown() {
+        portalCooldown = Portal.DEFAULT_COLLISION_DELAY;
     }
 
     @Override

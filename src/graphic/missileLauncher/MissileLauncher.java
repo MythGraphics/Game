@@ -78,7 +78,7 @@ public abstract class MissileLauncher {
         return fireMissile( map, source, launcher.getViewAngle() );
     }
 
-    public boolean  fireMissile(GameMap map, VectorBlock source, float angle) {
+    public boolean fireMissile(GameMap map, VectorBlock source, float angle) {
         if ( !hasMissile() ) {
             System.out.println(NOAMMO);
             return false;

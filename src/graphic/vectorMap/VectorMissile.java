@@ -27,7 +27,7 @@ public class VectorMissile extends BlockTile implements HasDirectionAngle, IsMov
     private final VectorRecord vec;
     private final MissileLauncher source;
 
-    private int armingDelay = 10;
+    private int collisionDelay = 5;
 
     public VectorMissile(float angle, int x, int y, IsBlockType bType, float missileSpeed, MissileLauncher source) {
 //      super( x, y, vec.width(), vec.height(), bType, source.getMissileImage() );
@@ -58,8 +58,8 @@ public class VectorMissile extends BlockTile implements HasDirectionAngle, IsMov
 
     @Override
     public void move() {
-        if (armingDelay > 0) {
-            --armingDelay;
+        if (collisionDelay > 0) {
+            --collisionDelay;
         }
         super.x += vec.vx();
         super.y += vec.vy();
@@ -72,16 +72,18 @@ public class VectorMissile extends BlockTile implements HasDirectionAngle, IsMov
 
     @Override
     public void collidesWith(Collidable target, GameMap map) {
-        if (armingDelay > 0) {
+        if (collisionDelay > 0) {
             return;
         }
         map.remove(this);
-        super.onCollision(target, map, map); // CAVE: Inversion der Kollisions-Kausalität: initiator <-> target
     }
 
     @Override
     public boolean onCollision(Collidable initiator, GameMap map, IsCollisionHandler handler) {
         // würde aufgerufen werden, wenn eine Rakete Ziel einer Kollision ist
+        if (collisionDelay > 0) {
+            return true;
+        }
         map.remove(this);
         return true;
     }

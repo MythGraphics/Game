@@ -41,7 +41,6 @@ public class Missile extends AutoMoveableTile implements IsMissile {
     @Override
     public void collidesWith(Collidable target, GameMap map) {
         map.remove(this);
-        super.onCollision(target, map, map); // CAVE: Inversion der Kollisions-Kausalität: initiator <-> target
     }
 
     @Override

@@ -15,6 +15,7 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -217,6 +218,11 @@ public class ImageUtility {
         return flippedImage;
     }
 
+    /**
+     * Rotiert das Bild um 90° nach rechts,
+     * @param source    Quellbild
+     * @return          rotiertes Bild
+     */
     public static BufferedImage rotateRight(BufferedImage source) {
         int width  = source.getWidth();
         int height = source.getHeight();
@@ -230,6 +236,35 @@ public class ImageUtility {
         g2d.dispose();
 
         return rotated;
+    }
+
+    /**
+     * Rotiert ein BufferedImage um den Mittelpunkt nach rechts (im Uhrzeigersinn).
+     * @param source    Quellbild
+     * @param phi       Der Winkel in rad (positive Werte drehen nach rechts)
+     * @return          rotiertes Bild
+     */
+    public static BufferedImage rotate(BufferedImage source, double phi) {
+        int width  = source.getWidth();
+        int height = source.getHeight();
+
+        // Neue Dimensionen (Bounding Box) berechnen, damit nichts abgeschnitten wird
+        double sin    = Math.abs( Math.sin( phi ));
+        double cos    = Math.abs( Math.cos( phi ));
+        int newWidth  = (int) Math.floor(width*cos  + height*sin);
+        int newHeight = (int) Math.floor(height*cos + width*sin);
+
+        // Zielbild im gleichen Format erstellen
+        int imageType = (source.getType() == BufferedImage.TYPE_CUSTOM)
+                ? BufferedImage.TYPE_INT_ARGB
+                : source.getType();
+
+        BufferedImage destination = new BufferedImage(newWidth, newHeight, imageType);
+        AffineTransform tx = new AffineTransform();
+        tx.translate((newWidth-width)/2.0, (newHeight-height)/2.0); // Verschiebung zum neuen Mittelpunkt des vergrößerten Bildes
+        tx.rotate(phi, width/2.0, height/2.0); // Rotation um den alten Mittelpunkt des Quellbildes
+        AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_BICUBIC);
+        return op.filter(source, destination);
     }
 
     public static BufferedImage toBufferedImage(Image image) {

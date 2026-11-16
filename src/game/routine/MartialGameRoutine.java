@@ -13,10 +13,10 @@ package game.routine;
 
 import game.GameFrame;
 import game.resource.Resource;
-import graphic.AutoMoveable;
 import static graphic.block.InteractionType.*;
 import graphic.map.CollisionEvent;
 import graphic.map.GameMap;
+import graphic.missileLauncher.IsMissile;
 import graphic.tile.IsDeadOrAliveTile;
 
 public class MartialGameRoutine extends DefaultGameRoutine {
@@ -25,15 +25,16 @@ public class MartialGameRoutine extends DefaultGameRoutine {
         super(gameFrame, map);
     }
 
-    public void attack(IsDeadOrAliveTile doat, int quantity) {
+    public void attack(IsDeadOrAliveTile doat, int quantity, GameMap map) {
+        if ( !doat.isAlive() ) {
+            return; // Tote mögen in Frieden ruhen
+        }
         Resource r = doat.getOverlayResource();
         r.forceConsume(quantity);
         if ( r.getValue() <= 0 ) {
             System.out.println( doat.getBlockType() + " destroyed.");
             doat.setDead();
-            if (doat instanceof AutoMoveable auto) {
-                auto.stopMovement();
-            }
+            map.disable(doat);
         }
     }
 
@@ -46,23 +47,21 @@ public class MartialGameRoutine extends DefaultGameRoutine {
             case PLAYER -> {
                 if (e.target instanceof IsDeadOrAliveTile doat) {
                     System.out.println( "Player hit by " + e.getInitiator().getBlockType() );
-                    attack(doat, 10);
+                    attack(doat, 10, e.map);
                 }
             }
             case ENEMY -> {
                 if (e.target instanceof IsDeadOrAliveTile doat) {
                     System.out.println( "Enemy hit by " + e.getInitiator().getBlockType() );
-                    attack(doat, 10);
+                    attack(doat, 10, e.map);
                 }
             }
             default -> super.collisionPerformed(e);
         }
-        if (e.initiator instanceof IsDeadOrAliveTile doat) {
-            if ( !doat.isAlive() ) {
-                return;
-            }
+
+        if (e.initiator instanceof IsDeadOrAliveTile doat && !(e.target instanceof IsMissile)) {
             System.out.println( e.initiator.getBlockType() + " hit " + e.target.getBlockType() );
-            attack(doat, 10);
+            attack(doat, 10, e.map);
         }
     }
 

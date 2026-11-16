@@ -14,6 +14,7 @@ package graphic.tile;
 import java.util.ArrayList;
 import java.util.Collection;
 
+@SuppressWarnings("CloneableImplementsClone")
 public class PortalList extends ArrayList<Portal> {
 
     @Override

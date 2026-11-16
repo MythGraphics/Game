@@ -15,10 +15,10 @@ import graphic.block.Collidable;
 import graphic.block.DefaultBlockType;
 import static graphic.block.DefaultBlockType.PLAYER;
 import graphic.block.IsBlockType;
-import graphic.block.IsMoveableBlock;
 import graphic.map.GameMap;
 import graphic.map.MapRecord;
 import graphic.tile.IsBlockTile;
+import graphic.tile.IsMoveableTile;
 import java.awt.event.KeyEvent;
 
 public abstract class VectorMap extends GameMap {
@@ -68,13 +68,18 @@ public abstract class VectorMap extends GameMap {
     @Override
     protected void move() {
         super.move();
+
+        for (IsMoveableTile tile : scurryables) {
+            if (tile instanceof Portable portable) {
+                portable.update();
+            }
+        }
+
         player.move();
         detectCollision(player);
-    }
-
-    @Override
-    public void moveThroughPortal(IsMoveableBlock moveableBlock, int x, int y) {
-        moveableBlock.setPos(x, y);
+        if (getPlayer() instanceof Portable portable) {
+            portable.update();
+        }
     }
 
     @Override
@@ -103,7 +108,7 @@ public abstract class VectorMap extends GameMap {
         boolean collision = super.isOutOfMap(collider);
         if (collision) {
             if (collider instanceof VectorBlock vb) {
-                System.err.println(collider + " is out of map: stopping movement and resetting position ...");
+                System.err.println(collider + " is out of map: stop movement and resetting position ...");
                 vb.stopMovement();
                 vb.px = Math.clamp(vb.px, DEFAULT_TILE_SIZE, boardWidth  - DEFAULT_TILE_SIZE);
                 vb.py = Math.clamp(vb.py, DEFAULT_TILE_SIZE, boardHeight - DEFAULT_TILE_SIZE);

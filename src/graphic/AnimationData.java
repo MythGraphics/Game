@@ -11,6 +11,7 @@ package graphic;
  *
  */
 
+import static graphic.io.ImageUtility.rotate;
 import java.awt.image.BufferedImage;
 
 public class AnimationData {
@@ -81,6 +82,16 @@ public class AnimationData {
 
     public static AnimationData[] buildDirectionalAnimationSet(BufferedImage[][] imageset) {
         return buildDirectionalAnimationSet(imageset, Direction.DEFAULT_ORIENTATION);
+    }
+
+    public static AnimationData buildRotatingAnimationSet(BufferedImage image, boolean right) {
+        int stepAngle = right ? 10 : -10;
+        BufferedImage[] array = new BufferedImage[36];
+        array[0] = image;
+        for (int i = 1; i < array.length; ++i) {
+            array[i] = rotate( image, Math.toRadians( stepAngle ));
+        }
+        return new AnimationData(array);
     }
 
 }

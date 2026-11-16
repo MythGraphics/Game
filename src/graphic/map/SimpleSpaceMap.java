@@ -35,6 +35,7 @@ public class SimpleSpaceMap extends SimpleMap {
     private final Map<IsBlockType, HasImage> imgMap = new HashMap<>();
 
     private Resource playerHealth;
+    private AnimationPlayer portalAni;
 
     public SimpleSpaceMap(char[][] tileMap) {
         super(tileMap);
@@ -63,9 +64,8 @@ public class SimpleSpaceMap extends SimpleMap {
                 loadImage(TILESET+"space/portal.png"), 80, -1
             )
         );
-        AnimationPlayer portalAni = new AnimationPlayer(portalAniData);
+        portalAni = new AnimationPlayer(portalAniData);
         portalAni.slowDown();
-        imgMap.put(PORTAL, portalAni);
 
         AnimationData missileAniData = new AnimationData(
             scaleImageSet(
@@ -108,6 +108,8 @@ public class SimpleSpaceMap extends SimpleMap {
                 enemyTile.setOverlayResource( new Resource( "HP", HEALTH, 25, 25 ));
                 enemyTile.setDeadTile( CORPSE, imgMap.get( CORPSE ));
                 return enemyTile;
+            case PORTAL:
+                return new Portal( new BlockTile( x, y, tileSize, bType, new AnimationPlayer( portalAni )));
             default:
                 return new BlockTile( x, y, tileSize, bType, imgMap.get( bType ));
         }

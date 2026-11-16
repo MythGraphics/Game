@@ -13,7 +13,7 @@ package graphic.vectorMap;
 
 import graphic.block.IsBlock;
 
-public interface IsVectorBlock {
+public interface IsVectorBlock extends Portable {
 
     final static float TWO_PI        = (float) (2.0 * Math.PI);
     final static float RESTITUTION   = 0.9f; // Elastizitätskoeffizient (<1 für etwas Dämpfung/Energieverlust)

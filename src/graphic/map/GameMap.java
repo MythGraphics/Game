@@ -11,7 +11,6 @@ package graphic.map;
  *
  */
 
-import graphic.HasImage;
 import graphic.Moveable;
 import graphic.block.Block;
 import graphic.block.Collidable;
@@ -27,8 +26,8 @@ import static graphic.io.ImageUtility.scale;
 import static graphic.io.ImageUtility.stretch;
 import graphic.tile.IsBlockTile;
 import graphic.tile.IsMoveableTile;
+import graphic.tile.IsTile;
 import graphic.tile.Portal;
-import graphic.tile.PortalList;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -68,15 +67,14 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
     public static boolean prerenderMap = true;
     public static int defaultMissileSpeed = DEFAULT_TILE_SIZE/4; // pixel per frame
 
-    protected final Collection<Collidable>      staticCollidables   = new HashSet<>(); // statische Collidables
-    protected final Collection<IsMoveableTile>  scurryables         = new HashSet<>(); // sich selbstständig bewegende Entitäten
-    protected final Collection<IsMissile>       missiles            = new HashSet<>();
-    protected final Collection<Renderable>      renderables         = new ArrayList<>();
-    protected final Collection<Collidable>      garbageC            = new HashSet<>(); // statische Collidables, die entfernt werden sollen
-    protected final Collection<IsMoveableTile>  garbageS            = new HashSet<>(); // MoveableTiles, die entfernt werden sollen
-    protected final Collection<IsMissile>       garbageM            = new HashSet<>(); // Missiles, die entfernt werden sollen
-    protected final Collection<Renderable>      garbageR            = new HashSet<>(); // Renderables, die entfernt werden sollen
-    protected final PortalList                  portals             = new PortalList();
+    protected final Collection<Collidable>      collidables     = new HashSet<>(); // Collidables
+    protected final Collection<IsMoveableTile>  scurryables     = new HashSet<>(); // selbstständig Bewegliches
+    protected final Collection<IsMissile>       missiles        = new HashSet<>();
+    protected final Collection<Renderable>      renderables     = new ArrayList<>();
+    protected final Collection<Collidable>      garbageC        = new HashSet<>(); // Collidables, die entfernt werden sollen
+    protected final Collection<IsMoveableTile>  garbageS        = new HashSet<>(); // MoveableTiles, die entfernt werden sollen
+    protected final Collection<IsMissile>       garbageM        = new HashSet<>(); // Missiles, die entfernt werden sollen
+    protected final Collection<Renderable>      garbageR        = new HashSet<>(); // Renderables, die entfernt werden sollen
 
     protected IsBlockType[] excludedBlockTypes = DEFAULT_EXCLUDE;
     protected IsBlockTile emptyTile;
@@ -89,6 +87,7 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
     private boolean active  = false;
     private boolean ready   = false;
     private Timer renderLoop;
+    private Portal currentPortal;
 
     public GameMap(char[][] tileMap, MapRecord rec) {
         this.tileMap    = tileMap;
@@ -230,7 +229,6 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
             }
             case SPACE          -> emptyTile = tile;
             case SPACEHOLDER    -> {}
-            case PORTAL         -> add( new Portal( getRandomSpace(), tile ));
             default             -> add(tile);
         }
     }
@@ -310,10 +308,6 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
         collisionListeners.add(actionListener);
     }
 
-    public List<Portal> getPortalList() {
-        return portals;
-    }
-
     /**
      * Holt den Block an gegebener Position aus den staticCollidables und nur von dort.
      * @param col   Spalte
@@ -328,7 +322,7 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
 
         int x = (col-1)*tileSize;
         int y = (row-1)*tileSize;
-        for (Collidable c : staticCollidables) {
+        for (Collidable c : collidables) {
             if ( x == c.getX() && y == c.getY() ) {
                 return c;
             }
@@ -359,7 +353,7 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
         Point pa = new Point(x, y);
         Point pb = new Point();
         Dimension d = new Dimension(tileSize, tileSize);
-        for (Collidable c : staticCollidables) {
+        for (Collidable c : collidables) {
             pb.x = c.getX();
             pb.y = c.getY();
             if ( collision( pa, d, pb, d )) {
@@ -378,7 +372,7 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
             occupied = false;
             pa.x = rangen.nextInt(1, boardWidth/tileSize)  * tileSize;
             pa.y = rangen.nextInt(1, boardHeight/tileSize) * tileSize;
-            for (Collidable c : staticCollidables) {
+            for (Collidable c : collidables) {
                 pb.x = c.getX();
                 pb.y = c.getY();
                 if ( collision( pa, d, pb, d )) {
@@ -388,20 +382,6 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
             }
         } while (occupied);
         return pa;
-    }
-
-    /**
-     * Bewegt den Block durch ein Portal zu angegebenen x-y-Koordninate.
-     * Der Block wird nach dem Versetzen einen Schritt bewegt (Kollisionsvermeidung),
-     * bevor die Kollisionsprüfung erfolgt.
-     * @param moveableBlock zu versetzender, beweglicher Block
-     * @param x             x-Koordinate
-     * @param y             y-Koordinate
-     */
-    public void moveThroughPortal(IsMoveableBlock moveableBlock, int x, int y) {
-        moveableBlock.setPos(x, y);
-        moveableBlock.move();
-        detectCollision(moveableBlock);
     }
 
     /**
@@ -547,16 +527,8 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
             }
         }
  */
-        // Kollisionsprüfung der umherwandernden Collidables
-        for (Collidable target : scurryables) {
-            if ( collision( source, target )) {
-                processCollision(source, target);
-                return;
-            }
-        }
-
-        // Kollisionsprüfung der statischen Collidables
-        for (Collidable target : staticCollidables) {
+        // Kollisionsprüfung der Collidables
+        for (Collidable target : collidables) {
             if ( collision( source, target )) {
                 processCollision(source, target);
                 return;
@@ -683,7 +655,7 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
     }
 
     /**
-     * Bereinigt die Map von allen nicht mehr darzustellenden Renderables.
+     * Bereinigt die Map von nicht mehr Benötigtem.
      */
     protected void clean() {
         renderables.removeAll(garbageR);
@@ -692,7 +664,7 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
         garbageM.clear();
         scurryables.removeAll(garbageS);
         garbageS.clear();
-        staticCollidables.removeAll(garbageC);
+        collidables.removeAll(garbageC);
         garbageC.clear();
     }
 
@@ -720,19 +692,13 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
 
     /**
      * Gibt die Anzahl der Collidables des angegebenen Typs zurück.
-     * Es werden nur statische und umherwandernde Collidables (staticCollidables, scurryables) gezählt,
-     * keine Raketen (missiles).
+     * Es werden nur Collidables gezählt, keine Raketen (missiles).
      * @param bType BlockType
      * @return      aktuelle Anzahl der Collidables auf der Map
      */
     public int getBlockCount(IsBlockType bType) {
         int value = 0;
-        for (Collidable c : staticCollidables) {
-            if ( c.getBlockType() == bType ) {
-                ++value;
-            }
-        }
-        for (Collidable c : scurryables) {
+        for (Collidable c : collidables) {
             if ( c.getBlockType() == bType ) {
                 ++value;
             }
@@ -745,21 +711,40 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
             return;
         }
 
-        if (obj instanceof HasImage img && obj instanceof Renderable r) {
-            if (img.getImage() != null) {
-                renderables.add(r);
+        if (obj instanceof Portal portal) {
+            if (currentPortal == null) {
+                currentPortal = portal;
+                portal.setTarget( getRandomSpace() );
+            } else {
+                // Portale verknüpfen
+                currentPortal.setTarget(portal);
+                portal.setTarget(currentPortal);
+                currentPortal = null;
             }
         }
-        if (obj instanceof Portal portal) {
-            portals.add(portal);
+        if (obj instanceof Collidable collidable && !(obj instanceof IsMissile)) {
+            collidables.add(collidable);
+        }
+        if (obj instanceof IsTile tile) {
+            // Renderable
+            if (tile.getImage() != null) {
+                renderables.add(tile);
+            }
         }
         switch (obj) {
             // CAVE: Reihenfolge ist essentiell - nicht ändern!
             case IsMissile missile       -> missiles.add(missile);
             case IsMoveableTile moveable -> scurryables.add(moveable);
-            case Collidable collidable   -> staticCollidables.add(collidable);
             default                      -> {}
         }
+    }
+
+    public void enable(Collidable collidable) {
+        collidables.add(collidable);
+    }
+
+    public void disable(Collidable collidable) {
+        garbageC.add(collidable);
     }
 
     public void remove(Object obj) {
@@ -767,9 +752,6 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
             return;
         }
 
-        if (obj instanceof Renderable renderable) {
-            garbageR.add(renderable);
-        }
         if (obj instanceof IsMissile missile) {
             garbageM.add(missile);
         }
@@ -779,8 +761,8 @@ public abstract class GameMap extends JPanel implements ActionListener, IsCollis
         if (obj instanceof Collidable collidable) {
             garbageC.add(collidable);
         }
-        if (obj instanceof Portal portal) {
-            portals.remove(portal);
+        if (obj instanceof Renderable renderable) {
+            garbageR.add(renderable);
         }
     }
 

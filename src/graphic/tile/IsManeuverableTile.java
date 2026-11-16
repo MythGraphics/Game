@@ -14,5 +14,5 @@ package graphic.tile;
 import graphic.HasDirection;
 import graphic.Maneuverable;
 
-// IsPlayer
+// Player
 public interface IsManeuverableTile extends IsMoveableTile, Maneuverable, HasDirection {}

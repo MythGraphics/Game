@@ -23,6 +23,7 @@ import graphic.map.OverlayUtil;
 import graphic.missileLauncher.DefaultMissileLauncher;
 import graphic.missileLauncher.HasMissileLauncher;
 import graphic.missileLauncher.MissileLauncher;
+import graphic.vectorMap.Portable;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
@@ -30,7 +31,7 @@ import java.awt.image.BufferedImage;
 @SuppressWarnings("CloneableImplementsClone")
 public class DeadOrAliveTileDecorator<T extends BlockTile> implements IsDeadOrAliveTile, IsMoveableBlock, AutoMoveable,
                                                                       Maneuverable, HasDirection, HasMinMaxPoint,
-                                                                      HasMissileLauncher {
+                                                                      HasMissileLauncher, Portable {
 
     private final T tile;
 
@@ -39,6 +40,7 @@ public class DeadOrAliveTileDecorator<T extends BlockTile> implements IsDeadOrAl
     private boolean drawOverlay = false;
     private boolean autoMoveAsCorpse = false;
     private MissileLauncher missileLauncher = new DefaultMissileLauncher(this, null);
+    private int portalCooldown = 0;
 
     public DeadOrAliveTileDecorator(T aliveTile) {
         this(aliveTile, null);
@@ -56,6 +58,23 @@ public class DeadOrAliveTileDecorator<T extends BlockTile> implements IsDeadOrAl
         } else {
             this.doaSet = dataSet;
         }
+    }
+
+    @Override
+    public void update() {
+        if (portalCooldown > 0) {
+            portalCooldown--;
+        }
+    }
+
+    @Override
+    public boolean isPortable() {
+        return portalCooldown <= 0;
+    }
+
+    @Override
+    public void resetPortalCooldown() {
+        portalCooldown = Portal.DEFAULT_COLLISION_DELAY;
     }
 
     public void setMissileLauncher(MissileLauncher missileLauncher) {
